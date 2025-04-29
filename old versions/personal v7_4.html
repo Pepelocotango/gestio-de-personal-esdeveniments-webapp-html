@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<!-- v.7.4 - Mandatory Load, People Mgmt, Calendar, Dual Summaries, New Fields, Conflict Warn -->
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestió Integral d'Esdeveniments v7</title>
+
+    <!-- FullCalendar CSS (local path assumed) -->
+    <link href='libs/fullcalendar/dist/index.global.min.css' rel='stylesheet' />
+
+    <style>
+        /* --- CSS Variables (igual que v6) --- */
+        :root {
+            --primary-color: #0056b3; --secondary-color: #5a6268; --success-color: #218838;
+            --danger-color: #c82333; --warning-color: #e0a800; --info-color: #117a8b;
+            --light-color: #f8f9fa; --dark-color: #343a40; --border-color: #ced4da;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --status-pending-bg: #ffeeba; --status-yes-bg: #c3e6cb; --status-no-bg: #f5c6cb;
+            --mobile-breakpoint: 800px; /* Slightly adjusted breakpoint */
+        }
+
+        /* --- Reset & Body (igual que v6) --- */
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font-family); margin: 0; padding: 10px; background-color: var(--light-color); color: var(--dark-color); line-height: 1.6; }
+
+        /* --- Container & Headings (igual que v6) --- */
+        .container { max-width: 1200px; margin: 15px auto; background-color: #fff; padding: 20px 25px; border-radius: 8px; box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08); overflow: hidden; }
+        h1, h2, h3 { margin-top: 0; }
+        h1 { color: var(--primary-color); text-align: center; margin-bottom: 30px; font-size: 1.8rem; }
+        h2 { color: var(--primary-color); text-align: center; margin-bottom: 20px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; gap: 0.5em;}
+        h3 { color: var(--secondary-color); text-align: left; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; font-size: 1.15rem; gap: 0.5em;}
+        h3 svg, h2 svg { flex-shrink: 0; width: 1.1em; height: 1.1em; }
+
+        /* --- Initial Load Overlay --- */
+        #initial-load-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 2000; text-align: center; padding: 20px;
+        }
+         #initial-load-overlay h2 { color: var(--primary-color); }
+         #initial-load-overlay p { color: var(--secondary-color); max-width: 500px; margin-bottom: 20px;}
+         #initial-load-overlay.hidden { display: none; }
+         /* Hide main content until data is loaded */
+         #main-content { display: none; }
+         #main-content.visible { display: block; }
+
+
+        /* --- Helper Classes (igual que v6) --- */
+        .hidden { display: none !important; }
+        .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+        .section { margin-bottom: 30px; padding: 20px; background-color: #fdfdfd; border-radius: 5px; border: 1px solid var(--border-color); }
+        .form-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;}
+        .table-responsive { overflow-x: auto; } /* For general tables */
+
+        /* --- Buttons (General - igual que v6) --- */
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5em; padding: 10px 20px; font-size: 0.95rem; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s ease; text-align: center; text-decoration: none; white-space: nowrap; }
+        .btn svg { width: 1em; height: 1em; }
+        .btn-primary { background-color: var(--primary-color); color: white; } .btn-primary:hover { background-color: #004494; }
+        .btn-secondary { background-color: var(--secondary-color); color: white; } .btn-secondary:hover { background-color: #495057; }
+        .btn-success { background-color: var(--success-color); color: white; } .btn-success:hover { background-color: #1e7e34; }
+        .btn-danger { background-color: var(--danger-color); color: white; } .btn-danger:hover { background-color: #b21f2d; }
+        .btn-warning { background-color: var(--warning-color); color: var(--dark-color); } .btn-warning:hover { background-color: #c89400; }
+        .btn-info { background-color: var(--info-color); color: white; } .btn-info:hover { background-color: #0f6674; }
+        .btn-light { background-color: var(--light-color); color: var(--dark-color); border: 1px solid var(--border-color); } .btn-light:hover { background-color: #e2e6ea; }
+        .btn-icon { background-color: transparent; padding: 4px 6px; font-size: 1.1rem; line-height: 1; vertical-align: middle; border: none; }
+        .btn-icon.btn-danger { color: var(--danger-color); } .btn-icon.btn-danger:hover { background-color: var(--danger-color); color: white; }
+        .btn-icon.btn-warning { color: #b88100; } .btn-icon.btn-warning:hover { background-color: var(--warning-color); color: var(--dark-color); }
+        .btn-icon.btn-success { color: var(--success-color); } .btn-icon.btn-success:hover { background-color: var(--success-color); color: white; }
+
+        /* --- Form Styling (incl. nous camps i select persona) --- */
+        #event-form { margin-bottom: 0; }
+        .form-group { margin-bottom: 15px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 0.95rem; color: var(--secondary-color); }
+        input[type="text"], input[type="date"], input[type="search"], input[type="email"], input[type="tel"], select, textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 1rem; font-family: inherit; background-color: #fff; color: var(--dark-color); }
+        input[type="date"] { min-height: calc(1.6em + 20px + 2px); appearance: none; }
+        textarea { min-height: 80px; resize: vertical; }
+        #event-form button[type="submit"] { width: auto; flex-grow: 1;}
+        #clear-form-btn, #cancel-edit-btn { width: auto; }
+        input::-webkit-calendar-picker-indicator { opacity: 0.6; }
+
+        /* --- Filter Controls (incl. nous filtres) --- */
+        #filter-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; }
+        #filter-controls .form-group { margin-bottom: 0; }
+        #reset-filters-btn { white-space: nowrap; }
+
+        /* --- Table Styling (igual que v6) --- */
+        #events-table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; vertical-align: middle; word-break: break-word; }
+        th { background-color: var(--primary-color); color: white; font-weight: 600; white-space: nowrap; font-size: 0.95rem; position: relative; }
+        th[data-sort-key] { cursor: pointer; user-select: none; padding-right: 25px; }
+        th[data-sort-key]:hover { background-color: #004494; }
+        .sort-indicator { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 0.8em; }
+        #events-table tr:nth-child(even):not([class*="status-"]) { background-color: #f7f7f7; }
+        #events-table td { font-size: 0.95rem; }
+        .status-select { padding: 6px 8px; border-radius: 4px; border: 1px solid var(--border-color); min-width: 100px; font-size: 0.9rem; background-color: #fff; cursor: pointer; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto; padding-right: 2em; }
+        .actions-cell { white-space: nowrap; text-align: right; }
+        .actions-cell button { margin-left: 5px; }
+        #events-table tr.status-Pendent { background-color: var(--status-pending-bg); }
+        #events-table tr.status-Sí { background-color: var(--status-yes-bg); }
+        #events-table tr.status-No { background-color: var(--status-no-bg); }
+        #events-table tr.status-Pendent:nth-child(even),
+        #events-table tr.status-Sí:nth-child(even),
+        #events-table tr.status-No:nth-child(even) { background-color: inherit; }
+
+        /* --- Summaries Styling (Dual Format) --- */
+        #summaries-section h2 { margin-bottom: 10px; }
+        .summary-toggle-buttons { margin-bottom: 20px; text-align: center; }
+        .summary-toggle-buttons .btn { margin: 0 5px; }
+        .summary-block { display: none; /* Hidden by default, shown by JS */ }
+        .summary-block.active { display: block; }
+        .summaries-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .summary-container { padding: 15px; background-color: #fdfdfd; border: 1px solid var(--border-color); border-radius: 5px; }
+        .summary-container table { margin-top: 10px; }
+        /* Count summary specific */
+        #summary-counts-block th { background-color: var(--secondary-color); font-size: 0.9rem; }
+        #summary-counts-block td { text-align: center; font-size: 0.9rem; }
+        #summary-counts-block td:first-child { text-align: left; font-weight: 500; }
+        #summary-counts-block td strong { color: var(--primary-color); }
+        /* Grouped summary specific */
+        #summary-grouped-block th { background-color: var(--secondary-color); font-size: 0.85rem; padding: 8px 10px;}
+        #summary-grouped-block td { font-size: 0.9rem; padding: 8px 10px; vertical-align: top;}
+        .summary-group-header td { font-weight: bold; background-color: #e9ecef; color: var(--secondary-color); padding: 8px 10px; font-size: 0.9rem; border-top: 2px solid var(--border-color); }
+        .summary-group-header:first-child td { border-top: none; }
+        .status-indicator { display: inline-block; padding: 3px 8px; border-radius: 10px; font-size: 0.8rem; color: white; white-space: nowrap; }
+        .status-indicator-Pendent { background-color: var(--warning-color); color: var(--dark-color);}
+        .status-indicator-Sí { background-color: var(--success-color); }
+        .status-indicator-No { background-color: var(--danger-color); }
+
+        .no-data-message { text-align: center; display: none; margin: 15px 0; padding: 12px; color: var(--secondary-color); background-color: #f0f0f0; border-radius: 4px; font-style: italic; }
+
+        /* --- Calendar Styling --- */
+        #calendar-section { min-height: 500px; /* Ensure it has some height */ }
+        /* FullCalendar Customizations (optional) */
+        :root { /* Define FullCalendar variables */
+            --fc-border-color: var(--border-color);
+            --fc-today-bg-color: rgba(0, 86, 179, 0.1); /* Light primary */
+            --fc-event-bg-color: var(--primary-color);
+            --fc-event-border-color: var(--primary-color);
+            /* Add more vars as needed from FullCalendar docs */
+        }
+        .fc-event { cursor: pointer; } /* Indicate events are clickable */
+        .fc .fc-daygrid-day.fc-day-today { background-color: var(--fc-today-bg-color); }
+
+        /* --- Modal Styling (Generic & People Modal) --- */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
+        .modal.visible { opacity: 1; visibility: visible; transition-delay: 0s; }
+        .modal-content { background-color: white; padding: 25px 30px; border-radius: 8px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); max-width: 600px; width: 90%; transform: scale(0.9); transition: transform 0.3s ease; max-height: 90vh; display: flex; flex-direction: column;}
+        .modal.visible .modal-content { transform: scale(1); }
+        .modal-header { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; flex-shrink: 0; }
+        .modal-title { color: var(--primary-color); font-size: 1.25rem; margin-bottom: 0; }
+        .modal-body { margin-bottom: 20px; color: var(--dark-color); overflow-y: auto; /* Scroll if content overflows */ flex-grow: 1;}
+        .modal-footer { text-align: right; border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: auto; flex-shrink: 0;}
+        .modal-footer .btn { margin-left: 10px; }
+        /* People Modal Specific */
+        #people-list { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 4px; margin-bottom: 15px;}
+        #people-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--border-color); }
+        #people-list li:last-child { border-bottom: none; }
+        #people-list .person-info { flex-grow: 1; margin-right: 10px; }
+        #people-list .person-info strong { display: block; }
+        #people-list .person-info span { font-size: 0.9em; color: var(--secondary-color); }
+        #people-list .person-actions button { margin-left: 5px; }
+
+        /* --- Feedback Area (igual que v6) --- */
+        #feedback-area { position: fixed; bottom: 20px; right: 20px; background-color: var(--dark-color); color: white; padding: 10px 20px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 1010; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        #feedback-area.visible { opacity: 1; visibility: visible; }
+
+        /* --- Data Management (igual que v6) --- */
+        .data-management-container { display: flex; gap: 15px; flex-wrap: wrap; }
+        #import-file-input { display: none; }
+
+        /* --- Conflict Warning --- */
+        .conflict-warning {
+            font-size: 0.9em; color: var(--danger-color); margin-top: 5px; display: none; /* Hidden by default */
+        }
+
+        /* --- Responsive adjustments (adaptat per a nous elements) --- */
+        @media (max-width: var(--mobile-breakpoint)) {
+            .container { padding: 15px; max-width: 100%; }
+            h1 { font-size: 1.6rem; margin-bottom: 20px; } h2 { font-size: 1.3rem; margin-bottom: 15px; } h3 { font-size: 1.1rem; }
+            .section { padding: 15px; }
+            .form-grid { grid-template-columns: 1fr; } /* Stack form grid */
+            #filter-controls { grid-template-columns: 1fr; }
+
+            /* Main table card list (igual que v6) */
+            #events-table thead { display: none; }
+            #events-table tr { display: block; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 5px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); background-color: #fff !important; border-left-width: 5px; border-left-style: solid; padding-left: 0; }
+            #events-table tr.status-Pendent { border-left-color: var(--warning-color); }
+            #events-table tr.status-Sí { border-left-color: var(--success-color); }
+            #events-table tr.status-No { border-left-color: var(--danger-color); }
+            #events-table td { display: block; text-align: right; padding-left: 45%; position: relative; border: none; border-bottom: 1px dotted var(--border-color); padding-top: 10px; padding-bottom: 10px; min-height: 42px; font-size: 0.9rem; background-color: transparent !important; word-break: break-word; }
+            #events-table tr td:last-child { border-bottom: none; }
+            #events-table td::before { content: attr(data-label); position: absolute; left: 10px; width: 40%; padding-right: 10px; white-space: nowrap; font-weight: bold; text-align: left; color: var(--secondary-color); font-size: 0.85rem; }
+            #events-table .status-select { width: auto; float: right; max-width: 110px; padding: 5px 2em 5px 8px; font-size: 0.85rem; }
+            #events-table .actions-cell { text-align: right; padding-left: 10px; }
+            #events-table .actions-cell::before { width: auto; position: static; margin-right: auto; }
+            #events-table .actions-cell button { float: right; margin-left: 5px; margin-top: 0; padding: 5px 8px; }
+
+            .summaries-grid { grid-template-columns: 1fr; } /* Stack summaries */
+            .summary-container table { display: block; overflow-x: auto; white-space: nowrap; } /* Make summary tables scrollable horizontally */
+
+             /* Calendar might need height adjustment */
+            #calendar-section { min-height: 400px; }
+             .fc .fc-toolbar { flex-wrap: wrap; font-size: 0.9em; }
+             .fc .fc-toolbar .fc-toolbar-chunk { margin-bottom: 5px; }
+        }
+
+        @media (max-width: 480px) {
+             h1 { font-size: 1.4rem; }
+             .btn { font-size: 0.9rem; padding: 8px 15px;}
+             .form-actions { flex-direction: column; align-items: stretch;}
+             .form-actions .btn { width: 100%; }
+             #events-table td { padding-left: 10px; text-align: left;}
+             #events-table td::before { position: static; display: block; width: 100%; font-weight: bold; margin-bottom: 3px; white-space: normal;}
+             #events-table .status-select { float: none; max-width: none; width: 100%; margin-top: 5px;}
+             #events-table .actions-cell { text-align: left; }
+             #events-table .actions-cell::before { margin-bottom: 5px; }
+             #events-table .actions-cell button { float: none; display: inline-block; margin-left: 0; margin-right: 5px; margin-top: 5px; }
+             .modal-content { width: 95%; padding: 20px; }
+             .data-management-container { flex-direction: column; align-items: stretch;}
+             .data-management-container .btn { width: 100%; }
+             /* Adapt grouped summary table mobile view */
+             #summary-grouped-block table thead { display: none; }
+             #summary-grouped-block table tr { display: block; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+             #summary-grouped-block table tr.summary-group-header { border-bottom: none; padding-bottom: 0; margin-bottom: 5px;}
+             #summary-grouped-block table td { display: block; text-align: right; padding-left: 40%; position: relative; border: none; }
+             #summary-grouped-block table td::before { content: attr(data-label); position: absolute; left: 8px; width: 35%; padding-right: 10px; white-space: nowrap; font-weight: bold; text-align: left; font-size: 0.8rem; color: var(--secondary-color);}
+             #summary-grouped-block tr.summary-group-header td { text-align: left; padding-left: 8px; }
+             #summary-grouped-block tr.summary-group-header td::before { display: none; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Initial Load Overlay -->
+    <div id="initial-load-overlay">
+        <h2>Benvingut/da a la Gestió d'Esdeveniments v7</h2>
+        <p>Per començar, si us plau, carrega el teu fitxer de dades d'esdeveniments (format JSON). Si no en tens cap, pots començar de zero i desar-lo més tard.</p>
+        <div>
+            <button id="load-data-initial-btn" class="btn btn-primary">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                 Carregar Fitxer JSON
+            </button>
+            <button id="start-empty-btn" class="btn btn-secondary">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                 Començar de Zero
+            </button>
+        </div>
+         <input type="file" id="import-file-input" accept=".json" class="hidden"> <!-- Single file input reused -->
+    </div>
+
+    <div id="main-content"> <!-- Main content hidden initially -->
+        <div class="container">
+            <h1>Gestió Integral d'Esdeveniments v7</h1>
+
+            <!-- Data Management Section (TOP) -->
+            <div id="data-management-section-top" class="section">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line><polyline points="7 16 12 21 17 16"></polyline><line x1="12" y1="21" x2="12" y2="9"></line></svg>
+                    Gestió de Dades
+                </h3>
+                <div class="data-management-container">
+                     <button id="manage-people-btn" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        Gestionar Persones/Grups
+                    </button>
+                    <button id="export-data-btn-top" class="btn btn-info">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Exportar/Desar Canvis (JSON)
+                    </button>
+                    <button id="import-data-btn-top" class="btn btn-warning">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        Importar Dades (JSON)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form to add/edit events -->
+            <form id="event-form" class="section">
+                <h2 id="form-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    Afegir Esdeveniment
+                </h2>
+                <input type="hidden" id="edit-event-id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="event-name">Nom de l'Esdeveniment:</label>
+                        <input type="text" id="event-name" required list="event-name-datalist">
+                        <datalist id="event-name-datalist"></datalist>
+                    </div>
+                     <div class="form-group">
+                        <label for="event-category">Categoria/Tipus:</label>
+                        <input type="text" id="event-category" list="event-category-datalist">
+                         <datalist id="event-category-datalist"></datalist>
+                    </div>
+                     <div class="form-group">
+                        <label for="event-location">Lloc/Ubicació:</label>
+                        <input type="text" id="event-location">
+                    </div>
+                    <div class="form-group">
+                        <label for="start-date">Data Inici:</label>
+                        <input type="date" id="start-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="end-date">Data Fi (Opcional):</label>
+                        <input type="date" id="end-date" aria-describedby="end-date-desc">
+                        <small id="end-date-desc" style="color: var(--secondary-color); font-size: 0.8rem;">Deixar buit si és un sol dia.</small>
+                    </div>
+                     <div class="form-group">
+                        <label for="person-select">Persona/Grup Assignat:</label>
+                        <select id="person-select" required>
+                            <option value="">-- Selecciona --</option>
+                            <!-- Options populated by JS -->
+                        </select>
+                         <div id="conflict-warning" class="conflict-warning">Atenció: Conflicte d'horari detectat per a aquesta persona.</div>
+                    </div>
+                     <div class="form-group">
+                        <label for="status">Estat:</label>
+                        <select id="status">
+                            <option value="Pendent" selected>Pendent</option>
+                            <option value="Sí">Confirmat (Sí)</option>
+                            <option value="No">Cancel·lat (No)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notes:</label>
+                    <textarea id="notes" placeholder="(Opcional)"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" id="submit-btn" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <span id="submit-btn-text">Afegir</span>
+                    </button>
+                    <button type="button" id="clear-form-btn" class="btn btn-light">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                        Netejar
+                    </button>
+                    <button type="button" id="cancel-edit-btn" class="btn btn-secondary hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        Cancel·lar Edició
+                    </button>
+                </div>
+            </form>
+
+             <!-- Calendar View -->
+            <div id="calendar-section" class="section">
+                 <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    Vista de Calendari
+                </h2>
+                <div id='calendar'></div>
+            </div>
+
+            <!-- Main Events List -->
+            <div class="section">
+                <h2 id="events-list-title" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><line x1="8" y1="14" x2="16" y2="14"></line></svg>
+                    Llista d'Esdeveniments (<span id="event-count">0</span>)
+                </h2>
+                <div id="events-table-wrapper" class="table-responsive">
+                    <table id="events-table" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th data-sort-key="eventName">Esdeveniment</th>
+                                <th data-sort-key="category">Categoria</th>
+                                <th data-sort-key="location">Ubicació</th>
+                                <th data-sort-key="startDate">Dates</th>
+                                <th data-sort-key="personId">Persona/Grup</th> <!-- Sort by ID? Or Name? Let's try name via lookup -->
+                                <th data-sort-key="status">Estat</th>
+                                <th>Notes</th>
+                                <th>Accions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <p id="no-events-message" class="no-data-message" style="display: block;">Encara no hi ha cap esdeveniment.</p>
+            </div>
+
+            <!-- Filter Controls -->
+            <div id="filter-controls-section" class="section">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                    Filtres i Cerca
+                </h3>
+                <div id="filter-controls">
+                    <div class="form-group">
+                        <label for="filter-search">Cercar (Nom, Esdeveniment, Notes, Lloc):</label>
+                        <input type="search" id="filter-search" placeholder="Escriu per cercar...">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-category">Filtrar per Categoria:</label>
+                         <input type="text" id="filter-category" list="event-category-datalist">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-person">Filtrar per Persona/Grup:</label>
+                        <select id="filter-person">
+                            <option value="">-- Tots --</option>
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-status">Filtrar per Estat:</label>
+                        <select id="filter-status">
+                            <option value="">-- Tots --</option>
+                            <option value="Pendent">Pendent</option>
+                            <option value="Sí">Confirmat (Sí)</option>
+                            <option value="No">Cancel·lat (No)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-start-date">Des de Data Inici:</label>
+                        <input type="date" id="filter-start-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-end-date">Fins a Data Inici:</label>
+                        <input type="date" id="filter-end-date">
+                    </div>
+                    <button id="reset-filters-btn" class="btn btn-secondary">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                        Netejar Filtres
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summaries Section (Dual Format) -->
+            <div id="summaries-section" class="section" style="display: none;">
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg>
+                    Resums
+                </h2>
+                <div class="summary-toggle-buttons">
+                    <button id="show-counts-summary-btn" class="btn btn-light active">Veure Recomptes</button>
+                    <button id="show-grouped-summary-btn" class="btn btn-light">Veure Llistes Agrupades</button>
+                </div>
+
+                <!-- Counts Summary Block -->
+                 <div id="summary-counts-block" class="summary-block active">
+                    <div class="summaries-grid">
+                        <div id="summary-by-date-container-counts" class="summary-container">
+                            <h3>Per Data Inici</h3>
+                            <div class="table-responsive">
+                                <table id="summary-by-date-counts">
+                                    <thead><tr><th>Data Inici</th><th>Pendent</th><th>Sí</th><th>No</th><th>Total</th></tr></thead>
+                                    <tbody id="summary-by-date-tbody-counts"></tbody>
+                                </table>
+                            </div>
+                            <p id="no-summary-date-counts" class="no-data-message">No hi ha dades.</p>
+                        </div>
+                         <div id="summary-by-person-container-counts" class="summary-container">
+                             <h3>Per Persona/Grup</h3>
+                             <div class="table-responsive">
+                                <table id="summary-by-person-counts">
+                                    <thead><tr><th>Persona/Grup</th><th>Pendent</th><th>Sí</th><th>No</th><th>Total</th></tr></thead>
+                                    <tbody id="summary-by-person-tbody-counts"></tbody>
+                                </table>
+                             </div>
+                            <p id="no-summary-person-counts" class="no-data-message">No hi ha dades.</p>
+                        </div>
+                        <div id="summary-by-event-container-counts" class="summary-container">
+                             <h3>Per Nom Esdeveniment</h3>
+                             <div class="table-responsive">
+                                <table id="summary-by-event-counts">
+                                    <thead><tr><th>Nom Esdeveniment</th><th>Pendent</th><th>Sí</th><th>No</th><th>Total</th></tr></thead>
+                                    <tbody id="summary-by-event-tbody-counts"></tbody>
+                                </table>
+                            </div>
+                            <p id="no-summary-event-counts" class="no-data-message">No hi ha dades.</p>
+                        </div>
+                         <div id="summary-by-category-container-counts" class="summary-container">
+                             <h3>Per Categoria</h3>
+                             <div class="table-responsive">
+                                <table id="summary-by-category-counts">
+                                    <thead><tr><th>Categoria</th><th>Pendent</th><th>Sí</th><th>No</th><th>Total</th></tr></thead>
+                                    <tbody id="summary-by-category-tbody-counts"></tbody>
+                                </table>
+                            </div>
+                            <p id="no-summary-category-counts" class="no-data-message">No hi ha dades.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grouped Summary Block -->
+                <div id="summary-grouped-block" class="summary-block">
+                    <div class="summaries-grid">
+                        <div id="summary-by-event-container-grouped" class="summary-container">
+                            <h3>Agrupat per Nom Esdeveniment</h3>
+                             <div class="table-responsive">
+                                <table id="summary-by-event-grouped">
+                                    <thead><tr><th>Persona/Grup</th><th>Dates</th><th>Estat</th></tr></thead>
+                                    <tbody id="summary-by-event-tbody-grouped"></tbody>
+                                </table>
+                            </div>
+                            <p id="no-summary-event-grouped" class="no-data-message">No hi ha dades.</p>
+                        </div>
+                         <div id="summary-by-date-container-grouped" class="summary-container">
+                            <h3>Agrupat per Data Inici</h3>
+                             <div class="table-responsive">
+                                <table id="summary-by-date-grouped">
+                                    <thead><tr><th>Esdeveniment</th><th>Persona/Grup</th><th>Estat</th></tr></thead>
+                                    <tbody id="summary-by-date-tbody-grouped"></tbody>
+                                </table>
+                             </div>
+                            <p id="no-summary-date-grouped" class="no-data-message">No hi ha dades.</p>
+                        </div>
+                         <div id="summary-by-person-container-grouped" class="summary-container">
+                            <h3>Agrupat per Persona/Grup</h3>
+                            <div class="table-responsive">
+                                <table id="summary-by-person-grouped">
+                                    <thead><tr><th>Esdeveniment</th><th>Dates</th><th>Estat</th></tr></thead>
+                                    <tbody id="summary-by-person-tbody-grouped"></tbody>
+                                </table>
+                            </div>
+                            <p id="no-summary-person-grouped" class="no-data-message">No hi ha dades.</p>
+                        </div>
+                         <div id="summary-by-category-container-grouped" class="summary-container">
+                            <h3>Agrupat per Categoria</h3>
+                             <div class="table-responsive">
+                                <table id="summary-by-category-grouped">
+                                    <thead><tr><th>Esdeveniment</th><th>Persona/Grup</th><th>Dates</th><th>Estat</th></tr></thead>
+                                    <tbody id="summary-by-category-tbody-grouped"></tbody>
+                                </table>
+                            </div>
+                            <p id="no-summary-category-grouped" class="no-data-message">No hi ha dades.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Management Section (BOTTOM) -->
+            <div id="data-management-section-bottom" class="section">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line><polyline points="7 16 12 21 17 16"></polyline><line x1="12" y1="21" x2="12" y2="9"></line></svg>
+                    Gestió de Dades
+                </h3>
+                <div class="data-management-container">
+                    <button id="export-data-btn-bottom" class="btn btn-info">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Exportar/Desar Canvis (JSON)
+                    </button>
+                    <button id="import-data-btn-bottom" class="btn btn-warning">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        Importar Dades (JSON)
+                    </button>
+                </div>
+            </div>
+
+        </div> <!-- End container -->
+    </div> <!-- End main-content -->
+
+    <!-- Template for event row -->
+    <template id="event-row-template">
+        <tr>
+            <td data-label="Esdeveniment" class="event-event-name"></td>
+            <td data-label="Categoria" class="event-category"></td>
+            <td data-label="Ubicació" class="event-location"></td>
+            <td data-label="Dates" class="event-dates"></td>
+            <td data-label="Persona/Grup" class="event-person-name"></td> <!-- Display name -->
+            <td data-label="Estat">
+                <select class="status-select" aria-label="Canviar estat">
+                    <option value="Pendent">Pendent</option> <option value="Sí">Confirmat (Sí)</option> <option value="No">Cancel·lat (No)</option>
+                </select>
+            </td>
+            <td data-label="Notes" class="event-notes"></td>
+            <td data-label="Accions" class="actions-cell">
+                <button class="edit-btn btn btn-icon btn-warning" title="Editar esdeveniment">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7m-5.5-5.5a2.121 2.121 0 0 1 3 3L12 15l-4 1l1-4l9.5-9.5z"></path></svg>
+                    <span class="visually-hidden">Editar</span>
+                </button>
+                <button class="delete-btn btn btn-icon btn-danger" title="Eliminar esdeveniment">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m-6 5v6m4-6v6"></path></svg>
+                    <span class="visually-hidden">Eliminar</span>
+                </button>
+            </td>
+        </tr>
+    </template>
+
+     <!-- Template for person list item -->
+    <template id="person-list-item-template">
+        <li>
+            <div class="person-info">
+                <strong class="person-item-name"></strong>
+                <span class="person-item-details"></span> <!-- Role, Contact -->
+                <span class="person-item-notes" style="display: block; font-style: italic; font-size: 0.85em;"></span>
+            </div>
+            <div class="person-actions">
+                <button class="edit-person-btn btn btn-icon btn-warning" title="Editar Persona">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7m-5.5-5.5a2.121 2.121 0 0 1 3 3L12 15l-4 1l1-4l9.5-9.5z"></path></svg>
+                    <span class="visually-hidden">Editar</span>
+                </button>
+                <button class="delete-person-btn btn btn-icon btn-danger" title="Eliminar Persona">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m-6 5v6m4-6v6"></path></svg>
+                    <span class="visually-hidden">Eliminar</span>
+                </button>
+            </div>
+        </li>
+    </template>
+
+    <!-- Confirmation Modal (igual que v6) -->
+    <div id="confirmation-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+         <div class="modal-content">
+             <div class="modal-header"><h4 id="modal-title" class="modal-title">Confirmació</h4></div>
+            <div class="modal-body"><p id="modal-message">Estàs segur?</p></div>
+            <div class="modal-footer">
+                <button id="modal-cancel-btn" class="btn btn-light">Cancel·lar</button>
+                <button id="modal-confirm-btn" class="btn btn-danger">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+     <!-- Manage People Modal -->
+    <div id="manage-people-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="manage-people-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="manage-people-title" class="modal-title">Gestionar Persones/Grups</h4>
+                 <button type="button" class="btn-icon" style="color: var(--secondary-color);" aria-label="Tancar" onclick="Utils.hideModal('manage-people-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Form to add/edit person -->
+                <form id="person-form" style="margin-bottom: 20px;">
+                     <input type="hidden" id="edit-person-id">
+                     <h5>Afegir/Editar Persona/Grup</h5>
+                     <div class="form-grid">
+                         <div class="form-group">
+                             <label for="person-modal-name">Nom:</label>
+                             <input type="text" id="person-modal-name" required>
+                         </div>
+                         <div class="form-group">
+                             <label for="person-modal-role">Rol/Tipus:</label>
+                             <input type="text" id="person-modal-role">
+                         </div>
+                          <div class="form-group">
+                             <label for="person-modal-contact">Contacte (Email/Tel):</label>
+                             <input type="text" id="person-modal-contact">
+                         </div>
+                     </div>
+                      <div class="form-group">
+                             <label for="person-modal-notes">Notes:</label>
+                             <textarea id="person-modal-notes"></textarea>
+                      </div>
+                     <div class="form-actions">
+                         <button type="submit" id="person-submit-btn" class="btn btn-success">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7-7v14"></path></svg>
+                            <span id="person-submit-btn-text">Afegir Persona</span>
+                         </button>
+                         <button type="button" id="person-cancel-edit-btn" class="btn btn-light hidden">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6L6 18M6 6l12 12"></path></svg>
+                             Cancel·lar Edició
+                         </button>
+                     </div>
+                </form>
+
+                 <!-- List of existing people -->
+                 <h5>Persones/Grups Existents</h5>
+                 <ul id="people-list">
+                     <!-- Populated by JS using template -->
+                     <li id="no-people-message" style="text-align: center; padding: 15px; color: var(--secondary-color);">No hi ha persones definides.</li>
+                 </ul>
+            </div>
+            <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" onclick="Utils.hideModal('manage-people-modal')">Tancar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Area (igual que v6) -->
+    <div id="feedback-area" aria-live="assertive"></div>
+
+    <!-- FullCalendar JS (local path assumed) -->
+    <script src='libs/fullcalendar/dist/index.global.min.js'></script>
+    <script src='libs/fullcalendar/packages/core/locales/ca.global.min.js'></script> <!-- Optional: Catalan locale -->
+
+    <script>
+        // --- Constants ---
+        const DEBOUNCE_DELAY = 300;
+    
+        // --- DOM Element References ---
+        const initialLoadOverlay = document.getElementById('initial-load-overlay');
+        const mainContent = document.getElementById('main-content');
+        const loadDataInitialBtn = document.getElementById('load-data-initial-btn');
+        const startEmptyBtn = document.getElementById('start-empty-btn');
+        const eventForm = document.getElementById('event-form');
+        const formTitle = document.getElementById('form-title');
+        const eventNameInput = document.getElementById('event-name');
+        const eventNameDatalist = document.getElementById('event-name-datalist');
+        const eventCategoryInput = document.getElementById('event-category');
+        const eventCategoryDatalist = document.getElementById('event-category-datalist');
+        const eventLocationInput = document.getElementById('event-location');
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        const personSelect = document.getElementById('person-select');
+        const conflictWarning = document.getElementById('conflict-warning');
+        const statusInput = document.getElementById('status');
+        const notesInput = document.getElementById('notes');
+        const editEventIdInput = document.getElementById('edit-event-id');
+        const submitBtn = document.getElementById('submit-btn');
+        const submitBtnText = document.getElementById('submit-btn-text');
+        const clearFormBtn = document.getElementById('clear-form-btn');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        const managePeopleBtn = document.getElementById('manage-people-btn');
+        const managePeopleModal = document.getElementById('manage-people-modal');
+        const personForm = document.getElementById('person-form');
+        const editPersonIdInput = document.getElementById('edit-person-id'); // Input ocult per l'ID de persona en edició
+        const personModalNameInput = document.getElementById('person-modal-name');
+        const personModalRoleInput = document.getElementById('person-modal-role');
+        const personModalContactInput = document.getElementById('person-modal-contact');
+        const personModalNotesInput = document.getElementById('person-modal-notes');
+        const personSubmitBtn = document.getElementById('person-submit-btn');
+        const personSubmitBtnText = document.getElementById('person-submit-btn-text');
+        const personCancelEditBtn = document.getElementById('person-cancel-edit-btn');
+        const peopleList = document.getElementById('people-list');
+        const noPeopleMessage = document.getElementById('no-people-message');
+        const personListItemTemplate = document.getElementById('person-list-item-template');
+        const calendarEl = document.getElementById('calendar');
+        let calendarInstance = null;
+        const filterControlsSection = document.getElementById('filter-controls-section');
+        const filterControls = document.getElementById('filter-controls');
+        const filterSearchInput = document.getElementById('filter-search');
+        const filterCategoryInput = document.getElementById('filter-category');
+        const filterPersonSelect = document.getElementById('filter-person');
+        const filterStatusSelect = document.getElementById('filter-status');
+        const filterStartDateInput = document.getElementById('filter-start-date');
+        const filterEndDateInput = document.getElementById('filter-end-date');
+        const resetFiltersBtn = document.getElementById('reset-filters-btn');
+        const eventsTableWrapper = document.getElementById('events-table-wrapper');
+        const eventsTable = document.getElementById('events-table');
+        const eventsTableBody = eventsTable.querySelector('tbody');
+        const eventsTableHeader = eventsTable.querySelector('thead');
+        const noEventsMessage = document.getElementById('no-events-message');
+        const eventsListTitle = document.getElementById('events-list-title');
+        const eventCountSpan = document.getElementById('event-count');
+        const eventRowTemplate = document.getElementById('event-row-template');
+        const summariesSection = document.getElementById('summaries-section');
+        const showCountsSummaryBtn = document.getElementById('show-counts-summary-btn');
+        const showGroupedSummaryBtn = document.getElementById('show-grouped-summary-btn');
+        const summaryCountsBlock = document.getElementById('summary-counts-block');
+        const summaryGroupedBlock = document.getElementById('summary-grouped-block');
+        const summaryByDateTbodyCounts = document.getElementById('summary-by-date-tbody-counts');
+        const noSummaryDateCounts = document.getElementById('no-summary-date-counts');
+        const summaryByPersonTbodyCounts = document.getElementById('summary-by-person-tbody-counts');
+        const noSummaryPersonCounts = document.getElementById('no-summary-person-counts');
+        const summaryByEventTbodyCounts = document.getElementById('summary-by-event-tbody-counts');
+        const noSummaryEventCounts = document.getElementById('no-summary-event-counts');
+        const summaryByCategoryTbodyCounts = document.getElementById('summary-by-category-tbody-counts');
+        const noSummaryCategoryCounts = document.getElementById('no-summary-category-counts');
+        const summaryByEventTbodyGrouped = document.getElementById('summary-by-event-tbody-grouped');
+        const noSummaryEventGrouped = document.getElementById('no-summary-event-grouped');
+        const summaryByDateTbodyGrouped = document.getElementById('summary-by-date-tbody-grouped');
+        const noSummaryDateGrouped = document.getElementById('no-summary-date-grouped');
+        const summaryByPersonTbodyGrouped = document.getElementById('summary-by-person-tbody-grouped');
+        const noSummaryPersonGrouped = document.getElementById('no-summary-person-grouped');
+        const summaryByCategoryTbodyGrouped = document.getElementById('summary-by-category-tbody-grouped');
+        const noSummaryCategoryGrouped = document.getElementById('no-summary-category-grouped');
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const modalTitle = confirmationModal.querySelector('.modal-title'); // Més específic
+        const modalMessage = confirmationModal.querySelector('#modal-message'); // Més específic
+        const modalConfirmBtn = confirmationModal.querySelector('#modal-confirm-btn'); // Més específic
+        const modalCancelBtn = confirmationModal.querySelector('#modal-cancel-btn'); // Més específic
+        const feedbackArea = document.getElementById('feedback-area');
+        const exportBtnTop = document.getElementById('export-data-btn-top');
+        const importBtnTop = document.getElementById('import-data-btn-top');
+        const exportBtnBottom = document.getElementById('export-data-btn-bottom');
+        const importBtnBottom = document.getElementById('import-data-btn-bottom');
+        const importFileInput = document.getElementById('import-file-input');
+    
+        // --- Application State ---
+        let appState = {
+            events: [], people: [],
+            filters: { search: '', status: '', startDate: '', endDate: '', category: '', personId: '' },
+            sort: { key: 'startDate', direction: 'desc' },
+            editingEventId: null, editingPersonId: null,
+            modalCallback: null, activeSummaryView: 'counts'
+        };
+        let searchDebounceTimeout;
+        let isDataLoaded = false;
+    
+        // --- Utility Functions ---
+        const Utils = {
+            loadDataFromFile: (jsonData) => { try { const data = JSON.parse(jsonData); if (typeof data !== 'object' || data === null || !Array.isArray(data.events) || !Array.isArray(data.people)) { throw new Error("El format del fitxer JSON no és correcte. Ha de contenir 'events' i 'people' com a arrays."); } appState.events = data.events.map(event => ({ id: event.id || Date.now() + Math.random(), eventName: event.eventName || 'Sense Nom Esdeveniment', category: event.category || '', location: event.location || '', startDate: event.startDate || null, endDate: event.endDate || null, personId: event.personId || null, status: event.status || 'Pendent', notes: event.notes || '' })); appState.people = data.people.map(person => ({ id: person.id || Date.now() + Math.random(), name: person.name || 'Sense Nom', role: person.role || '', contact: person.contact || '', notes: person.notes || '' })); isDataLoaded = true; return true; } catch (e) { console.error("Error parsing JSON data:", e); Utils.showConfirmationModal("Error de Càrrega", `No s'ha pogut processar el fitxer JSON: ${Utils.escapeHTML(e.message)}`, null, 'error'); isDataLoaded = false; return false; } }, // Canviat a showConfirmationModal
+            prepareDataForExport: () => JSON.stringify({ events: appState.events, people: appState.people }, null, 2),
+            escapeHTML: (str) => { if (typeof str !== 'string') return String(str); const p = document.createElement('p'); p.textContent = str; return p.innerHTML; },
+            formatDateRange: (startDateStr, endDateStr) => { if (!startDateStr || !/^\d{4}-\d{2}-\d{2}$/.test(startDateStr)) return 'N/D'; const formatSingle = (dateStr) => { try { const [y, m, d] = dateStr.split('-'); const dt = new Date(Date.UTC(y, m - 1, d)); return isNaN(dt.getTime()) ? 'Invàlid' : dt.toLocaleDateString('ca-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }); } catch { return 'Error'; } }; const startFormatted = formatSingle(startDateStr); if (!endDateStr || !/^\d{4}-\d{2}-\d{2}$/.test(endDateStr) || startDateStr === endDateStr) { return startFormatted; } const endFormatted = formatSingle(endDateStr); if (startFormatted.match(/Invàlid|Error|N\/D/) || endFormatted.match(/Invàlid|Error|N\/D/)) { return `${startFormatted} - ${endFormatted}`; } try { const start = new Date(startDateStr); const end = new Date(endDateStr); return end >= start ? `${startFormatted} - ${endFormatted}` : startFormatted; } catch { return `${startFormatted} - ${endFormatted}`; } },
+            formatSingleDate: (dateStr) => { if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return 'N/D'; try { const [y, m, d] = dateStr.split('-'); const dt = new Date(Date.UTC(y, m - 1, d)); return isNaN(dt.getTime()) ? 'Invàlid' : dt.toLocaleDateString('ca-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }); } catch { return 'Error'; } },
+            getUniqueValues: (items, key) => { const values = new Set(); items.forEach(item => { const value = (item[key] || '').trim(); if (value) { values.add(value); } }); return Array.from(values).sort((a, b) => a.localeCompare(b, 'ca', { sensitivity: 'base' })); },
+            getPersonNameById: (personId) => { const person = appState.people.find(p => p.id === personId); return person ? person.name : 'N/A'; },
+            // Funció específica per al modal de confirmació
+            showConfirmationModal: (title, message, confirmCallback, type = 'danger') => {
+                if (!confirmationModal || !modalTitle || !modalMessage || !modalConfirmBtn || !modalCancelBtn) {
+                    console.error("Confirmation modal elements not found!");
+                    return;
+                }
+                modalTitle.textContent = title;
+                modalMessage.innerHTML = message; // Usar innerHTML per permetre HTML al missatge
+                appState.modalCallback = confirmCallback;
+    
+                modalConfirmBtn.className = 'btn'; // Reset classes
+                if (type === 'danger') { modalConfirmBtn.classList.add('btn-danger'); modalConfirmBtn.textContent = "Confirmar"; }
+                else if (type === 'warning') { modalConfirmBtn.classList.add('btn-warning'); modalConfirmBtn.textContent = "Confirmar"; }
+                else { modalConfirmBtn.classList.add('btn-primary'); modalConfirmBtn.textContent = "Acceptar"; }
+    
+                if (confirmCallback) {
+                    modalConfirmBtn.style.display = '';
+                    modalCancelBtn.textContent = 'Cancel·lar';
+                    modalConfirmBtn.onclick = () => { // Assignar directament l'onclick
+                        if (typeof appState.modalCallback === 'function') {
+                            appState.modalCallback();
+                        }
+                        Utils.hideConfirmationModal(); // Tancar després de confirmar
+                    };
+                } else {
+                    modalConfirmBtn.style.display = 'none';
+                    modalCancelBtn.textContent = 'Tancar';
+                }
+    
+                modalCancelBtn.onclick = Utils.hideConfirmationModal; // Assignar directament l'onclick
+    
+                confirmationModal.classList.add('visible');
+                if (confirmCallback) modalConfirmBtn.focus(); else modalCancelBtn.focus();
+            },
+            hideConfirmationModal: () => {
+                if(confirmationModal) confirmationModal.classList.remove('visible');
+                appState.modalCallback = null; // Resetejar el callback
+                // Netejar onclick handlers per evitar crides múltiples
+                if(modalConfirmBtn) modalConfirmBtn.onclick = null;
+                if(modalCancelBtn) modalCancelBtn.onclick = null;
+            },
+            // Funcions per al modal de persones
+            showPeopleModal: () => {
+                Render.setPersonFormMode('add'); // Reset al formulari
+                Render.peopleManagementList(); // Assegurar llista actualitzada
+                managePeopleModal.classList.add('visible');
+                personModalNameInput.focus();
+            },
+            hidePeopleModal: () => {
+                 managePeopleModal.classList.remove('visible');
+                 Render.setPersonFormMode('add'); // Resetejar el formulari en tancar per si de cas
+            },
+            showFeedback: (message, type = 'success', duration = 3000) => { feedbackArea.textContent = message; feedbackArea.className = 'visible'; feedbackArea.classList.add(`feedback-${type}`); setTimeout(() => { feedbackArea.classList.remove('visible'); feedbackArea.className = '';}, duration); },
+            debounce: (func, delay) => { let timeoutId; return (...args) => { clearTimeout(timeoutId); timeoutId = setTimeout(() => { func.apply(this, args); }, delay); }; },
+            checkConflicts: (eventToCheck) => { const conflicts = []; if (!eventToCheck.personId || !eventToCheck.startDate) return conflicts; const personId = eventToCheck.personId; const start1 = new Date(eventToCheck.startDate); const end1 = eventToCheck.endDate ? new Date(eventToCheck.endDate) : new Date(eventToCheck.startDate); start1.setHours(0, 0, 0, 0); end1.setHours(23, 59, 59, 999); if (isNaN(start1.getTime()) || isNaN(end1.getTime())) return conflicts; appState.events.forEach(existingEvent => { if (existingEvent.id === eventToCheck.id) return; if (existingEvent.personId === personId && existingEvent.startDate) { const start2 = new Date(existingEvent.startDate); const end2 = existingEvent.endDate ? new Date(existingEvent.endDate) : new Date(existingEvent.startDate); start2.setHours(0, 0, 0, 0); end2.setHours(23, 59, 59, 999); if (!isNaN(start2.getTime()) && !isNaN(end2.getTime())) { if (start1 <= end2 && end1 >= start2) { conflicts.push(existingEvent); } } } }); return conflicts; }
+        };
+    
+         // --- Person Management Logic ---
+        const PeopleManager = {
+             addPerson: (personData) => {
+                 // Opcional: Comprovar si ja existeix algú amb el mateix nom (ignorant majúscules/minúscules)
+                 const existingPerson = appState.people.find(p => p.name.toLowerCase() === personData.name.toLowerCase());
+                 if (existingPerson) {
+                     Utils.showFeedback(`Ja existeix una persona amb el nom '${personData.name}'.`, 'warning');
+                     return false; // Indicar que no s'ha afegit
+                 }
+                 const newPerson = {
+                    id: Date.now() + Math.random(),
+                    name: personData.name.trim(),
+                    role: (personData.role || '').trim(),
+                    contact: (personData.contact || '').trim(),
+                    notes: (personData.notes || '').trim()
+                 };
+                 appState.people.push(newPerson);
+                 return true; // Indicar èxit
+             },
+             updatePerson: (id, personData) => {
+                const index = appState.people.findIndex(p => p.id === id);
+                if (index > -1) {
+                     // Opcional: Comprovar si el nou nom ja existeix per a una ALTRA persona
+                     const existingPersonWithNewName = appState.people.find(p => p.id !== id && p.name.toLowerCase() === personData.name.toLowerCase());
+                     if (existingPersonWithNewName) {
+                         Utils.showFeedback(`Ja existeix una altra persona amb el nom '${personData.name}'.`, 'warning');
+                         return false; // No actualitzar
+                     }
+                    appState.people[index] = {
+                        ...appState.people[index],
+                        name: personData.name.trim(),
+                        role: (personData.role || '').trim(),
+                        contact: (personData.contact || '').trim(),
+                        notes: (personData.notes || '').trim()
+                    };
+                    return true; // Indicar èxit
+                }
+                return false; // No trobat
+             },
+             deletePerson: (id) => {
+                const isUsed = appState.events.some(event => event.personId === id);
+                let canDelete = true;
+                if (isUsed) {
+                    // Si està usat, la confirmació ja es demana al handler (peopleListClick)
+                    // Només fem l'acció aquí si es confirma
+                    appState.people = appState.people.filter(p => p.id !== id);
+                    appState.events.forEach(event => {
+                        if (event.personId === id) { event.personId = null; }
+                    });
+                } else {
+                     // Si no està usat, eliminem directament
+                    appState.people = appState.people.filter(p => p.id !== id);
+                }
+                return canDelete; // En realitat, ja no cal la lògica de confirmació aquí
+             },
+             findPerson: (id) => appState.people.find(p => p.id === id)
+        };
+    
+        // --- Rendering Functions ---
+        const Render = {
+            renderAll: () => {
+                if (!isDataLoaded) return;
+                Render.eventsTable();
+                Render.peopleManagementList(); // Actualitzar llista al modal
+                Render.peopleSelectOptions(); // Actualitzar selects
+                Render.updateDatalists();
+                Render.calendar();
+                Render.renderSummaries();
+                Render.updateSortIndicators();
+            },
+            eventsTable: () => { const allEvents = appState.events; let filteredEvents = [...allEvents]; const searchTerm = appState.filters.search.toLowerCase().trim(); const filterStatus = appState.filters.status; const filterCategory = appState.filters.category.toLowerCase().trim(); const filterPersonId = appState.filters.personId; const filterStartDate = appState.filters.startDate ? new Date(appState.filters.startDate) : null; const filterEndDate = appState.filters.endDate ? new Date(appState.filters.endDate) : null; if (searchTerm || filterStatus || filterCategory || filterPersonId || filterStartDate || filterEndDate) { filteredEvents = filteredEvents.filter(event => { const eventNameMatch = searchTerm ? event.eventName.toLowerCase().includes(searchTerm) : true; const notesMatch = searchTerm ? event.notes.toLowerCase().includes(searchTerm) : true; const locationMatch = searchTerm ? (event.location || '').toLowerCase().includes(searchTerm) : true; const personName = event.personId ? Utils.getPersonNameById(event.personId).toLowerCase() : ''; const personSearchMatch = searchTerm ? personName.includes(searchTerm) : true; const statusMatch = filterStatus ? event.status === filterStatus : true; const categoryMatch = filterCategory ? (event.category || '').toLowerCase().includes(filterCategory) : true; const personMatch = filterPersonId ? event.personId === parseInt(filterPersonId, 10) : true; let dateMatch = true; if (event.startDate) { try { const eventDate = new Date(event.startDate); if (filterStartDate) { filterStartDate.setHours(0,0,0,0); if (eventDate < filterStartDate) dateMatch = false; } if (filterEndDate && dateMatch) { filterEndDate.setHours(23,59,59,999); if (eventDate > filterEndDate) dateMatch = false; } } catch (e) { dateMatch = false; } } else if(filterStartDate || filterEndDate) { dateMatch = false; } return (eventNameMatch || notesMatch || locationMatch || personSearchMatch) && statusMatch && categoryMatch && personMatch && dateMatch; }); } const sortKey = appState.sort.key; const sortDir = appState.sort.direction === 'asc' ? 1 : -1; filteredEvents.sort((a, b) => { let valA, valB; if (sortKey === 'personId') { valA = Utils.getPersonNameById(a.personId).toLowerCase(); valB = Utils.getPersonNameById(b.personId).toLowerCase(); } else { valA = a[sortKey]; valB = b[sortKey]; } if (sortKey === 'startDate') { valA = valA ? new Date(valA).getTime() : (sortDir === 1 ? Infinity : -Infinity); valB = valB ? new Date(valB).getTime() : (sortDir === 1 ? Infinity : -Infinity); if (isNaN(valA)) valA = (sortDir === 1 ? Infinity : -Infinity); if (isNaN(valB)) valB = (sortDir === 1 ? Infinity : -Infinity); } else if (typeof valA === 'string') { valA = (valA || '').toLowerCase(); valB = (valB || '').toLowerCase(); } else if (valA === null || valA === undefined) { valA = (sortDir === 1 ? Infinity : -Infinity); } else if (valB === null || valB === undefined) { valB = (sortDir === 1 ? Infinity : -Infinity); } if (valA < valB) return -1 * sortDir; if (valA > valB) return 1 * sortDir; return 0; }); eventsTableBody.innerHTML = ''; if (allEvents.length === 0) { eventsTable.style.display = 'none'; eventsListTitle.style.display = 'none'; noEventsMessage.textContent = "No hi ha dades carregades. Comença afegint un esdeveniment o importa un fitxer."; noEventsMessage.style.display = 'block'; filterControlsSection.style.display = 'none'; summariesSection.style.display = 'none'; if(calendarEl) calendarEl.style.display = 'none'; } else { filterControlsSection.style.display = ''; summariesSection.style.display = ''; if(calendarEl) calendarEl.style.display = ''; if (filteredEvents.length === 0) { eventsTable.style.display = 'none'; eventsListTitle.style.display = 'block'; eventCountSpan.textContent = `0 de ${allEvents.length}`; noEventsMessage.textContent = "No s'han trobat esdeveniments que coincideixin amb els filtres aplicats."; noEventsMessage.style.display = 'block'; } else { eventsTable.style.display = ''; eventsListTitle.style.display = 'block'; eventCountSpan.textContent = `${filteredEvents.length} de ${allEvents.length}`; noEventsMessage.style.display = 'none'; filteredEvents.forEach(event => { const row = Render.createEventRow(event); eventsTableBody.appendChild(row); }); } } },
+            createEventRow: (event) => { const templateContent = eventRowTemplate.content.cloneNode(true); const row = templateContent.querySelector('tr'); row.dataset.id = event.id; const safeStatus = Utils.escapeHTML(event.status); row.className = `status-${safeStatus}`; row.querySelector('.event-event-name').textContent = event.eventName; row.querySelector('.event-category').textContent = event.category || '-'; row.querySelector('.event-location').textContent = event.location || '-'; row.querySelector('.event-dates').textContent = Utils.formatDateRange(event.startDate, event.endDate); row.querySelector('.event-person-name').textContent = event.personId ? Utils.getPersonNameById(event.personId) : 'Sense assignar'; row.querySelector('.event-notes').innerHTML = Utils.escapeHTML(event.notes).replace(/\n/g, '<br>'); const statusSelect = row.querySelector('.status-select'); statusSelect.value = event.status; statusSelect.dataset.id = event.id; statusSelect.setAttribute('aria-label', `Canviar estat per a ${Utils.escapeHTML(event.eventName)}`); const editBtn = row.querySelector('.edit-btn'); const deleteBtn = row.querySelector('.delete-btn'); editBtn.dataset.id = event.id; deleteBtn.dataset.id = event.id; editBtn.setAttribute('aria-label', `Editar esdeveniment ${Utils.escapeHTML(event.eventName)}`); deleteBtn.setAttribute('aria-label', `Eliminar esdeveniment ${Utils.escapeHTML(event.eventName)}`); return row; },
+            updateDatalists: () => { const uniqueEventNames = Utils.getUniqueValues(appState.events, 'eventName'); const uniqueCategories = Utils.getUniqueValues(appState.events, 'category'); eventNameDatalist.innerHTML = uniqueEventNames.map(name => `<option value="${Utils.escapeHTML(name)}"></option>`).join(''); eventCategoryDatalist.innerHTML = uniqueCategories.map(cat => `<option value="${Utils.escapeHTML(cat)}"></option>`).join(''); },
+            peopleManagementList: () => {
+                 if (!peopleList || !personListItemTemplate || !noPeopleMessage) return; // Safety check
+                 peopleList.innerHTML = ''; // Netejar llista actual
+                 if (appState.people.length === 0) {
+                     noPeopleMessage.style.display = 'block';
+                 } else {
+                     noPeopleMessage.style.display = 'none';
+                     const sortedPeople = [...appState.people].sort((a, b) => a.name.localeCompare(b.name, 'ca', { sensitivity: 'base' }));
+                     sortedPeople.forEach(person => {
+                         const templateContent = personListItemTemplate.content.cloneNode(true);
+                         const li = templateContent.querySelector('li');
+                         li.dataset.id = person.id;
+                         li.querySelector('.person-item-name').textContent = person.name;
+                         const details = [person.role, person.contact].filter(Boolean).join(' | ');
+                         li.querySelector('.person-item-details').textContent = details;
+                         const notesSpan = li.querySelector('.person-item-notes');
+                         notesSpan.textContent = person.notes || '';
+                         notesSpan.style.display = person.notes ? 'block' : 'none'; // Mostrar/ocultar segons si hi ha notes
+    
+                         const editBtn = li.querySelector('.edit-person-btn');
+                         const deleteBtn = li.querySelector('.delete-person-btn');
+                         editBtn.dataset.id = person.id;
+                         deleteBtn.dataset.id = person.id;
+                         editBtn.setAttribute('aria-label', `Editar ${Utils.escapeHTML(person.name)}`);
+                         deleteBtn.setAttribute('aria-label', `Eliminar ${Utils.escapeHTML(person.name)}`);
+    
+                         peopleList.appendChild(li);
+                     });
+                 }
+            },
+            peopleSelectOptions: () => {
+                const optionsHTML = appState.people
+                    .sort((a, b) => a.name.localeCompare(b.name, 'ca', { sensitivity: 'base' }))
+                    .map(person => `<option value="${person.id}">${Utils.escapeHTML(person.name)}</option>`)
+                    .join('');
+                // Preserve selected value if possible
+                const currentPersonVal = personSelect.value;
+                const currentFilterVal = filterPersonSelect.value;
+                personSelect.innerHTML = '<option value="">-- Selecciona --</option>' + optionsHTML;
+                filterPersonSelect.innerHTML = '<option value="">-- Tots --</option>' + optionsHTML;
+                if (appState.people.some(p => p.id == currentPersonVal)) {
+                    personSelect.value = currentPersonVal;
+                }
+                if (appState.people.some(p => p.id == currentFilterVal)) {
+                     filterPersonSelect.value = currentFilterVal;
+                }
+            },
+            renderSummaries: () => { if (!isDataLoaded || appState.events.length === 0) { summariesSection.style.display = 'none'; return; } summariesSection.style.display = ''; if (appState.activeSummaryView === 'counts') { summaryCountsBlock.classList.add('active'); summaryGroupedBlock.classList.remove('active'); showCountsSummaryBtn.classList.add('active', 'btn-primary'); showCountsSummaryBtn.classList.remove('btn-light'); showGroupedSummaryBtn.classList.remove('active', 'btn-primary'); showGroupedSummaryBtn.classList.add('btn-light'); Render.renderCountSummaries(appState.events); } else { summaryCountsBlock.classList.remove('active'); summaryGroupedBlock.classList.add('active'); showCountsSummaryBtn.classList.remove('active', 'btn-primary'); showCountsSummaryBtn.classList.add('btn-light'); showGroupedSummaryBtn.classList.add('active', 'btn-primary'); showGroupedSummaryBtn.classList.remove('btn-light'); Render.renderGroupedSummaries(appState.events); } },
+            renderCountSummaries: (events) => { const summaryByDate = {}; let hasDateData = false; const summaryByPerson = {}; let hasPersonData = false; const summaryByEvent = {}; let hasEventData = false; const summaryByCategory = {}; let hasCategoryData = false; events.forEach(event => { const status = event.status || 'Pendent'; if (event.startDate && /^\d{4}-\d{2}-\d{2}$/.test(event.startDate)) { const date = event.startDate; if (!summaryByDate[date]) summaryByDate[date] = { P: 0, S: 0, N: 0, T: 0 }; summaryByDate[date][status[0]]++; summaryByDate[date].T++; hasDateData = true; } if (event.personId) { const personId = event.personId; if (!summaryByPerson[personId]) summaryByPerson[personId] = { id: personId, P: 0, S: 0, N: 0, T: 0 }; summaryByPerson[personId][status[0]]++; summaryByPerson[personId].T++; hasPersonData = true; } const eventName = (event.eventName || '').trim(); if (eventName) { const eventNameKey = eventName.toLowerCase(); if (!summaryByEvent[eventNameKey]) summaryByEvent[eventNameKey] = { displayName: eventName, P: 0, S: 0, N: 0, T: 0 }; summaryByEvent[eventNameKey][status[0]]++; summaryByEvent[eventNameKey].T++; hasEventData = true; } const category = (event.category || 'Sense Categoria').trim(); if (category) { const categoryKey = category.toLowerCase(); if (!summaryByCategory[categoryKey]) summaryByCategory[categoryKey] = { displayName: category, P: 0, S: 0, N: 0, T: 0 }; summaryByCategory[categoryKey][status[0]]++; summaryByCategory[categoryKey].T++; hasCategoryData = true; } }); const renderCountTable = (tbody, noDataMsg, container, data, hasData, keyFormatter, sortFn) => { tbody.innerHTML = ''; container = tbody.closest('.summary-container'); if (!hasData) { container.style.display = 'none'; noDataMsg.style.display = 'block'; } else { container.style.display = ''; noDataMsg.style.display = 'none'; const sortedKeys = Object.keys(data).sort(sortFn); sortedKeys.forEach(key => { const counts = data[key]; const row = document.createElement('tr'); row.innerHTML = `<td data-label="Clau">${keyFormatter(key, counts)}</td><td data-label="Pendent">${counts.P}</td><td data-label="Sí">${counts.S}</td><td data-label="No">${counts.N}</td><td data-label="Total"><strong>${counts.T}</strong></td>`; tbody.appendChild(row); }); } }; renderCountTable(summaryByDateTbodyCounts, noSummaryDateCounts, summaryByDateTbodyCounts.closest('.summary-container'), summaryByDate, hasDateData, Utils.formatSingleDate, (a, b) => new Date(a) - new Date(b)); renderCountTable(summaryByPersonTbodyCounts, noSummaryPersonCounts, summaryByPersonTbodyCounts.closest('.summary-container'), summaryByPerson, hasPersonData, Utils.getPersonNameById, (a, b) => Utils.getPersonNameById(a).localeCompare(Utils.getPersonNameById(b), 'ca', { sensitivity: 'base' })); renderCountTable(summaryByEventTbodyCounts, noSummaryEventCounts, summaryByEventTbodyCounts.closest('.summary-container'), summaryByEvent, hasEventData, (k,c) => Utils.escapeHTML(c.displayName), (a, b) => summaryByEvent[a].displayName.localeCompare(summaryByEvent[b].displayName, 'ca', { sensitivity: 'base' })); renderCountTable(summaryByCategoryTbodyCounts, noSummaryCategoryCounts, summaryByCategoryTbodyCounts.closest('.summary-container'), summaryByCategory, hasCategoryData, (k, c) => Utils.escapeHTML(c.displayName), (a, b) => summaryByCategory[a].displayName.localeCompare(summaryByCategory[b].displayName, 'ca', { sensitivity: 'base' })); },
+            renderGroupedSummaries: (events) => { const groupedByEventName = {}; const groupedByDate = {}; const groupedByPerson = {}; const groupedByCategory = {}; events.forEach(event => { const eventNameKey = (event.eventName || '').trim().toLowerCase(); if (eventNameKey) { if (!groupedByEventName[eventNameKey]) groupedByEventName[eventNameKey] = { displayName: event.eventName.trim(), events: [] }; groupedByEventName[eventNameKey].events.push(event); } if (event.startDate && /^\d{4}-\d{2}-\d{2}$/.test(event.startDate)) { if (!groupedByDate[event.startDate]) groupedByDate[event.startDate] = []; groupedByDate[event.startDate].push(event); } if (event.personId) { const personId = event.personId; if (!groupedByPerson[personId]) groupedByPerson[personId] = { id: personId, events: [] }; groupedByPerson[personId].events.push(event); } const categoryKey = (event.category || 'Sense Categoria').trim().toLowerCase(); if (categoryKey) { if (!groupedByCategory[categoryKey]) groupedByCategory[categoryKey] = { displayName: (event.category || 'Sense Categoria').trim(), events: [] }; groupedByCategory[categoryKey].events.push(event); } }); const sortedEventNameKeys = Object.keys(groupedByEventName).sort((a, b) => groupedByEventName[a].displayName.localeCompare(groupedByEventName[b].displayName, 'ca', { sensitivity: 'base' })); sortedEventNameKeys.forEach(key => groupedByEventName[key].events.sort((a, b) => (a.startDate || '').localeCompare(b.startDate || ''))); const sortedDateKeys = Object.keys(groupedByDate).sort(); sortedDateKeys.forEach(key => groupedByDate[key].sort((a, b) => (a.eventName || '').localeCompare(b.eventName || '', 'ca', { sensitivity: 'base' }))); const sortedPersonKeys = Object.keys(groupedByPerson).sort((a, b) => Utils.getPersonNameById(a).localeCompare(Utils.getPersonNameById(b), 'ca', { sensitivity: 'base' })); sortedPersonKeys.forEach(key => groupedByPerson[key].events.sort((a, b) => (a.startDate || '').localeCompare(b.startDate || ''))); const sortedCategoryKeys = Object.keys(groupedByCategory).sort((a, b) => groupedByCategory[a].displayName.localeCompare(groupedByCategory[b].displayName, 'ca', { sensitivity: 'base' })); sortedCategoryKeys.forEach(key => groupedByCategory[key].events.sort((a, b) => (a.startDate || '').localeCompare(b.startDate || ''))); const renderSingleGroupedTable = (tbody, noDataMsg, container, sortedKeys, data, groupRenderer, eventRenderer) => { tbody.innerHTML = ''; container = tbody.closest('.summary-container'); if (sortedKeys.length === 0) { container.style.display = 'none'; noDataMsg.style.display = 'block'; } else { container.style.display = ''; noDataMsg.style.display = 'none'; sortedKeys.forEach(key => { const groupInfo = data[key]; const eventsInGroup = Array.isArray(groupInfo) ? groupInfo : groupInfo.events; const groupDataForHeader = Array.isArray(groupInfo) ? null : groupInfo; tbody.insertAdjacentHTML('beforeend', groupRenderer(key, groupDataForHeader)); eventsInGroup.forEach(event => { const status = event.status || 'Pendent'; const safeStatus = Utils.escapeHTML(status); tbody.insertAdjacentHTML('beforeend', `<tr>${eventRenderer(event)}<td data-label="Estat"><span class="status-indicator status-indicator-${safeStatus}">${safeStatus}</span></td></tr>`); }); }); } }; renderSingleGroupedTable(summaryByEventTbodyGrouped, noSummaryEventGrouped, summaryByEventTbodyGrouped.closest('.summary-container'), sortedEventNameKeys, groupedByEventName, (k, g) => `<tr class="summary-group-header"><td colspan="3">Esdeveniment: ${Utils.escapeHTML(g.displayName)}</td></tr>`, (e) => `<td data-label="Persona/Grup">${Utils.escapeHTML(Utils.getPersonNameById(e.personId))}</td><td data-label="Dates">${Utils.formatDateRange(e.startDate, e.endDate)}</td>`); renderSingleGroupedTable(summaryByDateTbodyGrouped, noSummaryDateGrouped, summaryByDateTbodyGrouped.closest('.summary-container'), sortedDateKeys, groupedByDate, (k) => `<tr class="summary-group-header"><td colspan="3">Data Inici: ${Utils.formatSingleDate(k)}</td></tr>`, (e) => `<td data-label="Esdeveniment">${Utils.escapeHTML(e.eventName)}</td><td data-label="Persona/Grup">${Utils.escapeHTML(Utils.getPersonNameById(e.personId))}</td>`); renderSingleGroupedTable(summaryByPersonTbodyGrouped, noSummaryPersonGrouped, summaryByPersonTbodyGrouped.closest('.summary-container'), sortedPersonKeys, groupedByPerson, (k) => `<tr class="summary-group-header"><td colspan="3">Persona/Grup: ${Utils.escapeHTML(Utils.getPersonNameById(k))}</td></tr>`, (e) => `<td data-label="Esdeveniment">${Utils.escapeHTML(e.eventName)}</td><td data-label="Dates">${Utils.formatDateRange(e.startDate, e.endDate)}</td>`); renderSingleGroupedTable(summaryByCategoryTbodyGrouped, noSummaryCategoryGrouped, summaryByCategoryTbodyGrouped.closest('.summary-container'), sortedCategoryKeys, groupedByCategory, (k, g) => `<tr class="summary-group-header"><td colspan="4">Categoria: ${Utils.escapeHTML(g.displayName)}</td></tr>`, (e) => `<td data-label="Esdeveniment">${Utils.escapeHTML(e.eventName)}</td><td data-label="Persona/Grup">${Utils.escapeHTML(Utils.getPersonNameById(e.personId))}</td><td data-label="Dates">${Utils.formatDateRange(e.startDate, e.endDate)}</td>`); },
+            calendar: () => { if (!isDataLoaded || !calendarEl) return; const calendarEvents = appState.events .filter(event => event.startDate) // Només events amb data inici vàlida .map(event => ({ id: event.id, title: event.eventName, start: event.startDate, end: event.endDate ? new Date(new Date(event.endDate).setDate(new Date(event.endDate).getDate() + 1)).toISOString().split('T')[0] : null, allDay: true, extendedProps: { personName: event.personId ? Utils.getPersonNameById(event.personId) : '', location: event.location, category: event.category, status: event.status }, backgroundColor: event.status === 'Sí' ? 'var(--success-color)' : event.status === 'No' ? 'var(--danger-color)' : 'var(--primary-color)', borderColor: event.status === 'Sí' ? 'var(--success-color)' : event.status === 'No' ? 'var(--danger-color)' : 'var(--primary-color)' })); if (calendarInstance) { try { calendarInstance.removeAllEventSources(); // Millor manera d'eliminar events calendarInstance.addEventSource(calendarEvents); } catch (e) { console.error("Error actualitzant events del calendari:", e); } } else { try { calendarInstance = new FullCalendar.Calendar(calendarEl, { initialView: 'dayGridMonth', locale: 'ca', headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listWeek' }, events: calendarEvents, editable: false, selectable: false, eventClick: Handlers.calendarEventClick, height: 'auto' }); calendarInstance.render(); } catch (e) { console.error("Error inicialitzant FullCalendar:", e); calendarEl.innerHTML = "<p style='color:red;'>Error carregant el calendari. Assegura't que la llibreria FullCalendar està correctament carregada i que la referència 'calendarEl' és correcta.</p>"; } } },
+            updateSortIndicators: () => { eventsTableHeader.querySelectorAll('th[data-sort-key]').forEach(th => { const indicator = th.querySelector('.sort-indicator') || document.createElement('span'); indicator.classList.add('sort-indicator'); if (!th.querySelector('.sort-indicator')) th.appendChild(indicator); if (th.dataset.sortKey === appState.sort.key) { indicator.textContent = appState.sort.direction === 'asc' ? ' ▲' : ' ▼'; } else { indicator.textContent = ''; } }); },
+            setFormMode; (mode, event = null) => { eventForm.reset(); conflictWarning.style.display = 'none'; if (mode === 'edit' && event) { appState.editingEventId = event.id; editEventIdInput.value = event.id; // Títol del formulari principal formTitle.childNodes[1].textContent = " Editar Esdeveniment"; submitBtnText.textContent = "Desar Canvis"; cancelEditBtn.classList.remove('hidden'); eventNameInput.value = event.eventName; eventCategoryInput.value = event.category || ''; eventLocationInput.value = event.location || ''; startDateInput.value = event.startDate; endDateInput.value = event.endDate; personSelect.value = event.personId || ''; statusInput.value = event.status; notesInput.value = event.notes; eventNameInput.focus(); } else { appState.editingEventId = null; editEventIdInput.value = ''; formTitle.childNodes[1].textContent = " Afegir Esdeveniment"; submitBtnText.textContent = "Afegir"; cancelEditBtn.classList.add('hidden'); personSelect.value = ''; // Assegurar que el select es reseteja } },
+            // Canviat per usar l'ID correcte de l'input ocult
+            setPersonFormMode: (mode, person = null) => {
+                if (mode === 'edit' && person) {
+                    appState.editingPersonId = person.id; // Estableix l'ID de la persona que s'està editant
+                    editPersonIdInput.value = person.id;
+                    personModalNameInput.value = person.name;
+                    personModalRoleInput.value = person.role || '';
+                    personModalContactInput.value = person.contact || '';
+                    personModalNotesInput.value = person.notes || '';
+                    personSubmitBtnText.textContent = "Desar Canvis Persona";
+                    personCancelEditBtn.classList.remove('hidden');
+                    personModalNameInput.focus();
+                } else {
+                    appState.editingPersonId = null;
+                    editPersonIdInput.value = ''; // <<< Netejar l'input ocult correcte
+                    personSubmitBtnText.textContent = "Afegir Persona";
+                    personCancelEditBtn.classList.add('hidden');
+                }
+            },
+            renderPeopleList; () => {
+                const peopleList = document.getElementById('people-list');
+                if (!peopleList) {
+                    console.error("L'element 'people-list' no s'ha trobat.");
+                    return;
+                }
+                peopleList.innerHTML = ''; // Neteja la llista abans de renderitzar
+
+                if (!appState.people || appState.people.length === 0) {
+                    peopleList.innerHTML = '<p>No hi ha persones registrades.</p>';
+                    return;
+                }
+
+                appState.people.forEach(person => {
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('people-list-item');
+                    listItem.innerHTML = `
+                        <span>${person.name}</span>
+                        <div class="people-actions">
+                            <button class="btn btn-icon btn-warning" data-edit-person="${person.id}" title="Editar Persona">
+                                <svg><use xlink:href="#icon-edit"></use></svg>
+                            </button>
+                            <button class="btn btn-icon btn-danger" data-delete-person="${person.id}" title="Eliminar Persona">
+                                <svg><use xlink:href="#icon-delete"></use></svg>
+                            </button>
+                        </div>
+                    `;
+                    peopleList.appendChild(listItem);
+                });
+            },
+            renderEventsTable; () => {
+                // Implementa la lògica per renderitzar la taula d'esdeveniments
+            };
+            renderSummaries: () => {
+                // Implementa la lògica per renderitzar els resums
+            }
+        };
+
+        // --- Event Handlers ---
+        const Handlers = {
+            handleInitialLoadChoice: (loadFromFile) => {
+                initialLoadOverlay.classList.add('hidden');
+                if (loadFromFile) {
+                    importFileInput.click();
+                } else {
+                    appState.events = [];
+                    appState.people = [];
+                    isDataLoaded = true;
+                    mainContent.classList.add('visible');
+                    Render.renderAll();
+                    Utils.showFeedback("Començant amb una llista buida. Recorda Desar/Exportar!", 'info', 5000);
+                }
+            },
+            handleFileImport: (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const success = Utils.loadDataFromFile(event.target.result);
+                    if (success) {
+                        mainContent.classList.add('visible');
+                        Render.renderAll();
+                        Utils.showFeedback("Dades carregades correctament.");
+                        Render.setFormMode('add');
+                        Render.setPersonFormMode('add');
+                    } else {
+                        if (!isDataLoaded) {
+                            initialLoadOverlay.classList.remove('hidden');
+                        }
+                    }
+                };
+                reader.onerror = () => {
+                    Utils.showConfirmationModal("Error d'Importació", "No s'ha pogut llegir el fitxer.", null, 'error');
+                };
+                reader.readAsText(file);
+                importFileInput.value = '';
+            },
+            handleExportSave: () => {
+                if (!isDataLoaded) {
+                    Utils.showFeedback("No hi ha dades carregades per desar/exportar.", 'warning');
+                    return;
+                }
+                if (appState.events.length === 0 && appState.people.length === 0) {
+                    Utils.showFeedback("No hi ha dades per desar/exportar.", 'warning');
+                    return;
+                }
+                try {
+                    const dataStr = Utils.prepareDataForExport();
+                    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                    const url = URL.createObjectURL(dataBlob);
+                    const link = document.createElement('a');
+                    const timestamp = new Date().toISOString().slice(0, 10);
+                    link.download = `events_app_data_${timestamp}.json`;
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    Utils.showFeedback("Dades desades/exportades. Guarda el fitxer JSON.");
+                } catch (e) {
+                    console.error("Error exporting/saving data:", e);
+                    Utils.showFeedback("Error desant/exportant les dades.", 'error');
+                }
+            },
+            formSubmit: (e) => {
+                e.preventDefault();
+                if (!isDataLoaded) return;
+                const idToEdit = appState.editingEventId;
+                const eventData = {
+                    eventName: eventNameInput.value.trim(),
+                    category: eventCategoryInput.value.trim(),
+                    location: eventLocationInput.value.trim(),
+                    startDate: startDateInput.value,
+                    endDate: endDateInput.value || null,
+                    personId: personSelect.value ? parseInt(personSelect.value, 10) : null,
+                    status: statusInput.value,
+                    notes: notesInput.value.trim(),
+                    id: idToEdit ? parseFloat(idToEdit) : Date.now() + Math.random()
+                }; // Assegurar tipus numèric
+                if (!eventData.eventName) {
+                    Utils.showFeedback("El Nom de l'Esdeveniment és obligatori.", 'warning');
+                    eventNameInput.focus();
+                    return;
+                }
+                if (!eventData.startDate) {
+                    Utils.showFeedback("La Data d'Inici és obligatòria.", 'warning');
+                    startDateInput.focus();
+                    return;
+                }
+                if (!eventData.personId) {
+                    Utils.showFeedback("La Persona/Grup Assignat és obligatori.", 'warning');
+                    personSelect.focus();
+                    return;
+                }
+                if (eventData.endDate) {
+                    if (!/^\d{4}-\d{2}-\d{2}$/.test(eventData.endDate)) {
+                        Utils.showFeedback("El format de la Data Fi és invàlid (YYYY-MM-DD).", 'warning');
+                        endDateInput.focus();
+                        return;
+                    }
+                    try {
+                        const start = new Date(eventData.startDate);
+                        const end = new Date(eventData.endDate);
+                        if (end < start) {
+                            Utils.showFeedback("La Data Fi no pot ser anterior a la Data Inici.", 'warning');
+                            endDateInput.focus();
+                            return;
+                        }
+                    } catch (err) {
+                        console.error("Error comparant dates:", err);
+                        Utils.showFeedback("Error validant les dates.", 'error');
+                        return;
+                    }
+                }
+                const conflicts = Utils.checkConflicts(eventData);
+                if (conflicts.length > 0) {
+                    const conflictNames = conflicts.map(c => `"${c.eventName}" (${Utils.formatDateRange(c.startDate, c.endDate)})`).join(', ');
+                    conflictWarning.textContent = `Atenció: Conflicte d'horari amb: ${conflictNames}.`;
+                    conflictWarning.style.display = 'block';
+                } else {
+                    conflictWarning.style.display = 'none';
+                }
+                if (idToEdit) {
+                    const index = appState.events.findIndex(event => event.id === eventData.id);
+                    if (index > -1) {
+                        appState.events[index] = { ...appState.events[index], ...eventData };
+                        Utils.showFeedback("Esdeveniment actualitzat.");
+                    } else {
+                        console.error("ID d'edició no trobat:", idToEdit);
+                        Utils.showFeedback("Error actualitzant l'esdeveniment.", 'error');
+                        Render.setFormMode('add');
+                        return;
+                    }
+                } else {
+                    appState.events.push(eventData);
+                    Utils.showFeedback("Esdeveniment afegit.");
+                }
+                Render.setFormMode('add');
+                Render.renderAll();
+            },
+            handlePersonFormSubmit: (e) => {
+                e.preventDefault();
+                const idToEdit = appState.editingPersonId;
+                const personData = {
+                    name: personModalNameInput.value.trim(),
+                    role: personModalRoleInput.value.trim(),
+                    contact: personModalContactInput.value.trim(),
+                    notes: personModalNotesInput.value.trim()
+                };
+
+                if (!personData.name) {
+                    Utils.showFeedback("El Nom de la Persona és obligatori.", 'warning');
+                    personModalNameInput.focus();
+                    return;
+                }
+
+                if (idToEdit) {
+                    // Editar persona existent
+                    const index = appState.people.findIndex(person => person.id === idToEdit);
+                    if (index > -1) {
+                        appState.people[index] = { ...appState.people[index], ...personData };
+                        Utils.showFeedback("Persona actualitzada.");
+                    } else {
+                        console.error("ID d'edició de persona no trobat:", idToEdit);
+                        Utils.showFeedback("Error actualitzant la persona.", 'error');
+                    }
+                } else {
+                    // Afegir nova persona
+                    personData.id = Date.now() + Math.random(); // Generar un ID
+                    appState.people.push(personData);
+                    Utils.showFeedback("Persona afegida.");
+                }
+
+                Utils.hidePeopleModal();
+                Render.setPersonFormMode('add');
+                Render.renderAll();
+            },
+            peopleListClick: (e) => {
+                // Implementa la lògica per gestionar els clicks a la llista de persones
+            },
+            calendarEventClick: (info) => {
+                // Implementa la lògica per gestionar els clicks als events del calendari
+            }
+        };
+    </script>
+</body>
+</html>
+<!-- Final del document HTML -->
+   

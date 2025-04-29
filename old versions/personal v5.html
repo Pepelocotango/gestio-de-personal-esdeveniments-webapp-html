@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<!-- v.5 - Edició, Filtres, Ordenació, Modals, Templates, Export/Import -->
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestió Avançada d'Esdeveniments Personals v5</title>
+    <style>
+        /* --- CSS Variables --- */
+        :root {
+            --primary-color: #0056b3;
+            --secondary-color: #5a6268;
+            --success-color: #218838;
+            --danger-color: #c82333;
+            --warning-color: #e0a800;
+            --info-color: #117a8b;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-color: #ced4da;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --status-pending-bg: #ffeeba;
+            --status-yes-bg: #c3e6cb;
+            --status-no-bg: #f5c6cb;
+            --mobile-breakpoint: 768px; /* Adjusted breakpoint */
+        }
+
+        /* --- Reset & Body --- */
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-family);
+            margin: 0;
+            padding: 10px;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- Container & Headings --- */
+        .container {
+            max-width: 1100px; /* Wider for more controls */
+            margin: 15px auto;
+            background-color: #fff;
+            padding: 20px 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        h1, h2, h3 { margin-top: 0; }
+        h1 { color: var(--primary-color); text-align: center; margin-bottom: 30px; font-size: 1.8rem; }
+        h2 { color: var(--primary-color); text-align: center; margin-bottom: 20px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; gap: 0.5em;}
+        h3 { color: var(--secondary-color); text-align: left; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; font-size: 1.15rem; gap: 0.5em;}
+        h3 svg, h2 svg { flex-shrink: 0; width: 1.1em; height: 1.1em; }
+
+        /* --- Helper Classes --- */
+        .hidden { display: none !important; }
+        .visually-hidden { /* Renamed from sr-only for clarity */
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+        }
+        .section { margin-bottom: 30px; padding: 20px; background-color: #fdfdfd; border-radius: 5px; border: 1px solid var(--border-color); }
+        .form-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;}
+
+        /* --- Buttons (General) --- */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5em;
+            padding: 10px 20px; font-size: 0.95rem; font-weight: bold;
+            border: none; border-radius: 4px; cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            text-align: center; text-decoration: none; white-space: nowrap;
+        }
+        .btn svg { width: 1em; height: 1em; }
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: #004494; }
+        .btn-secondary { background-color: var(--secondary-color); color: white; }
+        .btn-secondary:hover { background-color: #495057; }
+        .btn-success { background-color: var(--success-color); color: white; }
+        .btn-success:hover { background-color: #1e7e34; }
+        .btn-danger { background-color: var(--danger-color); color: white; }
+        .btn-danger:hover { background-color: #b21f2d; }
+        .btn-warning { background-color: var(--warning-color); color: var(--dark-color); }
+        .btn-warning:hover { background-color: #c89400; }
+        .btn-info { background-color: var(--info-color); color: white; }
+        .btn-info:hover { background-color: #0f6674; }
+        .btn-light { background-color: var(--light-color); color: var(--dark-color); border: 1px solid var(--border-color); }
+        .btn-light:hover { background-color: #e2e6ea; }
+        .btn-icon { background-color: transparent; padding: 4px 6px; font-size: 1.1rem; line-height: 1; vertical-align: middle; }
+        .btn-icon.btn-danger { color: var(--danger-color); }
+        .btn-icon.btn-danger:hover { background-color: var(--danger-color); color: white; }
+        .btn-icon.btn-warning { color: #b88100; /* Darker yellow */ }
+        .btn-icon.btn-warning:hover { background-color: var(--warning-color); color: var(--dark-color); }
+
+        /* --- Form Styling --- */
+        #event-form { margin-bottom: 0; } /* Section handles margin now */
+        .form-group { margin-bottom: 15px; }
+        .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .form-row .form-group { flex: 1; margin-bottom: 0; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 0.95rem; color: var(--secondary-color); }
+        input[type="text"], input[type="date"], input[type="search"], select, textarea {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 4px;
+            font-size: 1rem; font-family: inherit; background-color: #fff; color: var(--dark-color);
+        }
+        input[type="date"] { min-height: calc(1.6em + 20px + 2px); appearance: none; }
+        textarea { min-height: 80px; resize: vertical; }
+        #event-form button[type="submit"] { width: auto; flex-grow: 1;}
+        #clear-form-btn, #cancel-edit-btn { width: auto; }
+
+        /* --- Filter Controls --- */
+        #filter-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; }
+        #filter-controls .form-group { margin-bottom: 0; }
+        #reset-filters-btn { white-space: nowrap; }
+
+        /* --- Table Styling --- */
+        #events-table-wrapper { overflow-x: auto; /* For very wide tables on smaller screens */ }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; vertical-align: middle; word-break: break-word; }
+        th {
+            background-color: var(--primary-color); color: white; font-weight: 600;
+            white-space: nowrap; font-size: 0.95rem; position: relative; /* For sort indicators */
+        }
+        th[data-sort-key] { cursor: pointer; user-select: none; padding-right: 25px; /* Space for indicator */ }
+        th[data-sort-key]:hover { background-color: #004494; }
+        .sort-indicator { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 0.8em; }
+        #events-table tr:nth-child(even):not([class*="status-"]) { background-color: #f7f7f7; } /* Exclude status rows */
+        #events-table td { font-size: 0.95rem; }
+        .status-select {
+            padding: 6px 8px; border-radius: 4px; border: 1px solid var(--border-color); min-width: 100px;
+            font-size: 0.9rem; background-color: #fff; cursor: pointer; appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto; padding-right: 2em;
+        }
+        .actions-cell { white-space: nowrap; text-align: right; } /* Keep action buttons together */
+        .actions-cell button { margin-left: 5px; }
+
+        /* Status Row Background Colors */
+        #events-table tr.status-Pendent { background-color: var(--status-pending-bg); }
+        #events-table tr.status-Sí { background-color: var(--status-yes-bg); }
+        #events-table tr.status-No { background-color: var(--status-no-bg); }
+        #events-table tr.status-Pendent:nth-child(even),
+        #events-table tr.status-Sí:nth-child(even),
+        #events-table tr.status-No:nth-child(even) { background-color: inherit; }
+
+        /* --- Summaries Styling --- */
+        #summaries { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .summary-container { padding: 15px; background-color: #fdfdfd; border: 1px solid var(--border-color); border-radius: 5px; }
+        .summary-container table th { background-color: var(--secondary-color); font-size: 0.9rem; }
+        .summary-container table td { text-align: center; font-size: 0.9rem; }
+        .summary-container table td:first-child { text-align: left; font-weight: 500; }
+        .summary-container table td strong { color: var(--primary-color); }
+        .no-data-message {
+            text-align: center; display: none; margin: 15px 0; padding: 12px;
+            color: var(--secondary-color); background-color: #f0f0f0; border-radius: 4px; font-style: italic;
+        }
+
+        /* --- Modal Styling --- */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+        }
+        .modal.visible { opacity: 1; visibility: visible; transition-delay: 0s; }
+        .modal-content {
+            background-color: white; padding: 25px 30px; border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            max-width: 500px; width: 90%;
+            transform: scale(0.9); transition: transform 0.3s ease;
+        }
+        .modal.visible .modal-content { transform: scale(1); }
+        .modal-header { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
+        .modal-title { color: var(--primary-color); font-size: 1.25rem; margin-bottom: 0; }
+        .modal-body { margin-bottom: 20px; color: var(--dark-color); }
+        .modal-footer { text-align: right; }
+        .modal-footer .btn { margin-left: 10px; }
+
+        /* --- Feedback Area --- */
+        #feedback-area {
+            position: fixed; bottom: 20px; right: 20px;
+            background-color: var(--dark-color); color: white;
+            padding: 10px 20px; border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1010; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+        }
+         #feedback-area.visible { opacity: 1; visibility: visible; transition-delay: 0s; }
+
+        /* --- Export/Import --- */
+        #data-management { display: flex; gap: 15px; flex-wrap: wrap; }
+        #import-file-input { display: none; }
+
+        /* --- Responsive adjustments --- */
+        @media (max-width: var(--mobile-breakpoint)) {
+            .container { padding: 15px; max-width: 100%; }
+            h1 { font-size: 1.6rem; margin-bottom: 20px; }
+            h2 { font-size: 1.3rem; margin-bottom: 15px; }
+            h3 { font-size: 1.1rem; }
+            .section { padding: 15px; }
+            .form-row { flex-direction: column; gap: 0; }
+            .form-row .form-group { margin-bottom: 15px; }
+            #filter-controls { grid-template-columns: 1fr; } /* Stack filters */
+
+            /* Transform the MAIN table into a card list */
+            #events-table thead { display: none; }
+            #events-table tr {
+                display: block; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 5px;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.07); background-color: #fff !important;
+                border-left-width: 5px; border-left-style: solid; padding-left: 0;
+            }
+            #events-table tr.status-Pendent { border-left-color: var(--warning-color); }
+            #events-table tr.status-Sí { border-left-color: var(--success-color); }
+            #events-table tr.status-No { border-left-color: var(--danger-color); }
+            #events-table td {
+                display: block; text-align: right; padding-left: 45%; position: relative;
+                border: none; border-bottom: 1px dotted var(--border-color); padding-top: 10px; padding-bottom: 10px;
+                min-height: 42px; font-size: 0.9rem; background-color: transparent !important; word-break: break-word;
+            }
+            #events-table tr td:last-child { border-bottom: none; }
+            #events-table td::before {
+                content: attr(data-label); position: absolute; left: 10px; width: 40%; padding-right: 10px;
+                white-space: nowrap; font-weight: bold; text-align: left; color: var(--secondary-color); font-size: 0.85rem;
+            }
+            #events-table .status-select { width: auto; float: right; max-width: 110px; padding: 5px 2em 5px 8px; font-size: 0.85rem; }
+            #events-table .actions-cell { text-align: right; padding-left: 10px; /* Reset padding */ }
+             #events-table .actions-cell::before { width: auto; position: static; margin-right: auto; } /* Label takes remaining space */
+             #events-table .actions-cell button { float: right; margin-left: 5px; margin-top: 0; padding: 5px 8px; }
+
+            #summaries { grid-template-columns: 1fr; } /* Stack summaries */
+        }
+
+        @media (max-width: 480px) {
+             h1 { font-size: 1.4rem; }
+             .btn { font-size: 0.9rem; padding: 8px 15px;}
+             .form-actions { flex-direction: column; align-items: stretch;}
+             .form-actions .btn { width: 100%; }
+             #events-table td { padding-left: 10px; text-align: left;}
+             #events-table td::before { position: static; display: block; width: 100%; font-weight: bold; margin-bottom: 3px; white-space: normal;}
+             #events-table .status-select { float: none; max-width: none; width: 100%; margin-top: 5px;}
+             #events-table .actions-cell { text-align: left; }
+             #events-table .actions-cell::before { margin-bottom: 5px; }
+             #events-table .actions-cell button { float: none; display: inline-block; margin-left: 0; margin-right: 5px; margin-top: 5px; }
+             .modal-content { width: 95%; padding: 20px; }
+             #data-management { flex-direction: column; align-items: stretch;}
+             #data-management .btn { width: 100%; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Gestió Avançada d'Esdeveniments v5</h1>
+
+        <!-- Filter Controls -->
+        <div id="filter-controls" class="section">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                Filtres i Cerca
+            </h3>
+            <div class="form-group">
+                <label for="filter-search">Cercar (Nom, Esdeveniment, Notes):</label>
+                <input type="search" id="filter-search" placeholder="Escriu per cercar...">
+            </div>
+            <div class="form-group">
+                <label for="filter-status">Filtrar per Estat:</label>
+                <select id="filter-status">
+                    <option value="">-- Tots --</option>
+                    <option value="Pendent">Pendent</option>
+                    <option value="Sí">Confirmat (Sí)</option>
+                    <option value="No">Cancel·lat (No)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                 <label for="filter-start-date">Des de Data Inici:</label>
+                 <input type="date" id="filter-start-date">
+            </div>
+            <div class="form-group">
+                 <label for="filter-end-date">Fins a Data Inici:</label>
+                 <input type="date" id="filter-end-date">
+            </div>
+            <button id="reset-filters-btn" class="btn btn-secondary">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                 Netejar Filtres
+             </button>
+        </div>
+
+        <!-- Form to add/edit events -->
+        <form id="event-form" class="section">
+            <h2 id="form-title"> <!-- Title changes dynamically -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                Afegir Esdeveniment
+            </h2>
+            <input type="hidden" id="edit-event-id"> <!-- Hidden field for editing -->
+            <div class="form-group">
+                <label for="person-name">Nom Persona / Grup:</label>
+                <input type="text" id="person-name" required aria-required="true">
+            </div>
+            <div class="form-group">
+                <label for="event-name">Nom de l'Esdeveniment:</label>
+                <input type="text" id="event-name" required aria-required="true">
+            </div>
+            <div class="form-row">
+                 <div class="form-group">
+                    <label for="start-date">Data Inici:</label>
+                    <input type="date" id="start-date" required aria-required="true">
+                </div>
+                 <div class="form-group">
+                    <label for="end-date">Data Fi (Opcional):</label>
+                    <input type="date" id="end-date" aria-describedby="end-date-desc">
+                     <small id="end-date-desc" style="color: var(--secondary-color); font-size: 0.8rem;">Deixar buit si és un sol dia.</small>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="status">Estat:</label>
+                <select id="status">
+                    <option value="Pendent" selected>Pendent</option>
+                    <option value="Sí">Confirmat (Sí)</option>
+                    <option value="No">Cancel·lat (No)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="notes">Notes:</label>
+                <textarea id="notes" placeholder="(Opcional)"></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" id="submit-btn" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span id="submit-btn-text">Afegir</span>
+                </button>
+                 <button type="button" id="clear-form-btn" class="btn btn-light">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    Netejar
+                </button>
+                <button type="button" id="cancel-edit-btn" class="btn btn-secondary hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    Cancel·lar Edició
+                </button>
+            </div>
+        </form>
+
+        <!-- Summaries Section -->
+        <div id="summaries-section" class="section" style="display: none;">
+             <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"></path><path d="M18 20V4"></path><path d="M6 20V16"></path></svg>
+                Resums Globals
+            </h2>
+            <div id="summaries">
+                <div id="summary-by-date-container" class="summary-container">
+                    <h3>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                         Per Data Inici
+                    </h3>
+                    <div style="overflow-x: auto;">
+                        <table id="summary-by-date">
+                            <thead><tr><th>Data Inici</th><th>Pendent</th><th>Sí</th><th>No</th><th>Total</th></tr></thead>
+                            <tbody id="summary-by-date-tbody"></tbody>
+                        </table>
+                    </div>
+                    <p id="no-summary-date" class="no-data-message">No hi ha dades per data.</p>
+                </div>
+                <div id="summary-by-person-container" class="summary-container">
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                         Per Persona/Grup
+                    </h3>
+                     <div style="overflow-x: auto;">
+                        <table id="summary-by-person">
+                            <thead><tr><th>Persona/Grup</th><th>Pendent</th><th>Sí</th><th>No</th><th>Total</th></tr></thead>
+                            <tbody id="summary-by-person-tbody"></tbody>
+                        </table>
+                    </div>
+                    <p id="no-summary-person" class="no-data-message">No hi ha dades per persona/grup.</p>
+                </div>
+                <div id="summary-by-event-container" class="summary-container">
+                    <h3>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                         Per Nom Esdeveniment
+                    </h3>
+                    <div style="overflow-x: auto;">
+                        <table id="summary-by-event">
+                            <thead><tr><th>Nom Esdeveniment</th><th>Pendent</th><th>Sí</th><th>No</th><th>Total</th></tr></thead>
+                            <tbody id="summary-by-event-tbody"></tbody>
+                        </table>
+                    </div>
+                    <p id="no-summary-event" class="no-data-message">No hi ha dades per nom d'esdeveniment.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Events List -->
+        <div class="section">
+            <h2 id="events-list-title" style="display: none;">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><line x1="8" y1="14" x2="16" y2="14"></line></svg>
+                Llista d'Esdeveniments (<span id="event-count">0</span>)
+            </h2>
+            <div id="events-table-wrapper">
+                 <table id="events-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <!-- Added data-sort-key for sorting -->
+                            <th data-sort-key="name">Persona/Grup <span class="sort-indicator"></span></th>
+                            <th data-sort-key="eventName">Esdeveniment <span class="sort-indicator"></span></th>
+                            <th data-sort-key="startDate">Dates <span class="sort-indicator"></span></th>
+                            <th data-sort-key="status">Estat <span class="sort-indicator"></span></th>
+                            <th>Notes</th>
+                            <th>Accions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Event rows will be populated here using template -->
+                    </tbody>
+                </table>
+            </div>
+            <p id="no-events-message" class="no-data-message" style="display: block;">Encara no hi ha cap esdeveniment. Comença afegint-ne un!</p>
+        </div>
+
+         <!-- Data Management Section -->
+        <div id="data-management-section" class="section">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line><polyline points="7 16 12 21 17 16"></polyline><line x1="12" y1="21" x2="12" y2="9"></line></svg>
+                Gestió de Dades
+            </h3>
+            <div id="data-management">
+                <button id="export-data-btn" class="btn btn-info">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Exportar Dades (JSON)
+                </button>
+                <button id="import-data-btn" class="btn btn-warning">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    Importar Dades (JSON)
+                </button>
+                <input type="file" id="import-file-input" accept=".json">
+            </div>
+        </div>
+
+    </div> <!-- End container -->
+
+    <!-- Template for event row -->
+    <template id="event-row-template">
+        <tr>
+            <td data-label="Persona/Grup" class="event-person-name"></td>
+            <td data-label="Esdeveniment" class="event-event-name"></td>
+            <td data-label="Dates" class="event-dates"></td>
+            <td data-label="Estat">
+                <select class="status-select" aria-label="Canviar estat">
+                    <option value="Pendent">Pendent</option>
+                    <option value="Sí">Confirmat (Sí)</option>
+                    <option value="No">Cancel·lat (No)</option>
+                </select>
+            </td>
+            <td data-label="Notes" class="event-notes"></td>
+            <td data-label="Accions" class="actions-cell">
+                <button class="edit-btn btn btn-icon btn-warning" title="Editar esdeveniment">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    <span class="visually-hidden">Editar</span>
+                </button>
+                <button class="delete-btn btn btn-icon btn-danger" title="Eliminar esdeveniment">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    <span class="visually-hidden">Eliminar</span>
+                </button>
+            </td>
+        </tr>
+    </template>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="modal-title" class="modal-title">Confirmació</h4>
+            </div>
+            <div class="modal-body">
+                <p id="modal-message">Estàs segur?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-cancel-btn" class="btn btn-light">Cancel·lar</button>
+                <button id="modal-confirm-btn" class="btn btn-danger">Confirmar</button> <!-- Default to danger, can be changed -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Area -->
+    <div id="feedback-area" aria-live="assertive"></div>
+
+    <script>
+        // --- Constants ---
+        const LOCAL_STORAGE_KEY = 'personalEventsApp_v5'; // Unique key for v5
+        const DEBOUNCE_DELAY = 300; // ms for search input delay
+
+        // --- DOM Element References ---
+        // Form
+        const eventForm = document.getElementById('event-form');
+        const formTitle = document.getElementById('form-title');
+        const personNameInput = document.getElementById('person-name');
+        const eventNameInput = document.getElementById('event-name');
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        const statusInput = document.getElementById('status');
+        const notesInput = document.getElementById('notes');
+        const editEventIdInput = document.getElementById('edit-event-id');
+        const submitBtn = document.getElementById('submit-btn');
+        const submitBtnText = document.getElementById('submit-btn-text');
+        const clearFormBtn = document.getElementById('clear-form-btn');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+
+        // Filters
+        const filterControls = document.getElementById('filter-controls');
+        const filterSearchInput = document.getElementById('filter-search');
+        const filterStatusSelect = document.getElementById('filter-status');
+        const filterStartDateInput = document.getElementById('filter-start-date');
+        const filterEndDateInput = document.getElementById('filter-end-date');
+        const resetFiltersBtn = document.getElementById('reset-filters-btn');
+
+        // Table & List
+        const eventsTableWrapper = document.getElementById('events-table-wrapper');
+        const eventsTable = document.getElementById('events-table');
+        const eventsTableBody = eventsTable.querySelector('tbody');
+        const eventsTableHeader = eventsTable.querySelector('thead');
+        const noEventsMessage = document.getElementById('no-events-message');
+        const eventsListTitle = document.getElementById('events-list-title');
+        const eventCountSpan = document.getElementById('event-count');
+        const eventRowTemplate = document.getElementById('event-row-template');
+
+        // Summaries
+        const summariesSection = document.getElementById('summaries-section');
+        const summaryByDateTable = document.getElementById('summary-by-date');
+        const summaryByPersonTable = document.getElementById('summary-by-person');
+        const summaryByEventTable = document.getElementById('summary-by-event');
+        const summaryByDateTableBody = document.getElementById('summary-by-date-tbody');
+        const summaryByPersonTableBody = document.getElementById('summary-by-person-tbody');
+        const summaryByEventTableBody = document.getElementById('summary-by-event-tbody');
+        const noSummaryDateMsg = document.getElementById('no-summary-date');
+        const noSummaryPersonMsg = document.getElementById('no-summary-person');
+        const noSummaryEventMsg = document.getElementById('no-summary-event');
+
+        // Modal
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+
+         // Feedback
+        const feedbackArea = document.getElementById('feedback-area');
+
+        // Data Management
+        const exportBtn = document.getElementById('export-data-btn');
+        const importBtn = document.getElementById('import-data-btn');
+        const importFileInput = document.getElementById('import-file-input');
+
+        // --- Application State ---
+        let appState = {
+            events: [], // Holds all events from storage
+            filters: {
+                search: '',
+                status: '',
+                startDate: '',
+                endDate: ''
+            },
+            sort: {
+                key: 'startDate', // Default sort
+                direction: 'desc' // Default direction (newest first)
+            },
+            editingEventId: null, // Holds the ID of the event being edited
+            modalCallback: null // Function to call on modal confirm
+        };
+        let searchDebounceTimeout;
+
+        // --- Utility Functions ---
+        const Utils = {
+            // Gets events from localStorage, ensuring structure and defaults
+            getEvents: () => {
+                try {
+                    const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+                    const parsedData = storedData ? JSON.parse(storedData) : [];
+                    if (!Array.isArray(parsedData)) {
+                         console.warn("Invalid data format in localStorage. Resetting.");
+                         return [];
+                    }
+                    // Ensure basic structure and defaults for each event
+                    return parsedData.map(event => ({
+                        id: event.id || Date.now() + Math.random(), // More robust fallback ID
+                        name: event.name || 'Sense Nom Persona',
+                        eventName: event.eventName || 'Sense Nom Esdeveniment',
+                        startDate: event.startDate || null,
+                        endDate: event.endDate || null,
+                        status: event.status || 'Pendent',
+                        notes: event.notes || ''
+                    }));
+                } catch (e) {
+                    console.error("Error parsing events from localStorage:", e);
+                    Utils.showFeedback("Error carregant les dades. S'ha restablert la llista.", 'error', 5000);
+                    localStorage.removeItem(LOCAL_STORAGE_KEY); // Clear corrupted data
+                    return [];
+                }
+            },
+            // Saves events to localStorage
+            saveEvents: (events) => {
+                try {
+                    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(events));
+                } catch (e) {
+                    console.error("Error saving events to localStorage:", e);
+                    Utils.showModal(
+                        "Error de Guardat",
+                        "No s'han pogut desar les dades. L'emmagatzematge local podria estar ple o inaccessible. Les darreres modificacions podrien perdre's en tancar.",
+                        null, // No confirm action needed here
+                        'error'
+                    );
+                }
+            },
+            // Escapes HTML characters
+            escapeHTML: (str) => {
+                if (typeof str !== 'string') return str;
+                const p = document.createElement('p');
+                p.textContent = str;
+                return p.innerHTML;
+            },
+            // Formats date range
+            formatDateRange: (startDateStr, endDateStr) => {
+                 if (!startDateStr || !/^\d{4}-\d{2}-\d{2}$/.test(startDateStr)) return 'N/D';
+                 const formatSingle = (dateStr) => {
+                     try {
+                         const [y, m, d] = dateStr.split('-');
+                         const dt = new Date(Date.UTC(y, m - 1, d));
+                         return isNaN(dt.getTime()) ? 'Invàlid' : dt.toLocaleDateString('ca-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                     } catch { return 'Error'; }
+                 };
+                 const startFormatted = formatSingle(startDateStr);
+                 if (!endDateStr || !/^\d{4}-\d{2}-\d{2}$/.test(endDateStr) || startDateStr === endDateStr) {
+                     return startFormatted;
+                 }
+                 const endFormatted = formatSingle(endDateStr);
+                 if (startFormatted.match(/Invàlid|Error|N\/D/) || endFormatted.match(/Invàlid|Error|N\/D/)) {
+                      return `${startFormatted} - ${endFormatted}`;
+                 }
+                 try {
+                     const start = new Date(startDateStr); const end = new Date(endDateStr);
+                     return end >= start ? `${startFormatted} - ${endFormatted}` : startFormatted;
+                 } catch { return `${startFormatted} - ${endFormatted}`; } // Fallback
+             },
+             // Formats single start date for summary
+             formatStartDateForSummary: (dateStr) => {
+                 if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return 'N/D';
+                 try {
+                     const [y, m, d] = dateStr.split('-');
+                     const dt = new Date(Date.UTC(y, m - 1, d));
+                     return isNaN(dt.getTime()) ? 'Invàlid' : dt.toLocaleDateString('ca-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                 } catch { return 'Error'; }
+             },
+            // Shows the confirmation modal
+            showModal: (title, message, confirmCallback, type = 'danger') => {
+                modalTitle.textContent = title;
+                modalMessage.innerHTML = message; // Use innerHTML to allow basic formatting if needed
+                appState.modalCallback = confirmCallback; // Store the callback
+
+                // Reset button classes and set based on type
+                modalConfirmBtn.className = 'btn'; // Reset classes
+                if (type === 'danger') {
+                     modalConfirmBtn.classList.add('btn-danger');
+                     modalConfirmBtn.textContent = "Confirmar Eliminació";
+                } else if (type === 'warning') {
+                     modalConfirmBtn.classList.add('btn-warning');
+                     modalConfirmBtn.textContent = "Confirmar";
+                } else { // Default / info
+                     modalConfirmBtn.classList.add('btn-primary');
+                     modalConfirmBtn.textContent = "Acceptar";
+                }
+
+                 modalConfirmBtn.style.display = confirmCallback ? '' : 'none'; // Hide confirm if no callback
+                 modalCancelBtn.textContent = confirmCallback ? 'Cancel·lar' : 'Tancar'; // Change cancel text if it's just informational
+
+                confirmationModal.classList.add('visible');
+                modalConfirmBtn.focus(); // Focus confirm button
+            },
+            // Hides the modal
+            hideModal: () => {
+                confirmationModal.classList.remove('visible');
+                appState.modalCallback = null; // Clear callback
+            },
+             // Shows feedback message
+            showFeedback: (message, type = 'success', duration = 3000) => {
+                 feedbackArea.textContent = message;
+                 feedbackArea.className = ''; // Reset classes
+                 feedbackArea.classList.add(`feedback-${type}`); // Optional: for specific styling
+                 feedbackArea.classList.add('visible');
+
+                 // Hide after duration
+                 setTimeout(() => {
+                     feedbackArea.classList.remove('visible');
+                 }, duration);
+             },
+             // Debounce function
+             debounce: (func, delay) => {
+                 let timeoutId;
+                 return (...args) => {
+                     clearTimeout(timeoutId);
+                     timeoutId = setTimeout(() => {
+                         func.apply(this, args);
+                     }, delay);
+                 };
+             }
+        };
+
+        // --- Rendering Functions ---
+        const Render = {
+            // Main render function: filters, sorts, and renders events
+            events: () => {
+                const allEvents = appState.events; // Get all events from state
+                let filteredEvents = [...allEvents]; // Start with a copy
+
+                // 1. Apply Filters
+                const searchTerm = appState.filters.search.toLowerCase().trim();
+                const filterStatus = appState.filters.status;
+                const filterStartDate = appState.filters.startDate ? new Date(appState.filters.startDate) : null;
+                const filterEndDate = appState.filters.endDate ? new Date(appState.filters.endDate) : null;
+
+                if (searchTerm || filterStatus || filterStartDate || filterEndDate) {
+                    filteredEvents = filteredEvents.filter(event => {
+                        const nameMatch = searchTerm ? event.name.toLowerCase().includes(searchTerm) : true;
+                        const eventNameMatch = searchTerm ? event.eventName.toLowerCase().includes(searchTerm) : true;
+                        const notesMatch = searchTerm ? event.notes.toLowerCase().includes(searchTerm) : true;
+                        const statusMatch = filterStatus ? event.status === filterStatus : true;
+
+                        let dateMatch = true;
+                        if (event.startDate) {
+                            try {
+                                const eventDate = new Date(event.startDate);
+                                // Adjust dates to compare day only (ignore time)
+                                if (filterStartDate) {
+                                    filterStartDate.setHours(0,0,0,0);
+                                    if (eventDate < filterStartDate) dateMatch = false;
+                                }
+                                if (filterEndDate && dateMatch) {
+                                     filterEndDate.setHours(23,59,59,999); // Include the end day
+                                     if (eventDate > filterEndDate) dateMatch = false;
+                                }
+                            } catch (e) {
+                                console.error("Error parsing event date for filtering:", event.startDate, e);
+                                dateMatch = false; // Exclude if date is invalid
+                            }
+                        } else if(filterStartDate || filterEndDate) {
+                            dateMatch = false; // Exclude if filtering by date and event has no date
+                        }
+
+
+                        return (nameMatch || eventNameMatch || notesMatch) && statusMatch && dateMatch;
+                    });
+                }
+
+                // 2. Apply Sorting
+                const sortKey = appState.sort.key;
+                const sortDir = appState.sort.direction === 'asc' ? 1 : -1;
+
+                filteredEvents.sort((a, b) => {
+                    let valA = a[sortKey];
+                    let valB = b[sortKey];
+
+                    // Handle date sorting specifically
+                    if (sortKey === 'startDate') {
+                        // Treat null/invalid dates as earliest or latest depending on direction? Let's put them last.
+                        valA = valA ? new Date(valA).getTime() : (sortDir === 1 ? Infinity : -Infinity);
+                        valB = valB ? new Date(valB).getTime() : (sortDir === 1 ? Infinity : -Infinity);
+                         if (isNaN(valA)) valA = (sortDir === 1 ? Infinity : -Infinity);
+                         if (isNaN(valB)) valB = (sortDir === 1 ? Infinity : -Infinity);
+
+                    } else if (typeof valA === 'string') {
+                        // Case-insensitive string sort
+                        valA = valA.toLowerCase();
+                        valB = valB.toLowerCase();
+                    }
+
+                    if (valA < valB) return -1 * sortDir;
+                    if (valA > valB) return 1 * sortDir;
+                    return 0;
+                });
+
+                // 3. Render Table
+                eventsTableBody.innerHTML = ''; // Clear table body
+                Render.updateSortIndicators(); // Update visual cues in headers
+
+                if (allEvents.length === 0) {
+                    // No events at all
+                    eventsTable.style.display = 'none';
+                    eventsListTitle.style.display = 'none';
+                    summariesSection.style.display = 'none';
+                    noEventsMessage.textContent = "Encara no hi ha cap esdeveniment. Comença afegint-ne un!";
+                    noEventsMessage.style.display = 'block';
+                } else if (filteredEvents.length === 0) {
+                     // Events exist, but none match filters
+                    eventsTable.style.display = 'none';
+                    eventsListTitle.style.display = 'block'; // Show title
+                    eventCountSpan.textContent = `0 de ${allEvents.length}`; // Show count
+                    summariesSection.style.display = ''; // Show summaries (always global)
+                    noEventsMessage.textContent = "No s'han trobat esdeveniments que coincideixin amb els filtres aplicats.";
+                    noEventsMessage.style.display = 'block';
+                } else {
+                    // Render filtered and sorted events
+                    eventsTable.style.display = '';
+                    eventsListTitle.style.display = 'block';
+                    eventCountSpan.textContent = `${filteredEvents.length} de ${allEvents.length}`;
+                    summariesSection.style.display = ''; // Show summaries
+                    noEventsMessage.style.display = 'none';
+
+                    filteredEvents.forEach(event => {
+                        const row = Render.createEventRow(event);
+                        eventsTableBody.appendChild(row);
+                    });
+                }
+
+                // 4. Render Summaries (Always based on ALL events)
+                Render.summaries(allEvents);
+            },
+
+            // Creates a table row using the template
+            createEventRow: (event) => {
+                 const templateContent = eventRowTemplate.content.cloneNode(true);
+                 const row = templateContent.querySelector('tr');
+
+                 row.dataset.id = event.id;
+                 const safeStatus = Utils.escapeHTML(event.status);
+                 row.className = `status-${safeStatus}`; // Apply status class
+
+                 // Populate cells using specific classes in the template
+                 row.querySelector('.event-person-name').textContent = event.name;
+                 row.querySelector('.event-event-name').textContent = event.eventName;
+                 row.querySelector('.event-dates').textContent = Utils.formatDateRange(event.startDate, event.endDate);
+                 row.querySelector('.event-notes').innerHTML = Utils.escapeHTML(event.notes).replace(/\n/g, '<br>'); // Allow line breaks
+
+                 // Set up status select
+                 const statusSelect = row.querySelector('.status-select');
+                 statusSelect.value = event.status;
+                 statusSelect.dataset.id = event.id; // Link select change to event ID
+                 statusSelect.setAttribute('aria-label', `Canviar estat per a ${Utils.escapeHTML(event.eventName)} (${Utils.escapeHTML(event.name)})`);
+
+                 // Set up action buttons
+                 const editBtn = row.querySelector('.edit-btn');
+                 const deleteBtn = row.querySelector('.delete-btn');
+                 editBtn.dataset.id = event.id;
+                 deleteBtn.dataset.id = event.id;
+                  editBtn.setAttribute('aria-label', `Editar esdeveniment ${Utils.escapeHTML(event.eventName)} per a ${Utils.escapeHTML(event.name)}`);
+                  deleteBtn.setAttribute('aria-label', `Eliminar esdeveniment ${Utils.escapeHTML(event.eventName)} per a ${Utils.escapeHTML(event.name)}`);
+
+                 return row;
+            },
+
+             // Updates sort indicators in table headers
+            updateSortIndicators: () => {
+                 eventsTableHeader.querySelectorAll('th[data-sort-key]').forEach(th => {
+                     const indicator = th.querySelector('.sort-indicator');
+                     if (th.dataset.sortKey === appState.sort.key) {
+                         indicator.textContent = appState.sort.direction === 'asc' ? ' ▲' : ' ▼';
+                     } else {
+                         indicator.textContent = '';
+                     }
+                 });
+             },
+
+            // Renders summaries (based on ALL events)
+            summaries: (events) => {
+                if (!events || events.length === 0) {
+                    summariesSection.style.display = 'none';
+                    return;
+                }
+                summariesSection.style.display = ''; // Ensure section is visible
+
+                // Date Summary
+                const summaryByDate = {}; let hasDateData = false;
+                events.forEach(event => {
+                    if (event.startDate && /^\d{4}-\d{2}-\d{2}$/.test(event.startDate)) {
+                        const date = event.startDate; const status = event.status || 'Pendent';
+                        if (!summaryByDate[date]) summaryByDate[date] = { Pendent: 0, Sí: 0, No: 0, Total: 0 };
+                        summaryByDate[date][status]++; summaryByDate[date].Total++; hasDateData = true;
+                    }
+                });
+                Render.updateSummaryTable(summaryByDateTable, summaryByDateTableBody, noSummaryDateMsg, summaryByDate, hasDateData, Utils.formatStartDateForSummary, (a, b) => new Date(a) - new Date(b));
+
+                // Person Summary
+                const summaryByPerson = {}; let hasPersonData = false;
+                events.forEach(event => {
+                    const name = (typeof event.name === 'string' ? event.name.trim() : '');
+                    if (name) {
+                        const status = event.status || 'Pendent';
+                        if (!summaryByPerson[name]) summaryByPerson[name] = { Pendent: 0, Sí: 0, No: 0, Total: 0 };
+                        summaryByPerson[name][status]++; summaryByPerson[name].Total++; hasPersonData = true;
+                    }
+                });
+                 Render.updateSummaryTable(summaryByPersonTable, summaryByPersonTableBody, noSummaryPersonMsg, summaryByPerson, hasPersonData, Utils.escapeHTML, (a, b) => a.localeCompare(b, 'ca', { sensitivity: 'base' }));
+
+                 // Event Name Summary
+                const summaryByEvent = {}; let hasEventData = false;
+                events.forEach(event => {
+                    const eventName = (typeof event.eventName === 'string' ? event.eventName.trim() : '');
+                    if (eventName) {
+                        const status = event.status || 'Pendent';
+                        if (!summaryByEvent[eventName]) summaryByEvent[eventName] = { Pendent: 0, Sí: 0, No: 0, Total: 0 };
+                        summaryByEvent[eventName][status]++; summaryByEvent[eventName].Total++; hasEventData = true;
+                    }
+                });
+                 Render.updateSummaryTable(summaryByEventTable, summaryByEventTableBody, noSummaryEventMsg, summaryByEvent, hasEventData, Utils.escapeHTML, (a, b) => a.localeCompare(b, 'ca', { sensitivity: 'base' }));
+            },
+
+            // Helper to update a single summary table
+            updateSummaryTable: (tableElement, tbodyElement, noDataMsgElement, summaryData, hasData, formatKeyFn, sortFn) => {
+                tbodyElement.innerHTML = '';
+                const container = tableElement.closest('.summary-container');
+                if (!hasData) {
+                    container.style.display = 'none'; // Hide the whole container
+                    // noDataMsgElement.style.display = 'block'; // No need if container is hidden
+                } else {
+                    container.style.display = ''; // Show container
+                    tableElement.style.display = '';
+                    noDataMsgElement.style.display = 'none';
+                    const sortedKeys = Object.keys(summaryData).sort(sortFn);
+                    sortedKeys.forEach(key => {
+                        const counts = summaryData[key];
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td data-label="Clau">${formatKeyFn(key)}</td>
+                            <td data-label="Pendent">${counts.Pendent}</td>
+                            <td data-label="Sí">${counts.Sí}</td>
+                            <td data-label="No">${counts.No}</td>
+                            <td data-label="Total"><strong>${counts.Total}</strong></td>
+                        `;
+                        tbodyElement.appendChild(row);
+                    });
+                }
+            },
+
+             // Sets the form to Add or Edit mode
+            setFormMode: (mode, event = null) => {
+                 eventForm.reset(); // Clear form first
+                 if (mode === 'edit' && event) {
+                     appState.editingEventId = event.id;
+                     editEventIdInput.value = event.id;
+                     formTitle.childNodes[1].textContent = " Editar Esdeveniment"; // Target the text node after the SVG
+                     submitBtnText.textContent = "Desar Canvis";
+                     cancelEditBtn.classList.remove('hidden');
+
+                     // Populate form
+                     personNameInput.value = event.name;
+                     eventNameInput.value = event.eventName;
+                     startDateInput.value = event.startDate;
+                     endDateInput.value = event.endDate;
+                     statusInput.value = event.status;
+                     notesInput.value = event.notes;
+
+                     personNameInput.focus(); // Focus first field
+                 } else { // Add mode
+                     appState.editingEventId = null;
+                     editEventIdInput.value = '';
+                     formTitle.childNodes[1].textContent = " Afegir Esdeveniment";
+                     submitBtnText.textContent = "Afegir";
+                     cancelEditBtn.classList.add('hidden');
+                 }
+             }
+        };
+
+        // --- Event Handlers ---
+        const Handlers = {
+            // Form Submit (Add or Edit)
+            formSubmit: (e) => {
+                e.preventDefault();
+                const idToEdit = appState.editingEventId;
+                const personNameValue = personNameInput.value.trim();
+                const eventNameValue = eventNameInput.value.trim();
+                const startDateValue = startDateInput.value;
+                const endDateValue = endDateInput.value;
+
+                // --- Validations ---
+                if (!personNameValue) { alert("El nom de la persona/grup és obligatori."); personNameInput.focus(); return; }
+                if (!eventNameValue) { alert("El nom de l'esdeveniment és obligatori."); eventNameInput.focus(); return; }
+                if (!startDateValue) { alert("La data d'inici és obligatòria."); startDateInput.focus(); return; }
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(startDateValue)) { alert("Format de data d'inici invàlid (AAAA-MM-DD)."); startDateInput.focus(); return; }
+                if (endDateValue) {
+                    if (!/^\d{4}-\d{2}-\d{2}$/.test(endDateValue)) { alert("Format de data fi invàlid (AAAA-MM-DD)."); endDateInput.focus(); return; }
+                    try {
+                        const start = new Date(startDateValue); const end = new Date(endDateValue);
+                        if (end < start) { alert("La data fi no pot ser anterior a la data d'inici."); endDateInput.focus(); return; }
+                    } catch (err) { console.error("Error comparing dates:", err); /* Allow submission anyway? */ }
+                }
+                // --- End Validations ---
+
+                const eventData = {
+                    // id is handled below (new or existing)
+                    name: personNameValue,
+                    eventName: eventNameValue,
+                    startDate: startDateValue,
+                    endDate: endDateValue || null,
+                    status: statusInput.value,
+                    notes: notesInput.value.trim()
+                };
+
+                if (idToEdit) { // Edit existing event
+                    const eventIndex = appState.events.findIndex(event => event.id === idToEdit);
+                    if (eventIndex > -1) {
+                        appState.events[eventIndex] = { ...appState.events[eventIndex], ...eventData }; // Merge data, keeping original ID
+                        Utils.showFeedback("Esdeveniment actualitzat correctament.");
+                    } else {
+                         console.error("Event ID to edit not found:", idToEdit);
+                         Utils.showFeedback("Error: No s'ha trobat l'esdeveniment per editar.", 'error');
+                         Render.setFormMode('add'); // Reset form to add mode
+                         return; // Stop processing
+                    }
+                } else { // Add new event
+                    eventData.id = Date.now(); // Assign new ID
+                    appState.events.push(eventData);
+                    Utils.showFeedback("Esdeveniment afegit correctament.");
+                }
+
+                Utils.saveEvents(appState.events); // Save all events
+                Render.setFormMode('add'); // Reset form to add mode
+                Render.events(); // Rerender the list and summaries
+            },
+
+            // Handle clicks within the table body (Edit, Delete)
+            tableClick: (e) => {
+                const editButton = e.target.closest('.edit-btn');
+                const deleteButton = e.target.closest('.delete-btn');
+
+                if (editButton) {
+                    const eventId = parseInt(editButton.dataset.id, 10);
+                    const eventToEdit = appState.events.find(event => event.id === eventId);
+                    if (eventToEdit) {
+                        Render.setFormMode('edit', eventToEdit);
+                        eventForm.scrollIntoView({ behavior: 'smooth' }); // Scroll form into view
+                    } else {
+                        console.error("Event not found for editing:", eventId);
+                        Utils.showFeedback("Error: No s'ha trobat l'esdeveniment per editar.", 'error');
+                    }
+                } else if (deleteButton) {
+                    const eventId = parseInt(deleteButton.dataset.id, 10);
+                     const eventToDelete = appState.events.find(event => event.id === eventId);
+                     if (eventToDelete) {
+                          const confirmMsg = `Segur que vols eliminar l'esdeveniment: <br><strong>${Utils.escapeHTML(eventToDelete.eventName)}</strong> per a <strong>${Utils.escapeHTML(eventToDelete.name)}</strong>? <br><br>Aquesta acció no es pot desfer.`;
+                          Utils.showModal(
+                              "Confirmar Eliminació",
+                              confirmMsg,
+                              () => { // Callback function on confirm
+                                  appState.events = appState.events.filter(event => event.id !== eventId);
+                                  Utils.saveEvents(appState.events);
+                                  Render.events(); // Rerender list
+                                  Utils.showFeedback("Esdeveniment eliminat.");
+                                  Utils.hideModal(); // Hide modal after action
+                                  if (appState.editingEventId === eventId) { // If deleting the event being edited, reset form
+                                        Render.setFormMode('add');
+                                    }
+                              },
+                              'danger'
+                          );
+                     } else {
+                           console.error("Event not found for deletion:", eventId);
+                           Utils.showFeedback("Error: No s'ha trobat l'esdeveniment per eliminar.", 'error');
+                     }
+                }
+            },
+
+            // Handle Status Select Change
+            tableChange: (e) => {
+                 if (e.target.classList.contains('status-select')) {
+                     const select = e.target;
+                     const eventId = parseInt(select.dataset.id, 10);
+                     const newStatus = select.value;
+                     const eventIndex = appState.events.findIndex(event => event.id === eventId);
+
+                     if (eventIndex > -1) {
+                         appState.events[eventIndex].status = newStatus;
+                         Utils.saveEvents(appState.events);
+
+                         // Update row style directly for immediate feedback
+                         const row = select.closest('tr');
+                         if (row) {
+                             row.className = `status-${Utils.escapeHTML(newStatus)}`;
+                         }
+                         Render.summaries(appState.events); // Update summaries as counts change
+                         Utils.showFeedback("Estat actualitzat.");
+                     } else {
+                         console.warn("Event ID not found for status update:", eventId);
+                          Utils.showFeedback("Error actualitzant l'estat.", 'error');
+                         Render.events(); // Fallback to full render
+                     }
+                 }
+             },
+
+             // Handle Filter Input Changes (debounced for search)
+             filterChange: Utils.debounce(() => {
+                  appState.filters.search = filterSearchInput.value;
+                  appState.filters.status = filterStatusSelect.value;
+                  appState.filters.startDate = filterStartDateInput.value;
+                  appState.filters.endDate = filterEndDateInput.value;
+                  Render.events(); // Re-render with new filters
+             }, DEBOUNCE_DELAY),
+
+             // Handle direct changes on select/date filters (no debounce)
+             directFilterChange: () => {
+                 appState.filters.status = filterStatusSelect.value;
+                 appState.filters.startDate = filterStartDateInput.value;
+                 appState.filters.endDate = filterEndDateInput.value;
+                 Render.events();
+             },
+
+
+             // Handle Reset Filters Button
+             resetFilters: () => {
+                 filterSearchInput.value = '';
+                 filterStatusSelect.value = '';
+                 filterStartDateInput.value = '';
+                 filterEndDateInput.value = '';
+                 appState.filters = { search: '', status: '', startDate: '', endDate: '' };
+                 Render.events(); // Re-render
+             },
+
+             // Handle Table Header Click for Sorting
+             headerClick: (e) => {
+                 const th = e.target.closest('th[data-sort-key]');
+                 if (!th) return;
+
+                 const newSortKey = th.dataset.sortKey;
+                 if (appState.sort.key === newSortKey) {
+                     // Toggle direction if same column clicked
+                     appState.sort.direction = appState.sort.direction === 'asc' ? 'desc' : 'asc';
+                 } else {
+                     // Change column, default to ascending (or descending for dates initially?)
+                     appState.sort.key = newSortKey;
+                     appState.sort.direction = 'asc'; // Default to asc for new column
+                 }
+                 Render.events(); // Re-render with new sort order
+             },
+
+             // Handle Clear Form Button
+             clearForm: () => {
+                 Render.setFormMode('add'); // Resets form and sets to add mode
+             },
+
+             // Handle Cancel Edit Button
+             cancelEdit: () => {
+                 Render.setFormMode('add'); // Resets form and sets to add mode
+             },
+
+             // Handle Modal Confirmation
+             modalConfirm: () => {
+                 if (typeof appState.modalCallback === 'function') {
+                     appState.modalCallback(); // Execute the stored callback
+                 }
+                  // Modal is hidden within the callback usually, but ensure it's hidden
+                  Utils.hideModal();
+             },
+
+             // Handle Modal Cancellation
+             modalCancel: () => {
+                 Utils.hideModal();
+             },
+
+             // Handle Export Button Click
+            handleExport: () => {
+                if (appState.events.length === 0) {
+                    Utils.showFeedback("No hi ha dades per exportar.", 'warning');
+                    return;
+                }
+                try {
+                    const dataStr = JSON.stringify(appState.events, null, 2); // Pretty print JSON
+                    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                    const url = URL.createObjectURL(dataBlob);
+                    const link = document.createElement('a');
+                    const timestamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+                    link.download = `esdeveniments_${timestamp}.json`;
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url); // Clean up
+                    Utils.showFeedback("Dades exportades correctament.");
+                } catch (e) {
+                     console.error("Error exporting data:", e);
+                     Utils.showFeedback("Error exportant les dades.", 'error');
+                }
+            },
+
+             // Handle Import Button Click (triggers file input)
+            handleImportTrigger: () => {
+                importFileInput.click();
+            },
+
+             // Handle File Selection for Import
+            handleFileImport: (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const importedData = JSON.parse(event.target.result);
+                        if (!Array.isArray(importedData)) {
+                            throw new Error("El fitxer JSON no conté un array.");
+                        }
+
+                        // Basic validation of imported structure (optional, but good)
+                        const isValid = importedData.every(item =>
+                            typeof item === 'object' && item !== null && 'name' in item && 'eventName' in item && 'startDate' in item
+                         );
+
+                        if (!isValid) {
+                             throw new Error("Algunes entrades del fitxer JSON no tenen el format esperat (name, eventName, startDate).");
+                        }
+
+                        // Ask user how to import (replace or merge)
+                        Utils.showModal(
+                             "Importar Dades",
+                             `S'han trobat ${importedData.length} esdeveniments al fitxer. Vols <strong>reemplaçar</strong> les dades actuals o <strong>afegir</strong> les noves a les existents?`,
+                             () => { // Callback for "Replace"
+                                 appState.events = importedData;
+                                 Utils.saveEvents(appState.events);
+                                 Render.events();
+                                 Utils.hideModal();
+                                 Utils.showFeedback("Dades importades (reemplaçades) correctament.");
+                             },
+                             'warning' // Use warning style for this choice
+                        );
+                        // Modify the modal buttons for Replace/Merge choice
+                        modalConfirmBtn.textContent = "Reemplaçar";
+                        modalConfirmBtn.onclick = () => { // Specific action for replace
+                             appState.events = importedData.map(event => ({ // Ensure defaults on import
+                                 ...event,
+                                id: event.id || Date.now() + Math.random(), // Assign new ID if missing/duplicate needed? Or keep original? Keep original for now.
+                                status: event.status || 'Pendent',
+                                notes: event.notes || ''
+                             }));
+                             Utils.saveEvents(appState.events);
+                             Render.events();
+                             Utils.hideModal();
+                             Utils.showFeedback("Dades importades (reemplaçades) correctament.");
+                              modalConfirmBtn.onclick = Handlers.modalConfirm; // Restore generic confirm handler
+                        };
+                         modalCancelBtn.textContent = "Afegir"; // Use Cancel button for Merge
+                         modalCancelBtn.onclick = () => { // Specific action for merge
+                             // Basic duplicate check based on ID (if IDs are kept) or content?
+                             // Simple merge: add all imported, maybe assign new IDs
+                             const mergedEvents = [...appState.events];
+                             importedData.forEach(item => {
+                                 // Optionally check for duplicates before pushing
+                                 mergedEvents.push({
+                                     ...item,
+                                     id: Date.now() + Math.random(), // Assign new ID on merge to avoid conflicts
+                                     status: item.status || 'Pendent',
+                                     notes: item.notes || ''
+                                 });
+                             });
+                             appState.events = mergedEvents;
+                             Utils.saveEvents(appState.events);
+                             Render.events();
+                             Utils.hideModal();
+                             Utils.showFeedback(`S'han afegit ${importedData.length} esdeveniments.`);
+                              modalCancelBtn.onclick = Handlers.modalCancel; // Restore generic cancel handler
+                         };
+
+
+                    } catch (err) {
+                         console.error("Error importing data:", err);
+                         Utils.showModal(
+                             "Error d'Importació",
+                             `No s'ha pogut importar el fitxer: ${Utils.escapeHTML(err.message)}`,
+                             null,
+                             'error'
+                          );
+                    } finally {
+                         // Reset file input to allow importing the same file again
+                         importFileInput.value = '';
+                          // Restore default modal button handlers after modal interaction finishes
+                        setTimeout(() => {
+                            modalConfirmBtn.onclick = Handlers.modalConfirm;
+                            modalCancelBtn.onclick = Handlers.modalCancel;
+                        }, 0); // Ensure it runs after current execution stack
+                    }
+                };
+                reader.onerror = () => {
+                    Utils.showModal("Error d'Importació", "No s'ha pogut llegir el fitxer seleccionat.", null, 'error');
+                     importFileInput.value = ''; // Reset input
+                };
+                reader.readAsText(file);
+            },
+        };
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load initial data
+            appState.events = Utils.getEvents();
+
+            // Attach Event Listeners
+            eventForm.addEventListener('submit', Handlers.formSubmit);
+            clearFormBtn.addEventListener('click', Handlers.clearForm);
+            cancelEditBtn.addEventListener('click', Handlers.cancelEdit);
+
+            // Filter listeners
+            filterSearchInput.addEventListener('input', Handlers.filterChange); // Debounced
+            filterStatusSelect.addEventListener('change', Handlers.directFilterChange);
+            filterStartDateInput.addEventListener('change', Handlers.directFilterChange);
+            filterEndDateInput.addEventListener('change', Handlers.directFilterChange);
+            resetFiltersBtn.addEventListener('click', Handlers.resetFilters);
+
+            // Table listeners (using delegation)
+            eventsTableBody.addEventListener('click', Handlers.tableClick);
+            eventsTableBody.addEventListener('change', Handlers.tableChange);
+            eventsTableHeader.addEventListener('click', Handlers.headerClick);
+
+            // Modal listeners
+            modalConfirmBtn.addEventListener('click', Handlers.modalConfirm); // Let specific actions override this later if needed
+            modalCancelBtn.addEventListener('click', Handlers.modalCancel);
+
+            // Data Management listeners
+            exportBtn.addEventListener('click', Handlers.handleExport);
+            importBtn.addEventListener('click', Handlers.handleImportTrigger);
+            importFileInput.addEventListener('change', Handlers.handleFileImport);
+
+            // Initial Render
+            Render.events();
+        });
+
+    </script>
+
+</body>
+</html>
