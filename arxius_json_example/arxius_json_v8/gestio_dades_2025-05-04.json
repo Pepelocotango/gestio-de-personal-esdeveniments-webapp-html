@@ -1,0 +1,101 @@
+{
+  "people": [
+    {
+      "id": 1746360012251.034,
+      "name": "A",
+      "role": "AR",
+      "tel1": "AT1",
+      "tel2": "AT2",
+      "email": "AMAIL@AS.S",
+      "web": "AWEB",
+      "notes": "ANOTES"
+    },
+    {
+      "id": 1746360751133.088,
+      "name": "B",
+      "role": "RB",
+      "tel1": "BT1",
+      "tel2": "BT2",
+      "email": "EBMAIL@X.X",
+      "web": "BWEB",
+      "notes": "BNOTES"
+    },
+    {
+      "id": 1746369106900.0603,
+      "name": "mooolt llargxxxxxxxxxxxx xxxx",
+      "role": "",
+      "tel1": "",
+      "tel2": "",
+      "email": "",
+      "web": "",
+      "notes": ""
+    }
+  ],
+  "eventFrames": [
+    {
+      "id": 1746360033102.7573,
+      "eventName": "EV1",
+      "location": "EVLLOC1",
+      "generalStartDate": "2025-05-31",
+      "generalEndDate": null,
+      "notesGeneral": "",
+      "isPersonnelComplete": false
+    },
+    {
+      "id": 1746360626747.1921,
+      "eventName": "EV2",
+      "location": "LLOC EV2",
+      "generalStartDate": "2025-05-30",
+      "generalEndDate": null,
+      "notesGeneral": "NOTES EVENT",
+      "isPersonnelComplete": true
+    },
+    {
+      "id": 1746360926686.114,
+      "eventName": "NOM MOLT LLARG D'ESCRIURE AFULL DE NOM A TOPE",
+      "location": "A TOMAR PEL CUL DE UN LLOC MOLT LLUNYA",
+      "generalStartDate": "2025-05-29",
+      "generalEndDate": null,
+      "notesGeneral": "mmmmmmmmmmmmmmmooooooooooooooooooltes notes aqui",
+      "isPersonnelComplete": true
+    }
+  ],
+  "assignments": [
+    {
+      "id": 1746360057719.3909,
+      "eventFrameId": 1746360033102.7573,
+      "personId": 1746360012251.034,
+      "assignmentStartDate": "2025-05-31",
+      "assignmentEndDate": null,
+      "status": "Pendent",
+      "notesAssignment": "NOMES TARDA"
+    },
+    {
+      "id": 1746360771250.3098,
+      "eventFrameId": 1746360626747.1921,
+      "personId": 1746360751133.088,
+      "assignmentStartDate": "2025-05-30",
+      "assignmentEndDate": null,
+      "status": "Pendent",
+      "notesAssignment": ""
+    },
+    {
+      "id": 1746360780567.3787,
+      "eventFrameId": 1746360626747.1921,
+      "personId": 1746360012251.034,
+      "assignmentStartDate": "2025-05-30",
+      "assignmentEndDate": null,
+      "status": "Sí",
+      "notesAssignment": ""
+    },
+    {
+      "eventFrameId": 1746360926686.114,
+      "personId": 1746369106900.0603,
+      "assignmentStartDate": "2025-05-29",
+      "assignmentEndDate": null,
+      "status": "No",
+      "notesAssignment": "",
+      "id": 1746369137184.4695
+    }
+  ]
+}

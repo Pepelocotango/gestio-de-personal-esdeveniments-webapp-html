@@ -1,0 +1,34 @@
+{
+  "people": [
+    {
+      "id": 1746360012251.034,
+      "name": "A",
+      "role": "AR",
+      "tel1": "AT1",
+      "tel2": "AT2",
+      "email": "AMAIL@AS.S",
+      "web": "AWEB",
+      "notes": "ANOTES"
+    },
+    {
+      "id": 1746360751133.088,
+      "name": "B",
+      "role": "RB",
+      "tel1": "BT1",
+      "tel2": "BT2",
+      "email": "EBMAIL@X.X",
+      "web": "BWEB",
+      "notes": "BNOTES"
+    },
+    {
+      "id": 1746369106900.0603,
+      "name": "mooolt llargxxxxxxxxxxxx xxxx",
+      "role": "",
+      "tel1": "",
+      "tel2": "",
+      "email": "",
+      "web": "",
+      "notes": ""
+    }
+  ]
+}
