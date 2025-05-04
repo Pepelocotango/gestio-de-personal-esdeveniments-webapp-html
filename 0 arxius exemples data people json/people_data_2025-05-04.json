@@ -1,0 +1,14 @@
+{
+  "people": [
+    {
+      "id": 1746379313821.5918,
+      "name": "exemple 1",
+      "role": "exemple1 Rol",
+      "tel1": "exemple1 tel1",
+      "tel2": "exemple1 tel2",
+      "email": "exemple1@mail.com",
+      "web": "exemple1 web",
+      "notes": "exemple1 notes"
+    }
+  ]
+}

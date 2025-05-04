@@ -1,0 +1,36 @@
+{
+  "people": [
+    {
+      "id": 1746379313821.5918,
+      "name": "exemple 1",
+      "role": "exemple1 Rol",
+      "tel1": "exemple1 tel1",
+      "tel2": "exemple1 tel2",
+      "email": "exemple1@mail.com",
+      "web": "exemple1 web",
+      "notes": "exemple1 notes"
+    }
+  ],
+  "eventFrames": [
+    {
+      "eventName": "exempleEvent1",
+      "location": "exemple Lloc event 1",
+      "generalStartDate": "2025-05-31",
+      "generalEndDate": null,
+      "notesGeneral": "exemple notes event1",
+      "isPersonnelComplete": false,
+      "id": 1746379386039.7893
+    }
+  ],
+  "assignments": [
+    {
+      "eventFrameId": 1746379386039.7893,
+      "personId": 1746379313821.5918,
+      "assignmentStartDate": "2025-05-31",
+      "assignmentEndDate": null,
+      "status": "Pendent",
+      "notesAssignment": "exemple notes assignacio event1",
+      "id": 1746379417223.1758
+    }
+  ]
+}
