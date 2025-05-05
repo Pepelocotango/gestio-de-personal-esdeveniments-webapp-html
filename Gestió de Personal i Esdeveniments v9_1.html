@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestió Esdeveniments v9 (Marc+Assignació)</title>
+    <title>Gestió Esdeveniments v9 (Esdeveniment+Assignació)</title>
 
 <style>
     /* --- CSS Variables --- */
@@ -432,12 +432,12 @@
             <form id="event-frame-form" class="section">
                 <h2 id="event-frame-form-title-content">
                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zm0 0l6 6m-6-6v6h6m-4 5h-4m4 4h-4m-2-8H8"></path></svg>
-                    <span>Afegir Esdeveniment Marc</span>
+                    <span> Afegir Marc Esdeveniment </span>
                 </h2>
                 <input type="hidden" id="edit-event-frame-id">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="event-frame-name">Nom de l'Esdeveniment Marc:</label>
+                        <label for="event-frame-name">Nom de l'Esdeveniment :</label>
                         <input type="text" id="event-frame-name" required list="event-name-datalist">
                         <datalist id="event-name-datalist"></datalist>
                     </div>
@@ -464,7 +464,7 @@
                 <div class="form-actions">
                     <button type="submit" id="submit-event-frame-btn" class="btn btn-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m-7-7h14"></path></svg>
-                        <span id="submit-event-frame-btn-text">Afegir Marc</span>
+                        <span id="submit-event-frame-btn-text">Afegir Esdeveniment</span>
                     </button>
                     <button type="button" id="clear-event-frame-form-btn" class="btn btn-light">
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6m4-6v6"></path></svg>
@@ -472,7 +472,7 @@
                     </button>
                     <button type="button" id="cancel-edit-event-frame-btn" class="btn btn-secondary hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6L6 18M6 6l12 12"></path></svg>
-                        Cancel·lar Edició Marc
+                        Cancel·lar Edició Esdeveniment
                     </button>
                 </div>
             </form>
@@ -532,7 +532,7 @@
             <div class="section">
                 <h2 id="events-list-heading">
                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zm13-2v4M8 2v4m-5 4h18M8 14h8"></path></svg>
-                    Llista d'Esdeveniments (<span id="event-frame-count">0</span> Marcs, <span id="assignment-count">0</span> Assignacions)
+                    Llista d'Esdeveniments (<span id="event-frame-count">0</span> Esdevenimentss, <span id="assignment-count">0</span> Assignacions)
                 </h2>
                 <div id="events-table-wrapper" class="table-responsive">
                     <table id="events-table">
@@ -540,7 +540,7 @@
                     <thead>
                         <tr>
                             <th style="width: 30px;">✓</th> <!-- No ordenable -->
-                            <th data-sort-key="eventName">Esdeveniment Marc</th> <!-- Ordenable per nom -->
+                            <th data-sort-key="eventName">Esdeveniment </th> <!-- Ordenable per nom -->
                             <th data-sort-key="location">Ubicació</th>            <!-- Ordenable per lloc -->
                             <th data-sort-key="generalStartDate">Dates Generals</th> <!-- Ordenable per data inici -->
                             <!-- Les columnes següents representen dades agregades o de detall, -->
@@ -557,7 +557,7 @@
                         <tbody><!-- Populat per JS amb files de marc i detall --></tbody>
                     </table>
                 </div>
-                <p id="no-events-message" class="no-data-message">Encara no hi ha cap esdeveniment marc.</p>
+                <p id="no-events-message" class="no-data-message">Encara no hi ha cap esdeveniment .</p>
             </div>
 
             <!-- Summaries Section (Comentat temporalment) -->
@@ -596,7 +596,7 @@
             <td data-label="Accions Marc" class="frame-actions-cell"> <!-- Col 9 -->
                 <button class="edit-frame-btn btn btn-icon btn-warning" title="Editar Marc">
                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7m-5.5-5.5a2.121 2.121 0 0 1 3 3L12 15l-4 1l1-4l9.5-9.5z"></path></svg>
-                    <span class="visually-hidden">Editar Marc</span>
+                    <span class="visually-hidden">Editar Esdeveniment</span>
                 </button>
                 <button class="assign-person-btn btn btn-success btn-icon" title="Assignar Persona/Grup">
                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m8-10a4 4 0 1 0 0-8a4 4 0 0 0 0 8zm6 11h6m-3-3v6"></path></svg>
@@ -685,7 +685,7 @@
                     <input type="hidden" id="edit-assignment-id">
                     <input type="hidden" id="assignment-event-frame-id">
                     <div class="form-group">
-                        <label>Esdeveniment Marc:</label>
+                        <label>Esdeveniment :</label>
                         <p id="assignment-modal-event-name" style="font-weight: bold;"></p>
                         <p id="assignment-date-range-info" style="font-size: 0.85rem; color: var(--secondary-color);"></p>
                     </div>
@@ -1198,8 +1198,8 @@ Docs & License: https://fullcalendar.io
                 } else { // mode 'add'
                     appState.editingEventFrameId = null;
                     if (editEventFrameIdInput) editEventFrameIdInput.value = '';
-                    if (eventFrameFormTitleContent) eventFrameFormTitleContent.textContent = "Afegir Marc";
-                    if (submitEventFrameBtnText) submitEventFrameBtnText.textContent = "Afegir Marc";
+                    if (eventFrameFormTitleContent) eventFrameFormTitleContent.textContent = "Afegir Esdeveniment";
+                    if (submitEventFrameBtnText) submitEventFrameBtnText.textContent = "Afegir Esdeveniment";
                     if (cancelEditEventFrameBtn) cancelEditEventFrameBtn.classList.add('hidden');
                     // Línia eliminada: if (personnelCompleteCheckbox) ...
                 }
