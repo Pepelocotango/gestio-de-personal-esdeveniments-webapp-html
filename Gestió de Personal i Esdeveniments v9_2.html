@@ -461,7 +461,7 @@
                     <label for="event-frame-notes">Notes Generals:</label>
                     <textarea id="event-frame-notes" placeholder="(Opcional)"></textarea>
                 </div>
-                <div class="form-actions">
+                                <div class="form-actions">
                     <button type="submit" id="submit-event-frame-btn" class="btn btn-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m-7-7h14"></path></svg>
                         <span id="submit-event-frame-btn-text">Afegir Esdeveniment</span>
@@ -470,6 +470,12 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6m4-6v6"></path></svg>
                         Netejar
                     </button>
+                     <!-- (inici afegit botó eliminar event des de form v9.x) -->
+                     <button type="button" id="delete-event-frame-from-form-btn" class="btn btn-danger hidden" style="margin-left: auto;">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6m4-6v6"></path></svg>
+                         Eliminar Esdeveniment
+                     </button>
+                     <!-- (final afegit botó eliminar event des de form v9.x) -->
                     <button type="button" id="cancel-edit-event-frame-btn" class="btn btn-secondary hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6L6 18M6 6l12 12"></path></svg>
                         Cancel·lar Edició Esdeveniment
@@ -593,16 +599,22 @@
             <td data-label="Notes Marc" class="frame-notes"> <!-- Col 8 -->
                 <span class="notes-content truncate-text"></span>
             </td>
-            <td data-label="Accions Marc" class="frame-actions-cell"> <!-- Col 9 -->
-                <button class="edit-frame-btn btn btn-icon btn-warning" title="Editar Marc">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7m-5.5-5.5a2.121 2.121 0 0 1 3 3L12 15l-4 1l1-4l9.5-9.5z"></path></svg>
-                    <span class="visually-hidden">Editar Esdeveniment</span>
-                </button>
-                <button class="assign-person-btn btn btn-success btn-icon" title="Assignar Persona/Grup">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m8-10a4 4 0 1 0 0-8a4 4 0 0 0 0 8zm6 11h6m-3-3v6"></path></svg>
-                    <span class="visually-hidden">Assignar</span>
-                </button>
-            </td>
+                        <td data-label="Accions Marc" class="frame-actions-cell"> <!-- Col 9 -->
+                 <!-- (inici afegit botó eliminar v9.x) -->
+                 <button class="delete-frame-btn btn btn-icon btn-danger" title="Eliminar Marc">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6m4-6v6"></path></svg>
+                     <span class="visually-hidden">Eliminar Esdeveniment</span>
+                 </button>
+                 <!-- (final afegit botó eliminar v9.x) -->
+                 <button class="edit-frame-btn btn btn-icon btn-warning" title="Editar Marc">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7m-5.5-5.5a2.121 2.121 0 0 1 3 3L12 15l-4 1l1-4l9.5-9.5z"></path></svg>
+                     <span class="visually-hidden">Editar Esdeveniment</span>
+                 </button>
+                 <button class="assign-person-btn btn btn-success btn-icon" title="Assignar Persona/Grup">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m8-10a4 4 0 1 0 0-8a4 4 0 0 0 0 8zm6 11h6m-3-3v6"></path></svg>
+                     <span class="visually-hidden">Assignar</span>
+                 </button>
+             </td>
         </tr>
     </template>
     <!-- < final modificació plantilla fila marc v8.6 (cel·les buides i colspan correctes) > -->
@@ -770,7 +782,7 @@ Docs & License: https://fullcalendar.io
     </script>
     <!-- final del script EL CODI COPIAT DE ca.global.min.js - ------------------------ --> 
     <script>
-   
+
         // --- Constants ---
         const DEBOUNCE_DELAY = 300;
 
@@ -794,6 +806,7 @@ Docs & License: https://fullcalendar.io
         const submitEventFrameBtnText = document.getElementById('submit-event-frame-btn-text');
         const clearEventFrameFormBtn = document.getElementById('clear-event-frame-form-btn');
         const cancelEditEventFrameBtn = document.getElementById('cancel-edit-event-frame-btn');
+        const deleteEventFrameFromFormBtn = document.getElementById('delete-event-frame-from-form-btn'); // Referència afegida
 
         // People Modal
         const managePeopleBtn = document.getElementById('manage-people-btn');
@@ -997,7 +1010,7 @@ Docs & License: https://fullcalendar.io
                  const p = document.createElement('p'); p.textContent = str; return p.innerHTML;
              },
 
-                         // < inici Utils.formatDateRange amb visualització DD/MM/YY >
+             // < inici Utils.formatDateRange amb visualització DD/MM/YY >
             formatDateRange: (startDateStr, endDateStr) => {
                 // Validació bàsica de la data d'inici
                 if (!startDateStr || !/^\d{4}-\d{2}-\d{2}$/.test(startDateStr)) return 'N/D';
@@ -1036,7 +1049,7 @@ Docs & License: https://fullcalendar.io
                 return startFormatted;
             },
             // < final Utils.formatDateRange amb visualització DD/MM/YY >
-             
+
             // < inici Utils.formatSingleDate amb visualització DD/MM/YY >
             formatSingleDate: (dateStr) => {
                  // Validació d'entrada (esperem YYYY-MM-DD)
@@ -1058,8 +1071,8 @@ Docs & License: https://fullcalendar.io
                      return 'Error';
                  }
             },
-            // < final Utils.formatSingleDate amb visualització DD/MM/YY > 
-                        getUniqueValues: (items, key) => {
+            // < final Utils.formatSingleDate amb visualització DD/MM/YY >
+            getUniqueValues: (items, key) => {
                  const values = new Set(); if (Array.isArray(items)) { items.forEach(item => { const v = (item && typeof item === 'object' && item.hasOwnProperty(key) && item[key] != null) ? String(item[key]).trim() : ''; if (v) { values.add(v); } }); } else { console.warn(`[DEBUG] Utils.getUniqueValues va rebre 'items' no array per clau '${key}'. Tipus: ${typeof items}`); } return Array.from(values).sort((a, b) => a.localeCompare(b, 'ca', { sensitivity: 'base' }));
              },
              getPersonNameById: (personId) => {
@@ -1093,85 +1106,88 @@ Docs & License: https://fullcalendar.io
             renderAll: () => { if (!isDataLoaded) { console.log("RenderAll v8 skipped: data not loaded."); return; } console.log("RenderAll v8 executed."); Render.eventsTable(); Render.peopleManagementList(); Render.peopleSelectOptions(); Render.updateDatalists(); Render.calendar(); Render.updateSortIndicators(); },
             eventsTable: () => { const allFrames = appState.eventFrames || []; const allAssignments = appState.assignments || []; let filteredFrames = [...allFrames]; const sf=appState.filters.search.toLowerCase().trim(), ss=appState.filters.status, sp=appState.filters.personId?parseFloat(appState.filters.personId):null; let sD=null, eD=null; try{sD=appState.filters.startDate?new Date(appState.filters.startDate+'T00:00:00Z'):null;}catch(e){} try{eD=appState.filters.endDate?new Date(appState.filters.endDate+'T23:59:59Z'):null;}catch(e){} if(sf||ss||sp!==null||sD||eD){filteredFrames=filteredFrames.filter(f=>{const aF=allAssignments.filter(a=>a.eventFrameId===f.id); let tm=!sf||((f.eventName||'').toLowerCase().includes(sf)||(f.location||'').toLowerCase().includes(sf)||(f.notesGeneral||'').toLowerCase().includes(sf)||aF.some(a=>(Utils.getPersonNameById(a.personId)||'').toLowerCase().includes(sf)||(a.notesAssignment||'').toLowerCase().includes(sf))); const sm=!ss||aF.some(a=>a.status===ss); const pm=sp===null||aF.some(a=>a.personId===sp); let dm=true; if(sD||eD){const fS=f.generalStartDate?new Date(f.generalStartDate+'T00:00:00Z'):null; const fE=f.generalEndDate?new Date(f.generalEndDate+'T23:59:59Z'):(fS?new Date(f.generalStartDate+'T23:59:59Z'):null); let fi=fS&&fE&&(!sD||fE>=sD)&&(!eD||fS<=eD); const ai=aF.some(a=>{const as=a.assignmentStartDate?new Date(a.assignmentStartDate+'T00:00:00Z'):null; const ae=a.assignmentEndDate?new Date(a.assignmentEndDate+'T23:59:59Z'):(as?new Date(a.assignmentStartDate+'T23:59:59Z'):null); return as&&ae&&(!sD||ae>=sD)&&(!eD||as<=eD);}); dm=fi||ai;} return tm&&sm&&pm&&dm;});} const sk=appState.sort.key, sd=appState.sort.direction==='asc'?1:-1; filteredFrames.sort((a,b)=>{let vA=a[sk],vB=b[sk]; if(sk==='generalStartDate'){const dA=vA?new Date(vA).getTime():(sd===1?Infinity:-Infinity); const dB=vB?new Date(vB).getTime():(sd===1?Infinity:-Infinity); vA=isNaN(dA)?(sd===1?Infinity:-Infinity):dA; vB=isNaN(dB)?(sd===1?Infinity:-Infinity):dB;}else if(typeof vA==='string'){vA=(vA||'').toLowerCase(); vB=(vB||'').toLowerCase();}else if(vA==null){vA=(sd===1?Infinity:-Infinity);}else if(vB==null){vB=(sd===1?Infinity:-Infinity);} if(vA<vB)return -1*sd; if(vA>vB)return 1*sd; return 0;}); if(eventsTableBody) eventsTableBody.innerHTML=''; else {console.error("eventsTableBody no trobat!"); return;} if(eventFrameCountSpan) eventFrameCountSpan.textContent=allFrames.length; if(assignmentCountSpan) assignmentCountSpan.textContent=allAssignments.length; if(allFrames.length===0){if(eventsTable)eventsTable.style.display='none'; if(noEventsMessage){noEventsMessage.style.display='block'; noEventsMessage.textContent="Cap esdeveniment marc.";}}else if(filteredFrames.length===0){if(eventsTable)eventsTable.style.display='none'; if(noEventsMessage){noEventsMessage.style.display='block'; noEventsMessage.textContent="Cap marc coincideix amb filtres.";}}else{if(eventsTable)eventsTable.style.display=''; if(noEventsMessage)noEventsMessage.style.display='none'; filteredFrames.forEach(frame=>{const assignmentsForFrame=allAssignments.filter(a=>a.eventFrameId===frame.id).sort((a,b)=>{const nA=Utils.getPersonNameById(a?a.personId:null)||''; const nB=Utils.getPersonNameById(b?b.personId:null)||''; return nA.localeCompare(nB,'ca',{sensitivity:'base'});}); eventsTableBody.appendChild(Render.createEventFrameRow(frame,assignmentsForFrame)); assignmentsForFrame.forEach(assignment=>{eventsTableBody.appendChild(Render.createAssignmentDetailRow(assignment));});});}},
 
-        // < inici Render.createEventFrameRow v8.6 >
-        createEventFrameRow: (frame, assignments) => {
-            if (!eventFrameRowTemplate) { console.error("Template event-frame-row-template no trobat"); return document.createElement('tr'); }
-            const templateContent = eventFrameRowTemplate.content.cloneNode(true);
-            const row = templateContent.querySelector('tr');
-            if (!row) { console.error("tr no trobat dins de event-frame-row-template"); return document.createElement('tr'); }
-            row.dataset.frameId = frame.id;
+            // < inici Render.createEventFrameRow v8.6 >
+            createEventFrameRow: (frame, assignments) => {
+                if (!eventFrameRowTemplate) { console.error("Template event-frame-row-template no trobat"); return document.createElement('tr'); }
+                const templateContent = eventFrameRowTemplate.content.cloneNode(true);
+                const row = templateContent.querySelector('tr');
+                if (!row) { console.error("tr no trobat dins de event-frame-row-template"); return document.createElement('tr'); }
+                row.dataset.frameId = frame.id;
 
-            // Cel·la 1: Checkbox
-            const checkboxCell = row.querySelector('.personnel-complete-checkbox');
-            if (checkboxCell) { checkboxCell.checked = frame.isPersonnelComplete || false; checkboxCell.dataset.frameId = frame.id; }
+                // Cel·la 1: Checkbox
+                const checkboxCell = row.querySelector('.personnel-complete-checkbox');
+                if (checkboxCell) { checkboxCell.checked = frame.isPersonnelComplete || false; checkboxCell.dataset.frameId = frame.id; }
 
-            // Cel·la 2: Nom Esdeveniment Marc
-            row.querySelector('.frame-event-name').textContent = frame.eventName;
-            // Cel·la 3: Ubicació
-            row.querySelector('.frame-location').textContent = frame.location || '-';
-            // Cel·la 4: Dates Generals
-            row.querySelector('.frame-dates').textContent = Utils.formatDateRange(frame.generalStartDate, frame.generalEndDate);
+                // Cel·la 2: Nom Esdeveniment Marc
+                row.querySelector('.frame-event-name').textContent = frame.eventName;
+                // Cel·la 3: Ubicació
+                row.querySelector('.frame-location').textContent = frame.location || '-';
+                // Cel·la 4: Dates Generals
+                row.querySelector('.frame-dates').textContent = Utils.formatDateRange(frame.generalStartDate, frame.generalEndDate);
 
-            // Cel·la 5 i 6 són buides per definició a la plantilla
+                // Cel·la 5 i 6 són buides per definició a la plantilla
 
-            // Cel·la 7: Recomptes
-            let counts = { 'Sí': 0, 'Pendent': 0, 'No': 0 };
-            assignments.forEach(a => { counts[a.status] = (counts[a.status] || 0) + 1; });
-            const countsCell = row.querySelector('.frame-counts');
-            if (countsCell) {
-                countsCell.innerHTML = ''; // Buidem per si de cas
-                const countYesSpan = document.createElement('span'); countYesSpan.className='count-yes'; countYesSpan.title='Confirmats';
-                const countPendingSpan = document.createElement('span'); countPendingSpan.className='count-pending'; countPendingSpan.title='Pendents';
-                const countNoSpan = document.createElement('span'); countNoSpan.className='count-no'; countNoSpan.title='Cancel·lats';
+                // Cel·la 7: Recomptes
+                let counts = { 'Sí': 0, 'Pendent': 0, 'No': 0 };
+                assignments.forEach(a => { counts[a.status] = (counts[a.status] || 0) + 1; });
+                const countsCell = row.querySelector('.frame-counts');
+                if (countsCell) {
+                    countsCell.innerHTML = ''; // Buidem per si de cas
+                    const countYesSpan = document.createElement('span'); countYesSpan.className='count-yes'; countYesSpan.title='Confirmats';
+                    const countPendingSpan = document.createElement('span'); countPendingSpan.className='count-pending'; countPendingSpan.title='Pendents';
+                    const countNoSpan = document.createElement('span'); countNoSpan.className='count-no'; countNoSpan.title='Cancel·lats';
 
-                if(counts['Sí'] > 0) countYesSpan.innerHTML = `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19L21 7l-1.41-1.41z"></path></svg><span>${counts['Sí']}</span>`;
-                if(counts['Pendent'] > 0) countPendingSpan.innerHTML = `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8s8 3.58 8 8s-3.58 8-8 8zm0-13c-1.1 0-2 .9-2 2h-2v2h2c0 1.1.9 2 2 2s2-.9 2-2h2V9h-2c0-1.1-.9-2-2-2zm-1 6.5V17h2v-1.5z"></path></svg><span>${counts['Pendent']}</span>`;
-                if(counts['No'] > 0) countNoSpan.innerHTML = `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8zm3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z"></path></svg><span>${counts['No']}</span>`;
+                    if(counts['Sí'] > 0) countYesSpan.innerHTML = `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19L21 7l-1.41-1.41z"></path></svg><span>${counts['Sí']}</span>`;
+                    if(counts['Pendent'] > 0) countPendingSpan.innerHTML = `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8s8 3.58 8 8s-3.58 8-8 8zm0-13c-1.1 0-2 .9-2 2h-2v2h2c0 1.1.9 2 2 2s2-.9 2-2h2V9h-2c0-1.1-.9-2-2-2zm-1 6.5V17h2v-1.5z"></path></svg><span>${counts['Pendent']}</span>`;
+                    if(counts['No'] > 0) countNoSpan.innerHTML = `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8zm3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z"></path></svg><span>${counts['No']}</span>`;
 
-                if(counts['Sí'] > 0) countsCell.appendChild(countYesSpan);
-                if(counts['Pendent'] > 0) countsCell.appendChild(countPendingSpan);
-                if(counts['No'] > 0) countsCell.appendChild(countNoSpan);
-             }
+                    if(counts['Sí'] > 0) countsCell.appendChild(countYesSpan);
+                    if(counts['Pendent'] > 0) countsCell.appendChild(countPendingSpan);
+                    if(counts['No'] > 0) countsCell.appendChild(countNoSpan);
+                 }
 
-            // Cel·la 8: Notes Marc
-            const notesContentSpan = row.querySelector('.frame-notes .notes-content');
-            if (notesContentSpan) { const nt = frame.notesGeneral || ''; notesContentSpan.textContent = nt; if (nt.length > 30) notesContentSpan.setAttribute('title', nt); } // Ajustat límit truncament
+                // Cel·la 8: Notes Marc
+                const notesContentSpan = row.querySelector('.frame-notes .notes-content');
+                if (notesContentSpan) { const nt = frame.notesGeneral || ''; notesContentSpan.textContent = nt; if (nt.length > 30) notesContentSpan.setAttribute('title', nt); } // Ajustat límit truncament
 
-            // Cel·la 9: Accions Marc
-            const assignBtn = row.querySelector('.assign-person-btn'); if(assignBtn) { assignBtn.dataset.frameId = frame.id; assignBtn.setAttribute('aria-label', `Assignar persona a ${Utils.escapeHTML(frame.eventName)}`); }
-            const editFrameBtn = row.querySelector('.edit-frame-btn'); if(editFrameBtn) { editFrameBtn.dataset.frameId = frame.id; editFrameBtn.setAttribute('aria-label', `Editar marc ${Utils.escapeHTML(frame.eventName)}`); }
+                // Cel·la 9: Accions Marc
+                // (inici afegit data-frameId al botó eliminar v9.x)
+                const deleteBtn = row.querySelector('.delete-frame-btn'); if(deleteBtn) { deleteBtn.dataset.frameId = frame.id; deleteBtn.setAttribute('aria-label', `Eliminar marc ${Utils.escapeHTML(frame.eventName)}`); }
+                // (final afegit data-frameId al botó eliminar v9.x)
+                const editFrameBtn = row.querySelector('.edit-frame-btn'); if(editFrameBtn) { editFrameBtn.dataset.frameId = frame.id; editFrameBtn.setAttribute('aria-label', `Editar marc ${Utils.escapeHTML(frame.eventName)}`); }
+                const assignBtn = row.querySelector('.assign-person-btn'); if(assignBtn) { assignBtn.dataset.frameId = frame.id; assignBtn.setAttribute('aria-label', `Assignar persona a ${Utils.escapeHTML(frame.eventName)}`); }
 
-            return row;
-        },
-        // < final Render.createEventFrameRow v8.6 >
+                return row;
+            },
+            // < final Render.createEventFrameRow v8.6 >
 
-                  // < inici Render.createAssignmentDetailRow v8.6 >
-        createAssignmentDetailRow: (assignment) => {
-            if (!assignmentDetailRowTemplate) { console.error("Template assignment-detail-row-template no trobat"); return document.createElement('tr'); }
-            const templateContent = assignmentDetailRowTemplate.content.cloneNode(true);
-            const row = templateContent.querySelector('tr');
-            if (!row) { console.error("tr no trobat dins de assignment-detail-row-template"); return document.createElement('tr'); }
-            row.dataset.assignmentId = assignment.id; row.dataset.frameId = assignment.eventFrameId;
-            const safeStatus = Utils.escapeHTML(assignment.status || 'Pendent');
-            row.className = `assignment-detail-row status-${safeStatus}`;
+            // < inici Render.createAssignmentDetailRow v8.6 >
+            createAssignmentDetailRow: (assignment) => {
+                if (!assignmentDetailRowTemplate) { console.error("Template assignment-detail-row-template no trobat"); return document.createElement('tr'); }
+                const templateContent = assignmentDetailRowTemplate.content.cloneNode(true);
+                const row = templateContent.querySelector('tr');
+                if (!row) { console.error("tr no trobat dins de assignment-detail-row-template"); return document.createElement('tr'); }
+                row.dataset.assignmentId = assignment.id; row.dataset.frameId = assignment.eventFrameId;
+                const safeStatus = Utils.escapeHTML(assignment.status || 'Pendent');
+                row.className = `assignment-detail-row status-${safeStatus}`;
 
-            // Les 4 primeres TD ja estan al template com a buides amb classe cell-hidden-detail
+                // Les 4 primeres TD ja estan al template com a buides amb classe cell-hidden-detail
 
-            // Cel·la 5: Persona/Grup
-            row.querySelector('.assignment-person-name').textContent = Utils.getPersonNameById(assignment.personId);
-            // Cel·la 6: Dates Assignació
-            row.querySelector('.assignment-dates').textContent = Utils.formatDateRange(assignment.assignmentStartDate, assignment.assignmentEndDate);
-            // Cel·la 7: Estat (Select)
-            const statusSelect = row.querySelector('.status-select'); if(statusSelect) { statusSelect.value = assignment.status || 'Pendent'; statusSelect.dataset.assignmentId = assignment.id; statusSelect.setAttribute('aria-label', `Canviar estat per a ${Utils.escapeHTML(Utils.getPersonNameById(assignment.personId))}`); }
-            // Cel·la 8: Notes Assignació
-            const notesText = assignment.notesAssignment || ''; let notesHtml = Utils.escapeHTML(notesText).replace(/\n/g, '<br>').replace(/(https?:\/\/[^\s"'<>]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'); row.querySelector('.assignment-notes').innerHTML = notesHtml;
-            // Cel·la 9: Accions Assignació
-            const editBtn = row.querySelector('.edit-assignment-btn'); if(editBtn) { editBtn.dataset.assignmentId = assignment.id; editBtn.setAttribute('aria-label', `Editar assignació de ${Utils.escapeHTML(Utils.getPersonNameById(assignment.personId))}`); }
-            const deleteBtn = row.querySelector('.delete-assignment-btn'); if(deleteBtn) { deleteBtn.dataset.assignmentId = assignment.id; deleteBtn.setAttribute('aria-label', `Eliminar assignació de ${Utils.escapeHTML(Utils.getPersonNameById(assignment.personId))}`); }
+                // Cel·la 5: Persona/Grup
+                row.querySelector('.assignment-person-name').textContent = Utils.getPersonNameById(assignment.personId);
+                // Cel·la 6: Dates Assignació
+                row.querySelector('.assignment-dates').textContent = Utils.formatDateRange(assignment.assignmentStartDate, assignment.assignmentEndDate);
+                // Cel·la 7: Estat (Select)
+                const statusSelect = row.querySelector('.status-select'); if(statusSelect) { statusSelect.value = assignment.status || 'Pendent'; statusSelect.dataset.assignmentId = assignment.id; statusSelect.setAttribute('aria-label', `Canviar estat per a ${Utils.escapeHTML(Utils.getPersonNameById(assignment.personId))}`); }
+                // Cel·la 8: Notes Assignació
+                const notesText = assignment.notesAssignment || ''; let notesHtml = Utils.escapeHTML(notesText).replace(/\n/g, '<br>').replace(/(https?:\/\/[^\s"'<>]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'); row.querySelector('.assignment-notes').innerHTML = notesHtml;
+                // Cel·la 9: Accions Assignació
+                const editBtn = row.querySelector('.edit-assignment-btn'); if(editBtn) { editBtn.dataset.assignmentId = assignment.id; editBtn.setAttribute('aria-label', `Editar assignació de ${Utils.escapeHTML(Utils.getPersonNameById(assignment.personId))}`); }
+                const deleteBtn = row.querySelector('.delete-assignment-btn'); if(deleteBtn) { deleteBtn.dataset.assignmentId = assignment.id; deleteBtn.setAttribute('aria-label', `Eliminar assignació de ${Utils.escapeHTML(Utils.getPersonNameById(assignment.personId))}`); }
 
-            return row;
-        },
-        // < final Render.createAssignmentDetailRow v8.6 >
+                return row;
+            },
+            // < final Render.createAssignmentDetailRow v8.6 >
 
             updateDatalists: () => { const uEN = Utils.getUniqueValues(appState.eventFrames || [], 'eventName'); if (eventNameDatalist) { eventNameDatalist.innerHTML = uEN.map(n => `<option value="${Utils.escapeHTML(n)}"></option>`).join(''); } else { console.warn("Element #event-name-datalist no trobat."); } const uL = Utils.getUniqueValues(appState.eventFrames || [], 'location'); if (locationDatalist) { locationDatalist.innerHTML = uL.map(l => `<option value="${Utils.escapeHTML(l)}"></option>`).join(''); } else { console.warn("Element #location-datalist no trobat."); } },
             peopleManagementList: () => { if (!peopleList || !personListItemTemplate || !noPeopleMessage) { console.error("Elements modal gestió persones no trobats."); return; } peopleList.innerHTML = ''; if (!appState.people || appState.people.length === 0) { noPeopleMessage.style.display = 'block'; } else { noPeopleMessage.style.display = 'none'; const sP = [...appState.people].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ca', { sensitivity: 'base' })); sP.forEach(p => { const tC=personListItemTemplate.content.cloneNode(true); const li=tC.querySelector('li'); if (!li) return; li.dataset.id=p.id; const setS=(sel,cnt,isL=false,lT='')=>{const s=li.querySelector(sel); if(s){if(cnt){if(isL&&lT==='web'&&cnt.startsWith('http')){s.innerHTML=`<a href="${Utils.escapeHTML(cnt)}" target="_blank" rel="noopener noreferrer">${Utils.escapeHTML(cnt)}</a>`;}else if(isL&&lT==='email'&&cnt.includes('@')){s.innerHTML=`<a href="mailto:${Utils.escapeHTML(cnt)}">${Utils.escapeHTML(cnt)}</a>`;}else{s.textContent=cnt;} s.style.display='block';}else{s.style.display='none';}}else{console.warn(`Selector no trobat: ${sel}`);}}; setS('.person-item-name', p.name || 'Sense Nom'); setS('.person-item-role', p.role); setS('.person-item-email', p.email, true, 'email'); const ph=[p.tel1,p.tel2].filter(Boolean).join(' / '); setS('.person-item-phones',ph); setS('.person-item-web',p.web,true,'web'); setS('.person-item-notes',p.notes); const eB=li.querySelector('.edit-person-btn'); if(eB){eB.dataset.id=p.id;eB.setAttribute('aria-label',`Editar ${Utils.escapeHTML(p.name||'p')}`);} const dB=li.querySelector('.delete-person-btn'); if(dB){dB.dataset.id=p.id;dB.setAttribute('aria-label',`Eliminar ${Utils.escapeHTML(p.name||'p')}`);} peopleList.appendChild(li); }); } },
@@ -1179,8 +1195,9 @@ Docs & License: https://fullcalendar.io
             renderSummaries: () => { /* console.log("RenderSummaries inactiu a v8"); */ },
             calendar: () => { if(!isDataLoaded||!calendarEl){return;} if(typeof FullCalendar==='undefined'){console.error("FullCalendar no carregat!"); if(calendarEl)calendarEl.innerHTML="<p style='color:red;'>Error: FullCalendar no carregat.</p>"; return;} const cE=(appState.eventFrames||[]).filter(f=>f.generalStartDate&&/^\d{4}-\d{2}-\d{2}$/.test(f.generalStartDate)).map(f=>{let eE=null; if(f.generalEndDate&&/^\d{4}-\d{2}-\d{2}$/.test(f.generalEndDate)&&f.generalEndDate>=f.generalStartDate){try{const e=new Date(f.generalEndDate+'T00:00:00Z');e.setUTCDate(e.getUTCDate()+1);eE=e.toISOString().split('T')[0];}catch(e){}} const eC=f.isPersonnelComplete?'var(--success-color)':'var(--primary-color)'; const aF=(appState.assignments||[]).filter(a=>a.eventFrameId===f.id).map(a=>({personName:Utils.getPersonNameById(a.personId),status:a.status||'Pendent',notes:a.notesAssignment||'',startDate:a.assignmentStartDate,endDate:a.assignmentEndDate})); return{id:String(f.id),title:f.eventName,start:f.generalStartDate,end:eE,allDay:true,backgroundColor:eC,borderColor:eC,extendedProps:{isFrame:true,frameLocation:f.location,frameNotes:f.notesGeneral,assignments:aF}};}); try{if(calendarInstance){calendarInstance.setOption('events',cE); console.log("FullCalendar events updated.");}else{calendarInstance=new FullCalendar.Calendar(calendarEl,{views:{multiMonthTwo:{type:'multiMonth',duration:{months:2},buttonText:'2 Mesos'},multiMonthFour:{type:'multiMonth',duration:{months:4},buttonText:'4 Mesos'}},initialView:'multiMonthTwo',locale:'ca',firstDay:1,headerToolbar:{left:'prev,next today',center:'title',right:'multiMonthFour,multiMonthTwo,dayGridMonth,timeGridWeek,listWeek'},events:cE,editable:false,selectable:false,eventClick:Handlers.calendarEventClick,height:'auto'}); calendarInstance.render(); console.log("FullCalendar initialized for v8.");}}catch(e){console.error("Error initializing/updating FullCalendar:",e); if(calendarEl)calendarEl.innerHTML="<p style='color:red;'>Error mostrant calendari.</p>"; calendarInstance=null;}},
             updateSortIndicators: () => { if (!eventsTableHeader) return; eventsTableHeader.querySelectorAll('th[data-sort-key]').forEach(th=>{let i=th.querySelector('.sort-indicator'); if(!i){i=document.createElement('span'); i.classList.add('sort-indicator'); th.appendChild(i);} if(th.dataset.sortKey===appState.sort.key){i.textContent=appState.sort.direction==='asc'?' ▲':' ▼';}else{i.textContent='';}}); },
-                        setEventFrameFormMode: (mode, frame = null) => {
-                if (!eventFrameForm) return;
+
+            setEventFrameFormMode: (mode, frame = null) => {
+                if (!eventFrameForm || !deleteEventFrameFromFormBtn) return; // Afegit deleteEventFrameFromFormBtn a la comprovació
                 eventFrameForm.reset();
                 if (mode === 'edit' && frame) {
                     appState.editingEventFrameId = frame.id;
@@ -1188,11 +1205,11 @@ Docs & License: https://fullcalendar.io
                     if (eventFrameFormTitleContent) eventFrameFormTitleContent.textContent = "Editar Marc";
                     if (submitEventFrameBtnText) submitEventFrameBtnText.textContent = "Desar Marc";
                     if (cancelEditEventFrameBtn) cancelEditEventFrameBtn.classList.remove('hidden');
+                    deleteEventFrameFromFormBtn.classList.remove('hidden'); // <<< MOSTRAR botó eliminar
                     if (eventFrameNameInput) eventFrameNameInput.value = frame.eventName || '';
                     if (eventFrameLocationInput) eventFrameLocationInput.value = frame.location || '';
                     if (eventFrameStartDateInput) eventFrameStartDateInput.value = frame.generalStartDate || '';
                     if (eventFrameEndDateInput) eventFrameEndDateInput.value = frame.generalEndDate || '';
-                    // Línia eliminada: if (personnelCompleteCheckbox) ...
                     if (eventFrameNotesInput) eventFrameNotesInput.value = frame.notesGeneral || '';
                     if (eventFrameNameInput) eventFrameNameInput.focus();
                 } else { // mode 'add'
@@ -1201,10 +1218,9 @@ Docs & License: https://fullcalendar.io
                     if (eventFrameFormTitleContent) eventFrameFormTitleContent.textContent = "Afegir Esdeveniment";
                     if (submitEventFrameBtnText) submitEventFrameBtnText.textContent = "Afegir Esdeveniment";
                     if (cancelEditEventFrameBtn) cancelEditEventFrameBtn.classList.add('hidden');
-                    // Línia eliminada: if (personnelCompleteCheckbox) ...
+                    deleteEventFrameFromFormBtn.classList.add('hidden'); // <<< OCULTAR botó eliminar
                 }
-            }, 
-            // <-- Fi de setEventFrameFormMode
+            }, // <-- Fi de setEventFrameFormMode
             setAssignmentFormMode: (mode, entity) => { if (!assignmentForm || !assignmentModalTitle || !submitAssignmentBtnText || !cancelEditAssignmentBtn || !assignmentEventFrameIdInput || !assignmentModalEventName || !assignmentDateRangeInfo || !assignmentPersonSelect || !assignmentStatusSelect || !assignmentStartDateInput || !assignmentEndDateInput || !assignmentNotesInput || !editAssignmentIdInput) { console.error("Elements form assignació no trobats!"); return; } assignmentForm.reset(); if(assignmentConflictWarning) assignmentConflictWarning.style.display='none'; if(mode==='edit'&&entity){const a=entity; const f=(appState.eventFrames||[]).find(f=>f.id===a.eventFrameId); appState.editingAssignmentId=a.id; editAssignmentIdInput.value=a.id; assignmentEventFrameIdInput.value=a.eventFrameId; assignmentModalTitle.textContent="Editar Assignació"; submitAssignmentBtnText.textContent="Desar Assign."; cancelEditAssignmentBtn.classList.remove('hidden'); assignmentModalEventName.textContent=f?f.eventName:'?'; assignmentDateRangeInfo.textContent=f?`Rang marc: ${Utils.formatDateRange(f.generalStartDate, f.generalEndDate)}`:''; assignmentPersonSelect.value=a.personId!==null?String(a.personId):''; assignmentStatusSelect.value=a.status||'Pendent'; assignmentStartDateInput.value=a.assignmentStartDate||''; assignmentEndDateInput.value=a.assignmentEndDate||''; assignmentNotesInput.value=a.notesAssignment||''; assignmentPersonSelect.focus();}else if(mode==='add'&&entity){const f=entity; appState.editingAssignmentId=null; editAssignmentIdInput.value=''; assignmentEventFrameIdInput.value=f.id; assignmentModalTitle.textContent="Afegir Assignació"; submitAssignmentBtnText.textContent="Afegir Assignació"; cancelEditAssignmentBtn.classList.add('hidden'); assignmentModalEventName.textContent=f.eventName; assignmentDateRangeInfo.textContent=`Rang marc: ${Utils.formatDateRange(f.generalStartDate, f.generalEndDate)}`; assignmentStartDateInput.value=f.generalStartDate||''; assignmentEndDateInput.value=f.generalEndDate||''; assignmentStatusSelect.value='Pendent'; assignmentPersonSelect.focus();}else{appState.editingAssignmentId=null; editAssignmentIdInput.value=''; assignmentEventFrameIdInput.value=''; assignmentModalTitle.textContent="Afegir Assignació"; submitAssignmentBtnText.textContent="Afegir Assignació"; cancelEditAssignmentBtn.classList.add('hidden'); assignmentModalEventName.textContent='?'; assignmentDateRangeInfo.textContent=''; assignmentStatusSelect.value='Pendent';}},
             setPersonFormMode: (mode, person = null) => { if(!personForm) return; personForm.reset(); if (mode === 'edit' && person) { appState.editingPersonId = person.id; if(editPersonIdInput) editPersonIdInput.value = person.id; if(personModalNameInput) personModalNameInput.value = person.name || ''; if(personModalRoleInput) personModalRoleInput.value = person.role || ''; if(personModalTel1Input) personModalTel1Input.value = person.tel1 || ''; if(personModalTel2Input) personModalTel2Input.value = person.tel2 || ''; if(personModalEmailInput) personModalEmailInput.value = person.email || ''; if(personModalWebInput) personModalWebInput.value = person.web || ''; if(personModalNotesInput) personModalNotesInput.value = person.notes || ''; if(personSubmitBtnText) personSubmitBtnText.textContent = "Desar Persona"; if(personCancelEditBtn) personCancelEditBtn.classList.remove('hidden'); if(personModalNameInput) personModalNameInput.focus(); } else { appState.editingPersonId = null; if(editPersonIdInput) editPersonIdInput.value = ''; if(personSubmitBtnText) personSubmitBtnText.textContent = "Afegir Persona"; if(personCancelEditBtn) personCancelEditBtn.classList.add('hidden'); } }
         }; // <<< End of Render object
@@ -1244,26 +1260,49 @@ Docs & License: https://fullcalendar.io
                     id: idToEdit !== null ? idToEdit : (Date.now() + Math.random())
                 };
 
-                // ... (resta de validacions i lògica d'afegir/actualitzar) ...
-                if (!frameData.eventName) { /* ... */ }
-                if (!frameData.generalStartDate || !/^\d{4}-\d{2}-\d{2}$/.test(frameData.generalStartDate)) { /* ... */ }
-                if (frameData.generalEndDate) { /* ... */ }
+                // Validacions bàsiques (afegir les que faltaven)
+                if (!frameData.eventName) {
+                    Utils.showFeedback("El nom de l'esdeveniment és obligatori.", 'warning');
+                    eventFrameNameInput?.focus();
+                    return;
+                 }
+                if (!frameData.generalStartDate || !/^\d{4}-\d{2}-\d{2}$/.test(frameData.generalStartDate)) {
+                    Utils.showFeedback("La data d'inici general és obligatòria i ha de ser vàlida (YYYY-MM-DD).", 'warning');
+                    eventFrameStartDateInput?.focus();
+                    return;
+                }
+                if (frameData.generalEndDate) {
+                    if (!/^\d{4}-\d{2}-\d{2}$/.test(frameData.generalEndDate)) {
+                        Utils.showFeedback("El format de la data de fi general és invàlid (YYYY-MM-DD).", 'warning');
+                        eventFrameEndDateInput?.focus();
+                        return;
+                    }
+                    try {
+                        const start = new Date(frameData.generalStartDate);
+                        const end = new Date(frameData.generalEndDate);
+                        if (end < start) {
+                             Utils.showFeedback("La data de fi general no pot ser anterior a la data d'inici.", 'warning');
+                             eventFrameEndDateInput?.focus();
+                             return;
+                        }
+                    } catch (e) {
+                        Utils.showFeedback("Error comparant les dates generals.", 'error');
+                        return;
+                    }
+                }
+
 
                 if (idToEdit !== null) {
                     const index = (appState.eventFrames || []).findIndex(f => f.id === idToEdit);
                     if (index > -1) {
-                         // Important: Assegurem que només actualitzem els camps del formulari,
-                         // mantenint l'estat de isPersonnelComplete que ja tenia o el per defecte.
                          appState.eventFrames[index] = {
-                             ...appState.eventFrames[index], // Mantenim camps existents (com isPersonnelComplete si ja existia)
+                             ...appState.eventFrames[index],
                              eventName: frameData.eventName,
                              location: frameData.location,
                              generalStartDate: frameData.generalStartDate,
                              generalEndDate: frameData.generalEndDate,
                              notesGeneral: frameData.notesGeneral,
-                             // Assignem el valor que hem determinat (l'existent o false si és nou)
-                             // Això és una mica redundant amb l'spread anterior si ja existia, però assegura el valor.
-                             isPersonnelComplete: frameData.isPersonnelComplete
+                             isPersonnelComplete: frameData.isPersonnelComplete // Assignem el valor correcte
                          };
                          Utils.showFeedback("Marc d'esdeveniment actualitzat.");
                     } else {
@@ -1272,25 +1311,26 @@ Docs & License: https://fullcalendar.io
                          return;
                     }
                 } else {
-                    // Si afegim nou, frameData ja té isPersonnelComplete: false
                     appState.eventFrames.push(frameData);
                     Utils.showFeedback("Marc d'esdeveniment afegit.");
                 }
 
                 Render.setEventFrameFormMode('add');
                 Render.renderAll();
-            }, // <-- Fi de handleEventFrameFormSubmit
-                        handleAssignmentFormSubmit: (e) => { e.preventDefault(); if (!isDataLoaded) return; const id=appState.editingAssignmentId?parseFloat(appState.editingAssignmentId):null; const fId=appState.currentAssignmentModalFrameId; const pId=assignmentPersonSelect?.value?parseFloat(assignmentPersonSelect.value):null; const f=(appState.eventFrames||[]).find(f=>f.id===fId); if(!f){Utils.showFeedback("Error: Marc no trobat.",'error'); return;} if(pId===null){Utils.showFeedback("Selecciona persona.",'warning'); assignmentPersonSelect?.focus();return;} const aD={eventFrameId:fId, personId:pId, assignmentStartDate:assignmentStartDateInput?assignmentStartDateInput.value:'', assignmentEndDate:assignmentEndDateInput?(assignmentEndDateInput.value||null):null, status:assignmentStatusSelect?assignmentStatusSelect.value:'Pendent', notesAssignment:assignmentNotesInput?assignmentNotesInput.value.trim():'', id:id!==null?id:(Date.now()+Math.random()+1000)}; if(!aD.assignmentStartDate||!/^\d{4}-\d{2}-\d{2}$/.test(aD.assignmentStartDate)){Utils.showFeedback("Data Inici Assign. obligatòria.",'warning'); assignmentStartDateInput?.focus();return;} let aS,aE,fS,fE; try{aS=new Date(aD.assignmentStartDate+'T00:00:00Z'); if(isNaN(aS.getTime())) throw new Error("Data inici assign. invàlida"); if(aD.assignmentEndDate){if(!/^\d{4}-\d{2}-\d{2}$/.test(aD.assignmentEndDate)){Utils.showFeedback("Format Data Fi Assign. invàlid.",'warning'); assignmentEndDateInput?.focus();return;} aE=new Date(aD.assignmentEndDate+'T00:00:00Z'); if(isNaN(aE.getTime())) throw new Error("Data fi assign. invàlida"); if(aE<aS){Utils.showFeedback("Data Fi Assign. anterior a inici.",'warning'); assignmentEndDateInput?.focus();return;}}else{aE=new Date(aD.assignmentStartDate+'T00:00:00Z');} fS=new Date(f.generalStartDate+'T00:00:00Z'); if(isNaN(fS.getTime())) throw new Error("Data inici marc invàlida"); fE=f.generalEndDate?new Date(f.generalEndDate+'T23:59:59Z'):new Date(f.generalStartDate+'T23:59:59Z'); if(isNaN(fE.getTime())) throw new Error("Data fi marc invàlida"); if(aS<fS||aE>fE){Utils.showFeedback("Dates assign. fora rang marc.",'warning',5000); return;}}catch(err){Utils.showFeedback(`Error dates: ${err.message}`,'error'); return;} const cfl=Utils.checkAssignmentConflicts(aD); if(cfl.length>0){const n=cfl.map(c=>`"${Utils.escapeHTML(c.eventName)}" (${Utils.formatDateRange(c.startDate,c.endDate)})`).join(', '); if(assignmentConflictWarning){assignmentConflictWarning.innerHTML=`Conflicte: ${n}.`; assignmentConflictWarning.style.display='block';} /* return; */}else{if(assignmentConflictWarning)assignmentConflictWarning.style.display='none';} const exI=(appState.assignments||[]).findIndex(a=>a.eventFrameId===fId&&a.personId===pId&&a.id!==aD.id); if(id===null&&exI>-1){Utils.showFeedback(`${Utils.getPersonNameById(pId)} ja assignat a aquest marc.`,'warning',5000);return;} if(id!==null){const i=(appState.assignments||[]).findIndex(a=>a.id===id); if(i>-1){appState.assignments[i]=aD; Utils.showFeedback("Assignació actualitzada.");}else{Utils.showFeedback("Error actualitzant assign.",'error'); Utils.hideAssignmentModal();return;}}else{appState.assignments.push(aD); Utils.showFeedback("Assignació afegida.");} Utils.hideAssignmentModal(); Render.renderAll(); },
+            }, // <-- Fi de handleEventFrameFormSubmit (COMA afegida)
+
+            handleAssignmentFormSubmit: (e) => { e.preventDefault(); if (!isDataLoaded) return; const id=appState.editingAssignmentId?parseFloat(appState.editingAssignmentId):null; const fId=appState.currentAssignmentModalFrameId; const pId=assignmentPersonSelect?.value?parseFloat(assignmentPersonSelect.value):null; const f=(appState.eventFrames||[]).find(f=>f.id===fId); if(!f){Utils.showFeedback("Error: Marc no trobat.",'error'); return;} if(pId===null){Utils.showFeedback("Selecciona persona.",'warning'); assignmentPersonSelect?.focus();return;} const aD={eventFrameId:fId, personId:pId, assignmentStartDate:assignmentStartDateInput?assignmentStartDateInput.value:'', assignmentEndDate:assignmentEndDateInput?(assignmentEndDateInput.value||null):null, status:assignmentStatusSelect?assignmentStatusSelect.value:'Pendent', notesAssignment:assignmentNotesInput?assignmentNotesInput.value.trim():'', id:id!==null?id:(Date.now()+Math.random()+1000)}; if(!aD.assignmentStartDate||!/^\d{4}-\d{2}-\d{2}$/.test(aD.assignmentStartDate)){Utils.showFeedback("Data Inici Assign. obligatòria.",'warning'); assignmentStartDateInput?.focus();return;} let aS,aE,fS,fE; try{aS=new Date(aD.assignmentStartDate+'T00:00:00Z'); if(isNaN(aS.getTime())) throw new Error("Data inici assign. invàlida"); if(aD.assignmentEndDate){if(!/^\d{4}-\d{2}-\d{2}$/.test(aD.assignmentEndDate)){Utils.showFeedback("Format Data Fi Assign. invàlid.",'warning'); assignmentEndDateInput?.focus();return;} aE=new Date(aD.assignmentEndDate+'T00:00:00Z'); if(isNaN(aE.getTime())) throw new Error("Data fi assign. invàlida"); if(aE<aS){Utils.showFeedback("Data Fi Assign. anterior a inici.",'warning'); assignmentEndDateInput?.focus();return;}}else{aE=new Date(aD.assignmentStartDate+'T00:00:00Z');} fS=new Date(f.generalStartDate+'T00:00:00Z'); if(isNaN(fS.getTime())) throw new Error("Data inici marc invàlida"); fE=f.generalEndDate?new Date(f.generalEndDate+'T23:59:59Z'):new Date(f.generalStartDate+'T23:59:59Z'); if(isNaN(fE.getTime())) throw new Error("Data fi marc invàlida"); if(aS<fS||aE>fE){Utils.showFeedback("Dates assign. fora rang marc.",'warning',5000); return;}}catch(err){Utils.showFeedback(`Error dates: ${err.message}`,'error'); return;} const cfl=Utils.checkAssignmentConflicts(aD); if(cfl.length>0){const n=cfl.map(c=>`"${Utils.escapeHTML(c.eventName)}" (${Utils.formatDateRange(c.startDate,c.endDate)})`).join(', '); if(assignmentConflictWarning){assignmentConflictWarning.innerHTML=`Conflicte: ${n}.`; assignmentConflictWarning.style.display='block';} /* return; */}else{if(assignmentConflictWarning)assignmentConflictWarning.style.display='none';} const exI=(appState.assignments||[]).findIndex(a=>a.eventFrameId===fId&&a.personId===pId&&a.id!==aD.id); if(id===null&&exI>-1){Utils.showFeedback(`${Utils.getPersonNameById(pId)} ja assignat a aquest marc.`,'warning',5000);return;} if(id!==null){const i=(appState.assignments||[]).findIndex(a=>a.id===id); if(i>-1){appState.assignments[i]=aD; Utils.showFeedback("Assignació actualitzada.");}else{Utils.showFeedback("Error actualitzant assign.",'error'); Utils.hideAssignmentModal();return;}}else{appState.assignments.push(aD); Utils.showFeedback("Assignació afegida.");} Utils.hideAssignmentModal(); Render.renderAll(); },
             handlePersonFormSubmit: (e) => { e.preventDefault(); if(!isDataLoaded)return; const id=appState.editingPersonId?parseFloat(appState.editingPersonId):null; const pD={name:personModalNameInput?.value.trim()||'',role:personModalRoleInput?.value.trim()||'',tel1:personModalTel1Input?.value.trim()||'',tel2:personModalTel2Input?.value.trim()||'',email:personModalEmailInput?.value.trim()||'',web:personModalWebInput?.value.trim()||'',notes:personModalNotesInput?.value.trim()||''}; if(!pD.name){Utils.showFeedback("Nom persona obligatori.",'warning'); personModalNameInput?.focus();return;} let opS=false; if(id!==null){opS=PeopleManager.updatePerson(id,pD); if(opS)Utils.showFeedback("Persona actualitzada.");}else{opS=PeopleManager.addPerson(pD); if(opS)Utils.showFeedback("Persona afegida.");} if(opS){Render.setPersonFormMode('add'); Render.renderAll(); Render.peopleManagementList();}},
             peopleListClick: (e) => { const edB=e.target.closest('.edit-person-btn'); const delB=e.target.closest('.delete-person-btn'); if(edB){const pId=parseFloat(edB.dataset.id); const p=PeopleManager.findPerson(pId); if(p)Render.setPersonFormMode('edit',p); else Utils.showFeedback("Error: Persona no trobada.", "error");}else if(delB){const pId=parseFloat(delB.dataset.id); const p=PeopleManager.findPerson(pId); if(p){const isU=(appState.assignments||[]).some(a=>a.personId===pId); const msg=`Eliminar <strong>${Utils.escapeHTML(p.name)}</strong>? ${isU?"<br>Es desassignarà.":""}`; Utils.showConfirmationModal("Confirmar Eliminació",msg,()=>{if(PeopleManager.deletePerson(pId)){Render.renderAll(); Render.peopleManagementList(); Utils.showFeedback('Persona eliminada.'); if(appState.editingPersonId===pId)Render.setPersonFormMode('add');}else Utils.showFeedback('No eliminada.','error');},'danger');}else Utils.showFeedback("Error: Persona no trobada.","error");}},
             handlePersonCancelEdit: () => { Render.setPersonFormMode('add'); },
-            // < inici Handlers.tableClick v8.2 (afegir edit frame) >
+            // < inici Handlers.tableClick v8.2 (afegir edit frame i delete frame) >
             tableClick: (e) => {
                  // Identifica quin botó s'ha premut dins de la fila
                  const assignBtn = e.target.closest('.assign-person-btn');
                  const editAssignmentBtn = e.target.closest('.edit-assignment-btn');
                  const deleteAssignmentBtn = e.target.closest('.delete-assignment-btn');
-                 const editFrameBtn = e.target.closest('.edit-frame-btn'); // Botó per editar el marc
+                 const editFrameBtn = e.target.closest('.edit-frame-btn');
+                 const deleteFrameBtn = e.target.closest('.delete-frame-btn'); // <-- Afegit delete frame btn
 
                  // Lògica per al botó ASSIGNAR PERSONA (a la fila del marc)
                  if (assignBtn) {
@@ -1323,9 +1363,8 @@ Docs & License: https://fullcalendar.io
 
                          Utils.showConfirmationModal("Confirmar Eliminació Assignació", confirmMsg, () => {
                              appState.assignments = appState.assignments.filter(a => a.id !== assignmentId);
-                             Render.renderAll(); // Re-renderitza tot per actualitzar taula i recomptes
+                             Render.renderAll();
                              Utils.showFeedback("Assignació eliminada.");
-                             // Si el modal d'assignació estava obert per a aquesta assignació, tanca'l
                              if (appState.editingAssignmentId === assignmentId) {
                                  Utils.hideAssignmentModal();
                              }
@@ -1334,13 +1373,12 @@ Docs & License: https://fullcalendar.io
                          Utils.showFeedback("Error: Assignació no trobada per eliminar.", 'error');
                      }
                  }
-                 // Lògica per al botó EDITAR MARC (a la fila del marc) - NOU
+                 // Lògica per al botó EDITAR MARC (a la fila del marc)
                  else if (editFrameBtn) {
                      const frameId = parseFloat(editFrameBtn.dataset.frameId);
                      const frameToEdit = (appState.eventFrames || []).find(f => f.id === frameId);
                      if (frameToEdit) {
-                         Render.setEventFrameFormMode('edit', frameToEdit); // Posa formulari principal en mode edició
-                         // Opcional: Scroll cap al formulari
+                         Render.setEventFrameFormMode('edit', frameToEdit);
                          if (eventFrameForm) {
                              eventFrameForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
                          }
@@ -1348,34 +1386,39 @@ Docs & License: https://fullcalendar.io
                          Utils.showFeedback("Error: Marc no trobat per editar.", 'error');
                      }
                  }
-                 // Podries afegir aquí 'else if' per a un botó '.delete-frame-btn' si l'implementes
-            },
-            // < final Handlers.tableClick v8.2 (afegir edit frame) >
-                        // < inici Handlers.tableChange v8.2 COMPLET >
+                 // (inici afegit lògica delete-frame-btn v9.x)
+                 // Lògica per al botó ELIMINAR MARC (a la fila del marc)
+                 else if (deleteFrameBtn) {
+                     const frameId = parseFloat(deleteFrameBtn.dataset.frameId);
+                     const frameToDelete = (appState.eventFrames || []).find(f => f.id === frameId);
+
+                     if (frameToDelete) {
+                         Handlers.requestDeleteEventFrame(frameId, frameToDelete.eventName); // Cridem la funció per demanar confirmació
+                     } else {
+                         Utils.showFeedback("Error: Marc no trobat per eliminar.", 'error');
+                     }
+                 }
+                 // (final afegit lògica delete-frame-btn v9.x)
+            }, // <-- Fi de tableClick (COMA afegida)
+            // < final Handlers.tableClick v8.2 (afegir edit frame i delete frame) >
+
+            // < inici Handlers.tableChange v8.2 COMPLET >
             tableChange: (e) => {
                 // Gestió Checkbox Personal Complet (a la fila del Marc)
                 if (e.target.classList.contains('personnel-complete-checkbox')) {
                     const checkbox = e.target;
-                    // Recupera l'ID del marc des de l'atribut data-* del checkbox
                     const frameId = parseFloat(checkbox.dataset.frameId);
                     const isChecked = checkbox.checked;
-
-                    // Troba l'índex del marc a l'array d'estat
                     const frameIndex = (appState.eventFrames || []).findIndex(f => f.id === frameId);
 
                     if (frameIndex > -1) {
-                        // Actualitza l'estat a la memòria (appState)
                         appState.eventFrames[frameIndex].isPersonnelComplete = isChecked;
                         Utils.showFeedback(`Marc marcat com a personal ${isChecked ? 'complet' : 'incomplet'}.`);
-                        // Actualitza només el calendari, ja que la taula no canvia visualment
-                        // (excepte el propi checkbox, que ja s'ha actualitzat per l'acció de l'usuari)
-                        // i els recomptes no es veuen afectats per aquest camp.
                         Render.calendar();
                     } else {
                         console.error("Error: No s'ha trobat el marc per actualitzar l'estat 'Personal Complet'. ID:", frameId);
                         Utils.showFeedback("Error actualitzant l'estat del marc.", 'error');
                     }
-                    // Important: Aturem l'execució aquí si el canvi era al checkbox
                     return;
                 }
 
@@ -1384,43 +1427,86 @@ Docs & License: https://fullcalendar.io
                     const select = e.target;
                     const assignmentId = parseFloat(select.dataset.assignmentId);
                     const newStatus = select.value;
-
-                    // Troba l'índex de l'assignació a l'array d'estat
                     const assignmentIndex = (appState.assignments || []).findIndex(a => a.id === assignmentId);
 
                     if (assignmentIndex > -1) {
-                        // Actualitza l'estat a la memòria (appState)
                         appState.assignments[assignmentIndex].status = newStatus;
-
-                        // Actualitza la classe CSS de la fila per canviar el color de fons
                         const row = select.closest('tr');
                         if (row && row.classList.contains('assignment-detail-row')) {
-                            // Treu qualsevol classe status-* anterior
                             row.className = row.className.replace(/status-\w+/g,'').trim();
-                            // Afegeix la nova classe d'estat
                             row.classList.add(`status-${Utils.escapeHTML(newStatus)}`);
                         }
-
-                        // Re-renderitza la taula per actualitzar els recomptes a la fila del marc
                         Render.eventsTable();
-                        // Els resums (si estiguessin actius) també s'haurien d'actualitzar
-                        // Render.renderSummaries();
+                        // Render.renderSummaries(); // Si estigués actiu
                         Utils.showFeedback("Estat d'assignació actualitzat.");
                     } else {
                         console.error("Error: No s'ha trobat l'assignació per actualitzar l'estat. ID:", assignmentId);
                         Utils.showFeedback("Error actualitzant estat d'assignació.", 'error');
-                        // En cas d'error, re-renderitzar tot pot ajudar a sincronitzar
                         Render.renderAll();
                     }
-                    // Aturem aquí si el canvi era al select d'estat
                     return;
                 }
-
-                // Pots afegir més condicionals 'else if' aquí si hi ha altres controls a la taula que gestionin canvis
-            },
+            }, // <-- Fi de tableChange (COMA afegida)
             // < final Handlers.tableChange v8.2 COMPLET >
-            
-            directFilterChange: () => { if(filterStatusSelect) appState.filters.status = filterStatusSelect.value; if(filterPersonSelect) appState.filters.personId = filterPersonSelect.value; if(filterStartDateInput) appState.filters.startDate = filterStartDateInput.value; if(filterEndDateInput) appState.filters.endDate = filterEndDateInput.value; Render.renderAll(); },
+
+            // (inici afegit funcions delete event frame v9.x)
+            requestDeleteEventFrame: (frameId, frameName) => {
+                const assignmentsCount = (appState.assignments || []).filter(a => a.eventFrameId === frameId).length;
+                let confirmMsg = `Segur que vols eliminar l'esdeveniment:<br><strong>${Utils.escapeHTML(frameName)}</strong>?`;
+                if (assignmentsCount > 0) {
+                    confirmMsg += `<br><br><strong style='color:var(--danger-color);'>ATENCIÓ:</strong> També s'eliminaran <strong>${assignmentsCount} assignaci${assignmentsCount === 1 ? 'ó' : 'ons'}</strong> de personal associades a aquest esdeveniment.`;
+                }
+                confirmMsg += `<br><br>Aquesta acció no es pot desfer.`
+
+                Utils.showConfirmationModal(
+                    "Confirmar Eliminació Esdeveniment",
+                    confirmMsg,
+                    () => { // Aquesta és la funció que s'executa si l'usuari confirma
+                        Handlers.executeDeleteEventFrame(frameId);
+                    },
+                    'danger' // Tipus de modal per emfatitzar l'acció
+                );
+            },
+
+            executeDeleteEventFrame: (frameId) => {
+                const initialFramesLength = (appState.eventFrames || []).length;
+                const initialAssignmentsLength = (appState.assignments || []).length;
+
+                // Filtra per eliminar el marc
+                appState.eventFrames = (appState.eventFrames || []).filter(f => f.id !== frameId);
+
+                // Filtra per eliminar les assignacions associades
+                appState.assignments = (appState.assignments || []).filter(a => a.eventFrameId !== frameId);
+
+                const framesRemoved = initialFramesLength - (appState.eventFrames || []).length;
+                const assignmentsRemoved = initialAssignmentsLength - (appState.assignments || []).length;
+
+                if (framesRemoved > 0) {
+                    Utils.showFeedback(`Esdeveniment eliminat (i ${assignmentsRemoved} assign. associades).`);
+                    // Si l'esdeveniment eliminat era el que s'estava editant, neteja el formulari
+                    if (appState.editingEventFrameId === frameId) {
+                        Render.setEventFrameFormMode('add');
+                    }
+                    Render.renderAll(); // Actualitza tota la interfície
+                } else {
+                    Utils.showFeedback("Error: No s'ha pogut eliminar l'esdeveniment.", 'error');
+                }
+            },
+            // (final afegit funcions delete event frame v9.x)
+
+            directFilterChange: () => {
+                // (inici correcció línia incompleta v9.x)
+                if (filterStatusSelect) appState.filters.status = filterStatusSelect.value;
+                // (final correcció línia incompleta v9.x)
+                if (filterPersonSelect) appState.filters.personId = filterPersonSelect.value;
+                if (filterStartDateInput) appState.filters.startDate = filterStartDateInput.value;
+                if (filterEndDateInput) appState.filters.endDate = filterEndDateInput.value;
+                Render.renderAll();
+            },
+            filterChange: Utils.debounce(() => {
+                if(filterSearchInput) appState.filters.search = filterSearchInput.value;
+                Render.renderAll();
+            }, DEBOUNCE_DELAY),
             resetFilters: () => { if(filterSearchInput) filterSearchInput.value = ''; if(filterStatusSelect) filterStatusSelect.value = ''; if(filterPersonSelect) filterPersonSelect.value = ''; if(filterStartDateInput) filterStartDateInput.value = ''; if(filterEndDateInput) filterEndDateInput.value = ''; appState.filters = { search: '', status: '', startDate: '', endDate: '', personId: '' }; Render.renderAll(); },
             headerClick: (e) => { const th=e.target.closest('th[data-sort-key]'); if (!th) return; const nk=th.dataset.sortKey; if(appState.sort.key===nk){appState.sort.direction=appState.sort.direction==='asc'?'desc':'asc';}else{appState.sort.key=nk; appState.sort.direction=(nk==='generalStartDate')?'desc':'asc';} Render.renderAll(); },
             clearEventFrameForm: () => { Render.setEventFrameFormMode('add'); },
@@ -1434,7 +1520,7 @@ Docs & License: https://fullcalendar.io
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOM Loaded. Initializing v8.1...");
+            console.log("DOM Loaded. Initializing v9..."); // Actualitzat missatge
             // Initial Load
             if(startEmptyBtn) startEmptyBtn.addEventListener('click', Handlers.handleInitialLoadChoice);
             if(importFileInput) importFileInput.addEventListener('change', Handlers.handleFileImport);
@@ -1471,18 +1557,36 @@ Docs & License: https://fullcalendar.io
             // Confirmation Modal
             if(confirmationModalCloseBtn) confirmationModalCloseBtn.addEventListener('click', Utils.hideConfirmationModal);
             // Data Management
-            if(loadAllBtn) loadAllBtn.addEventListener('click', Handlers.triggerLoadAll); // Nou
-            if(saveAllBtn) saveAllBtn.addEventListener('click', Handlers.handleSaveAll); // Nou
-            if(loadPeopleBtn) loadPeopleBtn.addEventListener('click', Handlers.triggerLoadPeople); // Canviat
-            if(savePeopleBtn) savePeopleBtn.addEventListener('click', Handlers.handleSavePeople); // Canviat
+            if(loadAllBtn) loadAllBtn.addEventListener('click', Handlers.triggerLoadAll);
+            if(saveAllBtn) saveAllBtn.addEventListener('click', Handlers.handleSaveAll);
+            if(loadPeopleBtn) loadPeopleBtn.addEventListener('click', Handlers.triggerLoadPeople);
+            if(savePeopleBtn) savePeopleBtn.addEventListener('click', Handlers.handleSavePeople);
+
+            // (inici afegit listener per eliminar des de form v9.x)
+            if (deleteEventFrameFromFormBtn) {
+                deleteEventFrameFromFormBtn.addEventListener('click', () => {
+                    const frameId = appState.editingEventFrameId ? parseFloat(appState.editingEventFrameId) : null;
+                    if (frameId !== null) {
+                        const frameToDelete = (appState.eventFrames || []).find(f => f.id === frameId);
+                        if (frameToDelete) {
+                            Handlers.requestDeleteEventFrame(frameId, frameToDelete.eventName);
+                        } else {
+                            Utils.showFeedback("Error: No s'ha pogut identificar l'esdeveniment a eliminar.", 'error');
+                        }
+                    } else {
+                         Utils.showFeedback("No hi ha cap esdeveniment en mode edició per eliminar.", 'warning');
+                    }
+                });
+            }
+            // (final afegit listener per eliminar des de form v9.x)
+
             // Initial State
             if(initialLoadOverlay) initialLoadOverlay.classList.remove('hidden');
             if(mainContent) mainContent.classList.remove('visible');
             console.log("Initialization v9 complete. Waiting for user action.");
         }); // <<< End of DOMContentLoaded listener
 
-    </script>
-    <!-- ********** FI CODI JavaScript PRINCIPAL DE L'APLICACIÓ (v9) ********** -->
+    </script>    <!-- ********** FI CODI JavaScript PRINCIPAL DE L'APLICACIÓ (v9) ********** -->
 
 </body>
 </html>

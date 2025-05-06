@@ -1,8 +1,8 @@
-# Gestió de Personal i Esdeveniments v9 (WebApp HTML)
+# Gestió de Personal i Esdeveniments v9.2 (WebApp HTML)
 
 Aquesta és una aplicació web autònoma (single-file HTML) redissenyada per gestionar esdeveniments (com a "marcs" generals) i les assignacions específiques de personal o grups a aquests marcs. Funciona completament al navegador sense necessitat de backend.
 
-**Versió Actual:** 9.0
+**Versió Actual:** 9.2
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -18,7 +18,7 @@ Això permet una gestió més detallada quan un mateix esdeveniment implica dive
 ## Característiques Clau
 
 *   **Gestió d'Esdeveniments Marc:**
-    *   Crear, editar i (properament) eliminar marcs d'esdeveniment (nom, ubicació, dates generals, notes generals).
+    *   Crear, editar i  eliminar marcs d'esdeveniment (nom, ubicació, dates generals, notes generals).
     *   Marcar un marc com a "Personal Complet" directament des de la llista principal.
 *   **Gestió d'Assignacions:**
     *   Assignar persones/grups a un esdeveniment marc existent mitjançant un modal dedicat.
@@ -67,7 +67,7 @@ Això permet una gestió més detallada quan un mateix esdeveniment implica dive
 
 ## Com Utilitzar
 
-1.  **Obrir:** Simplement obre el fitxer `PERSONAL V9 DEV .html` (o el nom que li hagis donat) en un navegador web modern.
+1.  **Obrir:** Simplement obre el fitxer `Gestió de Personal i Esdeveniments v9_2.html` en un navegador web modern.
 2.  **Començar:** A la pantalla inicial, fes clic a "Començar" per iniciar amb llistes buides.
 3.  **Carregar Dades (Opcional però Recomanat):**
     *   Si tens un fitxer JSON amb **totes** les dades (`people`, `eventFrames`, `assignments`) d'una sessió anterior, fes servir "Carregar Tot (JSON)".
@@ -82,7 +82,7 @@ Això permet una gestió més detallada quan un mateix esdeveniment implica dive
     *   Opcionalment, utilitza "Guardar Persones (JSON)" si només vols desar la llista de personal.
     *   Com que l'aplicació funciona només al navegador, **les dades NO es guarden automàticament**. Si tanques la pestanya o el navegador sense guardar, perdràs els canvis fets des de l'última càrrega/desat.
 
-## Gestió de Dades: Flux de Treball Important (v9)
+## Gestió de Dades: Flux de Treball Important (v9.2)
 
 Aquesta aplicació **no té backend ni emmagatzematge automàtic**. Tota la informació es manté a la memòria del navegador durant la sessió.
 
@@ -100,7 +100,7 @@ Aquesta aplicació **no té backend ni emmagatzematge automàtic**. Tota la info
 Aplicació d'un sol fitxer HTML. Pots editar-lo directament.
 
 *   El codi de FullCalendar i la localització estan incrustats.
-*   La lògica principal de l'aplicació (v9) es troba a l'últim bloc `<script>`, organitzada en objectes (`Utils`, `Render`, `Handlers`, `PeopleManager`).
+*   La lògica principal de l'aplicació (v9.2) es troba a l'últim bloc `<script>`, organitzada en objectes (`Utils`, `Render`, `Handlers`, `PeopleManager`).
 *   Els estils CSS es troben dins de l'etiqueta `<style>`.
 
 ## Llicència
