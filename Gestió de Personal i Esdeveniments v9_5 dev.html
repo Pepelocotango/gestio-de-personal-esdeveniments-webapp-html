@@ -107,7 +107,7 @@
     .sort-indicator { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 0.8em; }
 
     /* --- Event Frame Row Styling --- */
-    .event-frame-row { background-color: var(--frame-row-bg); font-weight: bold; }
+    .event-frame-row { background-color: #95926c; font-weight: bold; }/*-- color de fons de la fila de marc QUAN NO ESTÀ COMPLETAT --*/
     .event-frame-row td { border-bottom: 2px solid var(--secondary-color); border-top: 2px solid var(--secondary-color); }
     .event-frame-row td:first-child { border-left: 3px solid var(--primary-color); text-align: center; width: 30px; }
     .event-frame-row .frame-actions-cell { text-align: right; white-space: nowrap; }
@@ -183,15 +183,31 @@
     #feedback-area.feedback-warning { background-color: var(--warning-color); color: var(--dark-color); }
     #feedback-area.feedback-info { background-color: var(--info-color); }
 
-    /* --- Data Management --- */
+  /* --- Data Management --- */
     .data-management-container { display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-start; }
     .data-management-group { display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--border-color); padding: 10px; border-radius: 4px; flex-grow: 1; min-width: 180px; }
     .data-management-group h4 { margin: 0 0 8px 0; font-size: 0.95rem; color: var(--secondary-color); text-align: center;}
     .data-management-group .btn { flex-grow: 1; }
     #import-file-input { display: none; }
 
+    /* < inici estil avís dades no guardades > */
+    #unsaved-data-warning {
+        background-color: #fff3cd; /* Color de fons groc suau (similar a warning de Bootstrap) */
+        color: #856404; /* Color de text fosc per contrast */
+        border: 1px solid #ffeeba; /* Vora groga suau */
+        padding: 10px 15px;
+        border-radius: 4px;
+        text-align: center;
+        margin-top: 15px; /* Espai superior */
+        font-weight: bold;
+    }
+    #unsaved-data-warning.hidden { /* Aquesta classe ja existeix, però assegurem-nos que funciona */
+        display: none !important;
+    }
+    /* < final estil avís dades no guardades > */
+
     /* --- Conflict Warning --- */
-    .conflict-warning { font-size: 0.9em; color: var(--danger-color); margin-top: 5px; display: none; }
+        .conflict-warning { font-size: 0.9em; color: var(--danger-color); margin-top: 5px; display: none; }
 
     /* --- Estils TAULA PRINCIPAL (Vista Escriptori) --- */
 
@@ -235,6 +251,39 @@
     .assignment-detail-row.status-Pendent { background-color: var(--status-pending-bg); }
     .assignment-detail-row.status-Sí { background-color: var(--status-yes-bg); }
     .assignment-detail-row.status-No { background-color: var(--status-no-bg); }
+    /* < inici estils per a marc desplegable i completat > */
+    .event-frame-row .frame-assignment-toggle-icon {
+        display: inline-block; /* o inline-flex per alinear millor si fos un SVG complex */
+        /* padding: 2px 5px; */ /* Eliminat per donar-li més espai a la cel·la */
+        /* border-radius: 3px; */ /* Opcional */
+        /* background-color: #eee; */ /* Opcional: un fons lleuger */
+        /* border: 1px solid #ccc; */ /* Opcional */
+        user-select: none; /* Evitar selecció de text */
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .event-frame-row .frame-assignment-toggle-icon.expanded {
+        transform: rotate(90deg);
+    }
+
+    .assignment-detail-row.assignment-detail-hidden {
+        display: none;
+    }
+
+    /* Estil per a la fila del marc quan el personal està marcat com a complet */
+    .event-frame-row.frame-personnel-marked-complete {
+        background-color: #c6c9cb; /* Un verd suau, similar a --status-yes-bg però potser una mica diferent */
+        /* Considerar canviar el color del text si el fons és molt fosc */
+        /* color: var(--dark-color); */
+    }
+    .event-frame-row.frame-personnel-marked-complete td {
+        /* Podem fer la vora més gruixuda o d'un altre color si volem més èmfasi */
+         border-bottom-color: var(--success-color);
+         border-top-color: var(--success-color);
+    }
+     .event-frame-row.frame-personnel-marked-complete td:first-child {
+        border-left-color: var(--success-color);
+    }
 
     /* --- Responsive adjustments --- */
 
@@ -359,7 +408,131 @@
 
          .modal-content { width: 95%; padding: 20px; }
     } /* Fi de @media (max-width: 480px) */
+/* < inici estils per a la secció de resums > */
+    .summaries-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Responsive grid */
+        gap: 20px;
+        margin-top: 20px;
+    }
 
+    .summary-card {
+        background-color: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column; /* Important per al footer del CSV si el tinguéssim enganxat */
+    }
+
+    .summary-card-header {
+        padding: 12px 15px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .summary-card-header h3 {
+        margin: 0;
+        font-size: 1.1rem; /* Ajustat de 1.05rem */
+        color: var(--primary-color);
+        display: flex; /* Per alinear icona si l'afegim al h3 */
+        align-items: center;
+        gap: 0.4em;
+    }
+    .summary-card-header .btn-sm { /* Per fer botons més petits dins la capçalera */
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+
+    .summary-card-body {
+        padding: 15px;
+        flex-grow: 1; /* Perquè el cos ocupi l'espai disponible */
+        overflow-x: auto; /* Scroll horitzontal per a taules amples */
+    }
+
+    .summary-card-body table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem; /* Mida de font més petita per a les taules de resum */
+    }
+
+    .summary-card-body th,
+    .summary-card-body td {
+        border: 1px solid var(--border-color);
+        padding: 6px 8px; /* Padding més petit */
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .summary-card-body thead th {
+        background-color: var(--secondary-color); /* Fons diferent per a capçaleres de resum */
+        color: white;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .summary-card-body .summary-group-header { /* Per al "Esdeveniment: XXX" */
+        background-color: var(--frame-row-bg); /* Un color de fons suau */
+        font-weight: bold;
+        padding: 8px;
+        margin-top: 10px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .summary-card-body .summary-group-header:first-child {
+        margin-top: 0;
+    }
+
+    .summary-card-body .status-Pendent { background-color: var(--status-pending-bg); color: #856404; }
+    .summary-card-body .status-Sí { background-color: var(--status-yes-bg); color: #155724;}
+    .summary-card-body .status-No { background-color: var(--status-no-bg); color: #721c24;}
+    .summary-card-body td.status-Pendent,
+    .summary-card-body td.status-Sí,
+    .summary-card-body td.status-No { /* Per aplicar a cel·les TD que contenen només l'estat */
+        text-align: center;
+        font-weight: bold;
+    }
+
+    /* Ajustaments responsive per a les targetes de resum */
+    @media (max-width: var(--mobile-breakpoint)) {
+        .summaries-container {
+            grid-template-columns: 1fr; /* Una columna en mòbils */
+        }
+        .summary-card-header h3 {
+            font-size: 1rem;
+        }
+    }
+    /* < final estils per a la secció de resums > */
+        /* < inici estils per a seccions desplegables > */
+    .collapsible-header {
+        cursor: pointer;
+        display: flex; /* Per alinear icona i text */
+        align-items: center;
+        justify-content: space-between; /* Per posar la icona a la dreta */
+        padding: 10px 0; /* Una mica de padding per fer-lo més clicable */
+        user-select: none; /* Evitar selecció de text al fer doble clic */
+    }
+
+    .collapsible-header .collapse-icon {
+        margin-left: 10px;
+        font-size: 0.8em; /* Mida de la icona de fletxa */
+        transition: transform 0.2s ease-in-out; /* Transició suau per a la rotació */
+    }
+
+    .collapsible-header.collapsed .collapse-icon {
+        transform: rotate(-90deg); /* Gira la fletxa quan està col·lapsat (si usem ▼ inicialment) */
+    }
+    /* Si la icona inicial és ► per a tancat, no cal rotació inicial */
+    .collapsible-header:not(.collapsed) .collapse-icon.icon-closed { /* Per quan la icona inicial és ► */
+        transform: rotate(90deg);
+    }
+
+
+    .collapsible-content.hidden {
+        display: none;
+    }
+    /* No cal .collapsible-content { display: block; } perquè block és el valor per defecte dels divs */
+    /* < final estils per a seccions desplegables > */
 </style>
 
 </head>
@@ -426,7 +599,14 @@
                      <!-- Eliminats els grups separats per a Marcs i Assignacions -->
                 </div>
                  <!-- < final modificació gestió de dades v8.5 (Carregar/Guardar) > -->
+                 
+                 <!-- < inici avís dades no guardades > -->
+                 <div id="unsaved-data-warning" class="hidden" style="text-align: center; margin-top: 15px; padding: 10px; border-radius: 4px;">
+                     <!-- El text i estil es controlaran per JS/CSS -->
+                 </div>
+                 <!-- < final avís dades no guardades > -->
             </div>
+
 
             <!-- Form to add/edit EVENT FRAMES -->
             <form id="event-frame-form" class="section">
@@ -498,6 +678,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 3H2l8 9.46V19l4 2v-8.54z"></path></svg>
                     Filtres i Cerca
                 </h3>
+                <!-- < inici modificació filtres amb filtre esdeveniment v9.x > -->
                 <div id="filter-controls">
                     <div class="form-group">
                         <label for="filter-search">Cercar (Nom Esdev., Notes, Lloc, Persona):</label>
@@ -510,6 +691,15 @@
                             <!-- Options populated by JS -->
                         </select>
                     </div>
+                    <!-- NOU FILTRE PER ESDEVENIMENT -->
+                    <div class="form-group">
+                        <label for="filter-event-frame">Filtrar per Esdeveniment:</label>
+                        <select id="filter-event-frame">
+                            <option value="">-- Tots --</option>
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+                    <!-- FI NOU FILTRE PER ESDEVENIMENT -->
                     <div class="form-group">
                         <label for="filter-status">Filtrar per Estat Assignació:</label>
                         <select id="filter-status">
@@ -532,65 +722,154 @@
                         Netejar Filtres
                     </button>
                 </div>
-            </div>
+                <!-- < final modificació filtres amb filtre esdeveniment v9.x > -->
+            </div> 
+            <!-- Tancament de #filter-controls-section -->
 
-            <!-- Main Events List (Agrupada) -->
+                        <!-- Main Events List (Agrupada) -->
             <div class="section">
-                <h2 id="events-list-heading">
+                <!-- < inici capçalera desplegable llista esdeveniments (MODIFICAT per iniciar obert) > -->
+                <h2 id="events-list-heading" class="collapsible-header" data-target-content="events-list-content"> <!-- Eliminada classe 'collapsed' si existís -->
                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zm13-2v4M8 2v4m-5 4h18M8 14h8"></path></svg>
-                    Llista d'Esdeveniments (<span id="event-frame-count">0</span> Esdevenimentss, <span id="assignment-count">0</span> Assignacions)
+                    <span>Llista d'Esdeveniments (<span id="event-frame-count">0</span> Esdeveniments, <span id="assignment-count">0</span> Assignacions)</span>
+                    <span class="collapse-icon">▼</span>
+
                 </h2>
-                <div id="events-table-wrapper" class="table-responsive">
-                    <table id="events-table">
-                                       <!-- < inici restauració ordenació capçalera v8.7 > -->
+                <div id="events-list-content" class="collapsible-content">
+                <!-- < final capçalera desplegable llista esdeveniments > -->
+                    <div id="events-table-wrapper" class="table-responsive">
+                        <table id="events-table">
+                                           <!-- < inici restauració ordenació capçalera v8.7 > -->
                     <thead>
                         <tr>
-                            <th style="width: 30px;">✓</th> <!-- No ordenable -->
-                            <th data-sort-key="eventName">Esdeveniment </th> <!-- Ordenable per nom -->
-                            <th data-sort-key="location">Ubicació</th>            <!-- Ordenable per lloc -->
-                            <th data-sort-key="generalStartDate">Dates Generals</th> <!-- Ordenable per data inici -->
-                            <!-- Les columnes següents representen dades agregades o de detall, -->
-                            <!-- no són directament ordenables de forma simple per al marc. -->
-                            <th>Persona/Grup</th>        <!-- No ordenable (és del detall) -->
-                            <th>Dates Assign.</th>       <!-- No ordenable (és del detall) -->
-                            <th>Estat / Recompte</th>    <!-- No ordenable (agregat/detall) -->
-                            <th>Notes</th>               <!-- No ordenable (barreja marc/detall) -->
-                            <th>Accions</th>             <!-- No ordenable -->
+                            <!-- < inici capçalera ordenable per personal complet > -->
+                            <th style="width: auto; padding-left: 10px; padding-right: 10px;" data-sort-key="isPersonnelComplete" title="Ordenar per Personal Complet">✓ Complet</th> <!-- Ordenable per complet -->
+                            <!-- < final capçalera ordenable per personal complet > -->
+                            <th data-sort-key="eventName">Esdeveniment </th>
+                            <th data-sort-key="location">Ubicació</th>
+                            <th data-sort-key="generalStartDate">Dates Generals</th>
+                            <th>Persona/Grup</th>
+                            <th>Dates Assign.</th>
+                            <th>Estat / Recompte</th>
+                            <th>Notes</th>
+                            <th>Accions</th>
                         </tr>
                     </thead>
-                    <!-- < final restauració ordenació capçalera v8.7 > -->
-                        </thead>
-                        <tbody><!-- Populat per JS amb files de marc i detall --></tbody>
-                    </table>
+                        <!-- < final restauració ordenació capçalera v8.7 > -->
+                            </thead>
+                            <tbody><!-- Populat per JS amb files de marc i detall --></tbody>
+                        </table>
+                    </div>
+                    <p id="no-events-message" class="no-data-message">Encara no hi ha cap esdeveniment.</p>
+                <!-- < inici tancament div contingut desplegable llista esdeveniments > -->
                 </div>
-                <p id="no-events-message" class="no-data-message">Encara no hi ha cap esdeveniment .</p>
+                <!-- < final tancament div contingut desplegable llista esdeveniments > -->
             </div>
+            <!-- < inici Secció Generació Llistes / Informes (ESTRUCTURA CORRECTA - TANCADA PER DEFECTE) > -->
+        <div id="list-generation-section" class="section">
+            <!-- Capçalera TANCADA -->
+            <h2 id="list-generation-heading" class="collapsible-header collapsed" data-target-content="list-generation-content">
+                <!-- Assegura't que l'SVG és el correcte -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3v4a1 1 0 0 0 1 1h4M5 12V5a2 2 0 0 1 2-2h7l5 5v4M5 18h1.5a1.5 1.5 0 0 0 0-3H5v-3h1.5a1.5 1.5 0 0 1 0 3H5zm5.5 0h1a1.5 1.5 0 0 0 0-3h-1v3zm4 0h1.5a1.5 1.5 0 0 0 0-3H16v-3h1.5a1.5 1.5 0 0 1 0 3H16z"></path></svg>
+                <span>Generació de Llistes / Informes</span>
+                <span class="collapse-icon">►</span> <!-- Icona Tancada -->
+            </h2>
+            <!-- Contingut OCULT -->
+            <div id="list-generation-content" class="collapsible-content hidden"> <!-- SÍ té 'hidden' -->
 
-            <!-- Summaries Section (Comentat temporalment) -->
-            <!--
-            <div id="summaries-section" class="section">
-                 <h2><svg ...></svg> Resums</h2>
-                 ... contingut dels resums ...
-            </div>
-             -->
+                <!-- === Contingut intern CORRECTE === -->
+                <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--secondary-color);">Utilitza els controls de "Filtres i Cerca" per definir les dades a exportar.</p>
+                <div class="form-actions">
+                    <button id="export-filtered-view-btn" class="btn btn-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 11l5 5l5-5M12 4v12"></path></svg>
+                        Exportar Vista Filtrada (CSV)
+                    </button>
+                </div>
+                <!-- === Fi Contingut intern === -->
 
-        </div> <!-- End container -->
-    </div> <!-- End main-content -->
+            </div> <!-- Tancament list-generation-content -->
+        </div>
+        <!-- < final Secció Generació Llistes / Informes > -->
+
+            <!-- < inici Secció Resums (ESTRUCTURA CORRECTA - TANCADA PER DEFECTE) > -->
+        <div id="summaries-section" class="section">
+            <!-- Capçalera TANCADA -->
+            <h2 id="summaries-heading" class="collapsible-header collapsed" data-target-content="summaries-content">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18"></path><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12h2l2 4l2-8l2 4h2"></path></svg>
+                <span>Resums de Llistes Agrupades</span>
+                <span class="collapse-icon">►</span> <!-- Icona Tancada -->
+            </h2>
+            <!-- Contingut OCULT -->
+            <div id="summaries-content" class="collapsible-content hidden"> <!-- SÍ té 'hidden' -->
+
+                <!-- Contenidor dels resums -->
+                <div class="summaries-container">
+
+                    <!-- Targeta: Agrupat per Nom Esdeveniment -->
+                    <div class="summary-card">
+                        <div class="summary-card-header">
+                            <h3>Agrupat per Nom Esdeveniment</h3>
+                            <!-- El botó exportar CSV dels resums el deixem, encara que no funcioni -->
+                            <button class="btn btn-sm btn-light export-csv-btn" data-type="event-name">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 11l5 5l5-5M12 4v12"></path></svg>
+                                Exportar CSV
+                            </button>
+                        </div>
+                        <!-- Cos de la targeta amb l'ID correcte -->
+                        <div class="summary-card-body" id="summary-by-event-name">
+                            <p>Carregant...</p> <!-- Contingut inicial placeholder -->
+                        </div>
+                    </div>
+
+                    <!-- Targeta: Agrupat per Data Inici -->
+                    <div class="summary-card">
+                        <div class="summary-card-header">
+                            <h3>Agrupat per Data Inici</h3>
+                            <button class="btn btn-sm btn-light export-csv-btn" data-type="start-date">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 11l5 5l5-5M12 4v12"></path></svg>
+                                Exportar CSV
+                            </button>
+                        </div>
+                         <!-- Cos de la targeta amb l'ID correcte -->
+                        <div class="summary-card-body" id="summary-by-start-date">
+                            <p>Carregant...</p> <!-- Contingut inicial placeholder -->
+                        </div>
+                    </div>
+
+                    <!-- Targeta: Agrupat per Persona/Grup -->
+                    <div class="summary-card">
+                        <div class="summary-card-header">
+                            <h3>Agrupat per Persona/Grup</h3>
+                            <button class="btn btn-sm btn-light export-csv-btn" data-type="person">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 11l5 5l5-5M12 4v12"></path></svg>
+                                 Exportar CSV
+                             </button>
+                        </div>
+                         <!-- Cos de la targeta amb l'ID correcte -->
+                        <div class="summary-card-body" id="summary-by-person">
+                            <p>Carregant...</p> <!-- Contingut inicial placeholder -->
+                        </div>
+                    </div>
+
+                </div> <!-- Tancament summaries-container -->
+
+            </div> <!-- Tancament summaries-content -->
+        </div>
+        <!-- < final Secció Resums > -->
 
     <!-- Template for event frame row -->
-    <!-- < inici modificació plantilla fila marc v8.6 (cel·les buides i colspan correctes) > -->
+    <!-- < inici modificació plantilla fila marc v9.x (desplegable i estat complet) > -->
     <template id="event-frame-row-template">
         <tr class="event-frame-row">
-            <td data-label="Complet" class="frame-complete-cell"> <!-- Col 1 -->
-                <input type="checkbox" class="personnel-complete-checkbox" title="Marcar com a personal complet">
+            <td data-label="Desplegar/Complet" class="frame-toggle-complete-cell" style="text-align: center; width: 60px;"> <!-- Col 1 Modificada -->
+                <span class="frame-assignment-toggle-icon" role="button" tabindex="0" title="Mostrar/Ocultar assignacions" style="cursor: pointer; padding: 0 5px; font-size: 1.1em;">▼</span>
+                <input type="checkbox" class="personnel-complete-checkbox" title="Marcar com a personal complet" style="margin-left: 5px; vertical-align: middle;">
             </td>
             <td data-label="Esdeveniment Marc" class="frame-event-name"></td> <!-- Col 2 -->
             <td data-label="Ubicació" class="frame-location"></td>         <!-- Col 3 -->
             <td data-label="Dates Generals" class="frame-dates"></td>        <!-- Col 4 -->
-            <!-- Cel·les Buides per alinear amb Persona/Grup i Dates Assign. de la capçalera -->
             <td></td> <!-- Col 5 (Buida) -->
             <td></td> <!-- Col 6 (Buida) -->
-            <!-- Recompte Estats (ara només necessita colspan="1" perquè ja no agrupa 3 columnes) -->
              <td data-label="Recompte Estats" class="frame-counts" colspan="1"> <!-- Col 7 -->
                 <span class="count-yes" title="Confirmats"></span>
                 <span class="count-pending" title="Pendents"></span>
@@ -599,7 +878,7 @@
             <td data-label="Notes Marc" class="frame-notes"> <!-- Col 8 -->
                 <span class="notes-content truncate-text"></span>
             </td>
-                        <td data-label="Accions Marc" class="frame-actions-cell"> <!-- Col 9 -->
+            <td data-label="Accions Marc" class="frame-actions-cell"> <!-- Col 9 -->
                  <!-- (inici afegit botó eliminar v9.x) -->
                  <button class="delete-frame-btn btn btn-icon btn-danger" title="Eliminar Marc">
                      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6m4-6v6"></path></svg>
@@ -617,11 +896,11 @@
              </td>
         </tr>
     </template>
-    <!-- < final modificació plantilla fila marc v8.6 (cel·les buides i colspan correctes) > -->
+    <!-- < final modificació plantilla fila marc v9.x (desplegable i estat complet) > -->
      <!-- < final modificació plantilla fila marc v8.5 (icones recompte, botó editar, notes) > -->
-           <!-- < inici restauració plantilla fila detall v8.5 > -->
+           <!-- < inici restauració plantilla fila detall v9.x > -->
     <template id="assignment-detail-row-template">
-         <tr class="assignment-detail-row">
+         <tr class="assignment-detail-row status-Pendent">
              <!-- Cel·les buides per alinear amb capçalera (Checkbox, Nom Marc, Ubicació, Dates Marc) -->
              <td class="cell-hidden-detail"></td> <!-- Buit (per alinear amb checkbox) -->
              <td class="cell-hidden-detail"></td> <!-- Buit (per alinear amb Nom Marc) -->
@@ -748,7 +1027,7 @@
         </div>
     </div>
 
-    <!-- Confirmation Modal -->
+<!-- Confirmation Modal -->
     <div id="confirmation-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmation-modal-title">
          <div class="modal-content">
              <div class="modal-header"><h4 id="confirmation-modal-title" class="modal-title">Confirmació</h4><button type="button" class="btn-close" aria-label="Tancar">×</button></div>
@@ -757,6 +1036,34 @@
          </div>
     </div>
 
+    <!-- < inici nou modal Detalls Marc Esdeveniment > -->
+    <div id="event-frame-details-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="event-frame-details-modal-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="event-frame-details-modal-title" class="modal-title">Detalls del Marc</h4>
+                <button type="button" class="btn-close" aria-label="Tancar">×</button>
+            </div>
+            <div id="event-frame-details-modal-body" class="modal-body">
+                <!-- Contingut dels detalls s'inserirà aquí via JavaScript -->
+                <p>Carregant detalls...</p>
+            </div>
+            <div class="modal-footer">
+                <button id="event-frame-details-edit-btn" class="btn btn-warning">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7m-5.5-5.5a2.121 2.121 0 0 1 3 3L12 15l-4 1l1-4l9.5-9.5z"></path></svg>
+                    Editar Marc
+                </button>
+                <button id="event-frame-details-delete-btn" class="btn btn-danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6m4-6v6"></path></svg>
+                    Eliminar Marc
+                </button>
+                <button id="event-frame-details-close-btn" class="btn btn-secondary" style="margin-left: auto;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6L6 18M6 6l12 12"></path></svg>
+                    Tancar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- < final nou modal Detalls Marc Esdeveniment > -->
     <!-- Feedback Area -->
     <div id="feedback-area" aria-live="assertive"></div>
 
@@ -786,7 +1093,7 @@ Docs & License: https://fullcalendar.io
         // --- Constants ---
         const DEBOUNCE_DELAY = 300;
 
-        // --- DOM Element References ---
+      // --- DOM Element References ---
         const initialLoadOverlay = document.getElementById('initial-load-overlay');
         const mainContent = document.getElementById('main-content');
         const startEmptyBtn = document.getElementById('start-empty-btn');
@@ -862,6 +1169,8 @@ Docs & License: https://fullcalendar.io
         const filterStartDateInput = document.getElementById('filter-start-date');
         const filterEndDateInput = document.getElementById('filter-end-date');
         const resetFiltersBtn = document.getElementById('reset-filters-btn');
+        const filterEventFrameSelect = document.getElementById('filter-event-frame');
+        const exportFilteredViewBtn = document.getElementById('export-filtered-view-btn')
 
         // Events Table (Agrupada)
         const eventsTableWrapper = document.getElementById('events-table-wrapper');
@@ -898,27 +1207,58 @@ Docs & License: https://fullcalendar.io
         const importFileInput = document.getElementById('import-file-input'); // Aquest es manté igual
         // < final modificació referències DOM Data Management v8.5 >
 
+        // < inici afegit referència avís dades no guardades >
+        const unsavedDataWarning = document.getElementById('unsaved-data-warning');
+        // < final afegit referència avís dades no guardades >
+         // < inici referències DOM per al modal de Detalls del Marc >
+        const eventFrameDetailsModal = document.getElementById('event-frame-details-modal');
+        const eventFrameDetailsModalTitle = document.getElementById('event-frame-details-modal-title');
+        const eventFrameDetailsModalBody = document.getElementById('event-frame-details-modal-body');
+        const eventFrameDetailsEditBtn = document.getElementById('event-frame-details-edit-btn');
+        const eventFrameDetailsDeleteBtn = document.getElementById('event-frame-details-delete-btn');
+        const eventFrameDetailsCloseBtn = document.getElementById('event-frame-details-close-btn');
+        const eventFrameDetailsModalCloseBtnX = eventFrameDetailsModal?.querySelector('.btn-close'); // El '?' és per si eventFrameDetailsModal encara no està definit en el moment d'execució inicial
+        // < final referències DOM per al modal de Detalls del Marc >
 
         // --- Application State ---
         let appState = {
             people: [],
             eventFrames: [], // Nou: Emmagatzema els marcs d'esdeveniment
             assignments: [], // Nou: Emmagatzema les assignacions persona-marc
-            filters: { search: '', status: '', startDate: '', endDate: '', personId: '' },
+            // < inici modificació appState.filters amb eventFrameId v9.x >
+            filters: { search: '', status: '', startDate: '', endDate: '', personId: '', eventFrameId: '' }, // <<< Afegit eventFrameId
+            // < final modificació appState.filters amb eventFrameId v9.x >
             sort: { key: 'generalStartDate', direction: 'desc' }, // Ordenació per data general per defecte
             editingEventFrameId: null, // ID del marc en edició
             editingAssignmentId: null, // ID de l'assignació en edició
             modalCallback: null,
-            // activeSummaryView: 'counts', // Comentat temporalment
             importType: null, // Pot ser 'people', 'all'
-            currentAssignmentModalFrameId: null // Per saber quin marc s'està assignant
+            currentAssignmentModalFrameId: null, // Per saber quin marc s'està assignant
+            hasUnsavedChanges: false
         };
+
         let searchDebounceTimeout;
         let isDataLoaded = false;
 
-        // --- Utility Functions ---
+         // --- Utility Functions ---
         const Utils = {
-            // < inici Utils per v8 COMPLET >
+
+            // < inici funció per gestionar l'avís de canvis no guardats >
+            setUnsavedChanges: (hasChanges) => {
+                appState.hasUnsavedChanges = hasChanges;
+                if (unsavedDataWarning) {
+                    if (hasChanges) {
+                        unsavedDataWarning.textContent = "Atenció: Hi ha canvis sense guardar.";
+                        unsavedDataWarning.classList.remove('hidden');
+                    } else {
+                        unsavedDataWarning.classList.add('hidden');
+                        unsavedDataWarning.textContent = ""; // Opcional: buidar el text
+                    }
+                } else {
+                    console.warn("#unsaved-data-warning element not found.");
+                }
+            },
+            // < final funció per gestionar l'avís de canvis no guardats >
 
             // Carrega Marcs d'Esdeveniment (Part de loadAllDataFromFile)
             _loadEventFrames: (framesData) => {
@@ -995,7 +1335,6 @@ Docs & License: https://fullcalendar.io
                   })).filter(person => person !== null && person.name);
              },
 
-
              // Prepara objecte complet per guardar
              prepareAllDataForSave: () => {
                  const dataToSave = { people: appState.people || [], eventFrames: appState.eventFrames || [], assignments: appState.assignments || [] };
@@ -1004,107 +1343,405 @@ Docs & License: https://fullcalendar.io
              // Prepara JSON només per a persones
              preparePeopleForSave: () => JSON.stringify({ people: appState.people || [] }, null, 2),
 
-
+             // Escapa HTML per seguretat
              escapeHTML: (str) => {
                  if (str == null || str === '') return ''; if (typeof str !== 'string') str = String(str);
                  const p = document.createElement('p'); p.textContent = str; return p.innerHTML;
              },
 
-             // < inici Utils.formatDateRange amb visualització DD/MM/YY >
+            // Formata rang de dates YYYY-MM-DD a DD/MM/YY - DD/MM/YY
             formatDateRange: (startDateStr, endDateStr) => {
-                // Validació bàsica de la data d'inici
                 if (!startDateStr || !/^\d{4}-\d{2}-\d{2}$/.test(startDateStr)) return 'N/D';
-
-                // Utilitzem la nova Utils.formatSingleDate per obtenir el format DD/MM/YY
                 const startFormatted = Utils.formatSingleDate(startDateStr);
-
-                // Comprova si hi ha data de fi vàlida i si és diferent de la d'inici
                 if (!endDateStr || !/^\d{4}-\d{2}-\d{2}$/.test(endDateStr) || startDateStr === endDateStr) {
-                    // Si no hi ha fi, o és invàlida, o és igual a l'inici, retorna només l'inici formatat
                     return startFormatted;
                 }
-
                 const endFormatted = Utils.formatSingleDate(endDateStr);
-
-                // Només mostra rang si les dues dates s'han pogut formatar
-                // i la data de fi no és anterior a la d'inici
                 if (startFormatted !== 'N/D' && startFormatted !== 'Invàlid' && startFormatted !== 'Error' &&
                     endFormatted !== 'N/D' && endFormatted !== 'Invàlid' && endFormatted !== 'Error')
                 {
                      try {
-                         // Compara les dates originals per assegurar ordre correcte
                          const start = new Date(startDateStr);
                          const end = new Date(endDateStr);
                          if (end >= start) {
-                            // Retorna el rang formatat
                             return `${startFormatted} - ${endFormatted}`;
                          }
                      } catch (e) {
                         console.error("Error comparant dates en rang (formatDateRange):", e);
-                        // Si hi ha error comparant, retorna només la d'inici
                      }
                 }
-
-                // Fallback a la data d'inici formatada si alguna cosa falla
                 return startFormatted;
             },
-            // < final Utils.formatDateRange amb visualització DD/MM/YY >
 
-            // < inici Utils.formatSingleDate amb visualització DD/MM/YY >
+            // Formata una data YYYY-MM-DD a DD/MM/YY
             formatSingleDate: (dateStr) => {
-                 // Validació d'entrada (esperem YYYY-MM-DD)
                  if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return 'N/D';
                  try {
                      const [y, m, d] = dateStr.split('-');
-                     // Creem objecte Date (la zona horària no importa per obtenir components)
-                     const dt = new Date(y, m - 1, d); // Mesos 0-11
-                     if (isNaN(dt.getTime())) return 'Invàlid'; // Comprova si la data és vàlida
-
-                     // Obtenim els components i formatem a DD/MM/YY
+                     const dt = new Date(y, m - 1, d);
+                     if (isNaN(dt.getTime())) return 'Invàlid';
                      const day = String(dt.getDate()).padStart(2, '0');
-                     const month = String(dt.getMonth() + 1).padStart(2, '0'); // Sumem 1 al mes
-                     const year = String(dt.getFullYear()).slice(-2); // Agafem els últims 2 dígits de l'any
-
+                     const month = String(dt.getMonth() + 1).padStart(2, '0');
+                     const year = String(dt.getFullYear()).slice(-2);
                      return `${day}/${month}/${year}`;
                  } catch (e) {
                      console.error("Error formatant data única a DD/MM/YY:", e);
                      return 'Error';
                  }
             },
-            // < final Utils.formatSingleDate amb visualització DD/MM/YY >
+
+            // Obté valors únics d'un array d'objectes
             getUniqueValues: (items, key) => {
                  const values = new Set(); if (Array.isArray(items)) { items.forEach(item => { const v = (item && typeof item === 'object' && item.hasOwnProperty(key) && item[key] != null) ? String(item[key]).trim() : ''; if (v) { values.add(v); } }); } else { console.warn(`[DEBUG] Utils.getUniqueValues va rebre 'items' no array per clau '${key}'. Tipus: ${typeof items}`); } return Array.from(values).sort((a, b) => a.localeCompare(b, 'ca', { sensitivity: 'base' }));
              },
+
+             // Obté nom de persona per ID
              getPersonNameById: (personId) => {
                  if (personId == null) return 'Sense assignar'; const idToCompare = typeof personId === 'string' ? parseFloat(personId) : personId; const person = (appState.people || []).find(p => p.id === idToCompare); return person ? person.name : 'Persona Desconeguda';
              },
+
+             // Mostra el modal de confirmació genèric
              showConfirmationModal: (title, message, confirmCallback, type = 'danger') => {
                  if (!confirmationModal || !confirmationModalTitle || !confirmationModalMessage || !modalConfirmBtn || !modalCancelBtn) { console.error("[FATAL DEBUG] Elements modal confirmació no trobats!"); return; } confirmationModalTitle.textContent = title; confirmationModalMessage.innerHTML = message; appState.modalCallback = confirmCallback; modalConfirmBtn.className = 'btn'; if (type === 'danger') { modalConfirmBtn.classList.add('btn-danger'); modalConfirmBtn.textContent = "Confirmar"; } else if (type === 'warning') { modalConfirmBtn.classList.add('btn-warning'); modalConfirmBtn.textContent = "Confirmar"; } else { modalConfirmBtn.classList.add('btn-primary'); modalConfirmBtn.textContent = "Acceptar"; } if (confirmCallback && typeof confirmCallback === 'function') { modalConfirmBtn.style.display = ''; modalCancelBtn.textContent = 'Cancel·lar'; modalConfirmBtn.onclick = () => { if (typeof appState.modalCallback === 'function') { appState.modalCallback(); } Utils.hideConfirmationModal(); }; } else { modalConfirmBtn.style.display = 'none'; modalCancelBtn.textContent = 'Tancar'; modalConfirmBtn.onclick = null; } modalCancelBtn.onclick = Utils.hideConfirmationModal; confirmationModalCloseBtn?.removeEventListener('click', Utils.hideConfirmationModal); confirmationModalCloseBtn?.addEventListener('click', Utils.hideConfirmationModal, { once: true }); confirmationModal.classList.add('visible'); if (modalConfirmBtn.style.display !== 'none') { modalConfirmBtn.focus(); } else { modalCancelBtn.focus(); }
              },
-             hideConfirmationModal: () => { if (confirmationModal) confirmationModal.classList.remove('visible'); appState.modalCallback = null; if(modalConfirmBtn) modalConfirmBtn.onclick = null; if(modalCancelBtn) modalCancelBtn.onclick = null; },
-             showPeopleModal: () => { if (!managePeopleModal || !personModalNameInput) { console.error("[FATAL DEBUG] Elements modal persones no trobats a showPeopleModal!"); Utils.showFeedback("Error obrint gestor persones.", "error"); return; } Render.setPersonFormMode('add'); Render.peopleManagementList(); managePeopleModal.classList.add('visible'); personModalNameInput.focus(); },
-             hidePeopleModal: () => { if (managePeopleModal) managePeopleModal.classList.remove('visible'); },
-             showAssignmentModal: (frameId, assignmentId = null) => { const frame = (appState.eventFrames||[]).find(f => f.id === frameId); if (!frame) { Utils.showFeedback("Error: Marc no trobat.", 'error'); return; } if (!assignmentModal || !assignmentPersonSelect) { console.error("[FATAL DEBUG] Elements modal assignació no trobats!"); Utils.showFeedback("Error obrint formulari assignació.", "error"); return; } appState.currentAssignmentModalFrameId = frameId; assignmentEventFrameIdInput.value = frameId; assignmentModalEventName.textContent = frame.eventName; assignmentDateRangeInfo.textContent = `Rang marc: ${Utils.formatDateRange(frame.generalStartDate, frame.generalEndDate) || 'N/D'}`; if (assignmentId !== null) { const assignment = (appState.assignments||[]).find(a => a.id === assignmentId); if (!assignment) { Utils.showFeedback("Error: Assignació no trobada.", 'error'); return; } Render.setAssignmentFormMode('edit', assignment); } else { Render.setAssignmentFormMode('add', frame); } assignmentModal.classList.add('visible'); assignmentPersonSelect.focus(); },
-             hideAssignmentModal: () => { if (assignmentModal) assignmentModal.classList.remove('visible'); appState.editingAssignmentId = null; appState.currentAssignmentModalFrameId = null; if (assignmentConflictWarning) assignmentConflictWarning.style.display = 'none'; },
-             showFeedback: (message, type = 'success', duration = 3000) => { if (!feedbackArea) return; feedbackArea.textContent = message; feedbackArea.className = 'visible'; feedbackArea.classList.add(`feedback-${type}`); if (feedbackArea.timeoutId) clearTimeout(feedbackArea.timeoutId); feedbackArea.timeoutId = setTimeout(() => { feedbackArea.classList.remove('visible'); feedbackArea.timeoutId = null; }, duration); },
-             debounce: (func, delay) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => { func.apply(this, a); }, delay); }; },
-             checkAssignmentConflicts: (assignmentToCheck) => { const c = []; if (!assignmentToCheck.personId || !assignmentToCheck.eventFrameId || !assignmentToCheck.assignmentStartDate || !/^\d{4}-\d{2}-\d{2}$/.test(assignmentToCheck.assignmentStartDate)) { return c; } let s1, e1; try { s1 = new Date(assignmentToCheck.assignmentStartDate + 'T00:00:00Z'); e1 = assignmentToCheck.assignmentEndDate && /^\d{4}-\d{2}-\d{2}$/.test(assignmentToCheck.assignmentEndDate) ? new Date(assignmentToCheck.assignmentEndDate + 'T23:59:59Z') : new Date(assignmentToCheck.assignmentStartDate + 'T23:59:59Z'); if (isNaN(s1.getTime()) || isNaN(e1.getTime()) || e1 < s1) { return c; } } catch(e) { return c; } (appState.assignments||[]).forEach(exA => { if (exA.id === assignmentToCheck.id || !exA.personId || !exA.assignmentStartDate || !/^\d{4}-\d{2}-\d{2}$/.test(exA.assignmentStartDate) || exA.personId !== assignmentToCheck.personId) { return; } let s2, e2; try { s2 = new Date(exA.assignmentStartDate + 'T00:00:00Z'); e2 = exA.assignmentEndDate && /^\d{4}-\d{2}-\d{2}$/.test(exA.assignmentEndDate) ? new Date(exA.assignmentEndDate + 'T23:59:59Z') : new Date(exA.assignmentStartDate + 'T23:59:59Z'); if (isNaN(s2.getTime()) || isNaN(e2.getTime()) || e2 < s2) return; } catch (e) { return; } if (s1 <= e2 && e1 >= s2) { const cf = (appState.eventFrames||[]).find(f => f.id === exA.eventFrameId); const cn = cf ? cf.eventName : '?'; c.push({ eventName: cn, startDate: exA.assignmentStartDate, endDate: exA.assignmentEndDate }); } }); console.log("[DEBUG] checkAssignmentConflicts: Conflictes trobats:", c.length); return c; }
 
-            // < final Utils per v8 COMPLET >
-        }; // Fi objecte Utils
+             // Oculta el modal de confirmació
+             hideConfirmationModal: () => { if (confirmationModal) confirmationModal.classList.remove('visible'); appState.modalCallback = null; if(modalConfirmBtn) modalConfirmBtn.onclick = null; if(modalCancelBtn) modalCancelBtn.onclick = null; },
+
+             // Mostra el modal de gestió de persones
+             showPeopleModal: () => { if (!managePeopleModal || !personModalNameInput) { console.error("[FATAL DEBUG] Elements modal persones no trobats a showPeopleModal!"); Utils.showFeedback("Error obrint gestor persones.", "error"); return; } Render.setPersonFormMode('add'); Render.peopleManagementList(); managePeopleModal.classList.add('visible'); personModalNameInput.focus(); },
+
+             // Oculta el modal de gestió de persones
+             hidePeopleModal: () => { if (managePeopleModal) managePeopleModal.classList.remove('visible'); },
+
+             // Mostra el modal d'assignació
+             showAssignmentModal: (frameId, assignmentId = null) => { const frame = (appState.eventFrames||[]).find(f => f.id === frameId); if (!frame) { Utils.showFeedback("Error: Marc no trobat.", 'error'); return; } if (!assignmentModal || !assignmentPersonSelect) { console.error("[FATAL DEBUG] Elements modal assignació no trobats!"); Utils.showFeedback("Error obrint formulari assignació.", "error"); return; } appState.currentAssignmentModalFrameId = frameId; assignmentEventFrameIdInput.value = frameId; assignmentModalEventName.textContent = frame.eventName; assignmentDateRangeInfo.textContent = `Rang marc: ${Utils.formatDateRange(frame.generalStartDate, frame.generalEndDate) || 'N/D'}`; if (assignmentId !== null) { const assignment = (appState.assignments||[]).find(a => a.id === assignmentId); if (!assignment) { Utils.showFeedback("Error: Assignació no trobada.", 'error'); return; } Render.setAssignmentFormMode('edit', assignment); } else { Render.setAssignmentFormMode('add', frame); } assignmentModal.classList.add('visible'); assignmentPersonSelect.focus(); },
+
+             // Oculta el modal d'assignació
+             hideAssignmentModal: () => { if (assignmentModal) assignmentModal.classList.remove('visible'); appState.editingAssignmentId = null; appState.currentAssignmentModalFrameId = null; if (assignmentConflictWarning) assignmentConflictWarning.style.display = 'none'; },
+
+             // Mostra el modal de detalls del marc
+            showEventFrameDetailsModal: (frameId) => {
+                if (!eventFrameDetailsModal || !eventFrameDetailsModalTitle || !eventFrameDetailsModalBody || !eventFrameDetailsEditBtn || !eventFrameDetailsDeleteBtn || !eventFrameDetailsCloseBtn) {
+                    console.error("Elements del modal de detalls del marc no trobats.");
+                    Utils.showFeedback("Error mostrant detalls del marc.", "error");
+                    return;
+                }
+
+                const frame = (appState.eventFrames || []).find(f => f.id === frameId);
+                if (!frame) {
+                    Utils.showFeedback("Error: Marc no trobat per mostrar detalls.", 'error');
+                    return;
+                }
+
+                eventFrameDetailsModalTitle.textContent = `Detalls: ${Utils.escapeHTML(frame.eventName)}`;
+
+                const allFrameAssignments = (appState.assignments || []).filter(a => a.eventFrameId === frameId);
+
+                let counts = { 'Sí': 0, 'Pendent': 0, 'No': 0 };
+                allFrameAssignments.forEach(a => { counts[a.status] = (counts[a.status] || 0) + 1; });
+
+                let assistanceTitleParts = [];
+                if (counts['Sí'] > 0) assistanceTitleParts.push(`<span style="color:var(--success-color);">${counts['Sí']} Confirmats</span>`);
+                if (counts['Pendent'] > 0) assistanceTitleParts.push(`<span style="color:var(--warning-color);">${counts['Pendent']} Pendents</span>`);
+                if (counts['No'] > 0) assistanceTitleParts.push(`<span style="color:var(--danger-color);">${counts['No']} Cancel·lats</span>`);
+
+                let assistanceTitle = "Personal: ";
+                if (assistanceTitleParts.length > 0) { assistanceTitle += assistanceTitleParts.join(', ');
+                } else { assistanceTitle += "Cap persona assignada"; }
+
+                let detailsHtml = `
+                    <p><strong>Esdeveniment:</strong> ${Utils.escapeHTML(frame.eventName)}</p>
+                    <p><strong>Dates Generals:</strong> ${Utils.formatDateRange(frame.generalStartDate, frame.generalEndDate)}</p>
+                    <p><strong>Lloc:</strong> ${Utils.escapeHTML(frame.location || '-')}</p>
+                    <p><strong>Notes Generals:</strong><br>${frame.notesGeneral ? Utils.escapeHTML(frame.notesGeneral).replace(/\n/g, '<br>') : '-'}</p>
+                    <hr>
+                    <p><strong>${assistanceTitle}</strong></p>`;
+
+                const confirmedAssignments = allFrameAssignments.filter(a => a.status === 'Sí') .sort((a, b) => (Utils.getPersonNameById(a.personId) || '').localeCompare(Utils.getPersonNameById(b.personId) || '', 'ca'));
+                const pendingAssignments = allFrameAssignments.filter(a => a.status === 'Pendent') .sort((a, b) => (Utils.getPersonNameById(a.personId) || '').localeCompare(Utils.getPersonNameById(b.personId) || '', 'ca'));
+                const cancelledAssignments = allFrameAssignments.filter(a => a.status === 'No') .sort((a, b) => (Utils.getPersonNameById(a.personId) || '').localeCompare(Utils.getPersonNameById(b.personId) || '', 'ca'));
+
+                const buildAssignmentListItem = (a) => {
+                    const personName = Utils.getPersonNameById(a.personId);
+                    const assignmentDates = Utils.formatDateRange(a.assignmentStartDate, a.assignmentEndDate);
+                    const frameDates = Utils.formatDateRange(frame.generalStartDate, frame.generalEndDate);
+                    let statusStyle = ''; let statusText = Utils.escapeHTML(a.status);
+                     switch (a.status) {
+                        case 'Sí': statusStyle = 'color:var(--success-color); font-weight:bold;'; break;
+                        case 'Pendent': statusStyle = 'color:var(--warning-color); font-weight:bold;'; break;
+                        case 'No': statusStyle = 'color:var(--danger-color); font-weight:bold;'; break;
+                    }
+                    return `<li style="margin-bottom:8px;">
+                                <strong>${Utils.escapeHTML(personName)}</strong> - <em style="${statusStyle}">${statusText}</em>
+                                ${(assignmentDates && assignmentDates !== frameDates) ? `<br><small>(Dates Assignació: ${assignmentDates})</small>` : ''}
+                                ${a.notesAssignment ? `<br><small style="font-style:italic;">${Utils.escapeHTML(a.notesAssignment).replace(/\n/g, '<br>')}</small>` : ''}
+                            </li>`;
+                };
+
+                if (confirmedAssignments.length > 0) { detailsHtml += `<h4>Confirmats (${confirmedAssignments.length})</h4><ul style="margin-top:5px; padding-left:20px; list-style-type: disc;">`; confirmedAssignments.forEach(a => { detailsHtml += buildAssignmentListItem(a); }); detailsHtml += '</ul>'; }
+                const pendingAndCancelledAssignments = [...pendingAssignments, ...cancelledAssignments];
+                if (pendingAndCancelledAssignments.length > 0) { detailsHtml += `<h4 style="margin-top:15px;">Pendents / Cancel·lats (${pendingAndCancelledAssignments.length})</h4><ul style="margin-top:5px; padding-left:20px; list-style-type: disc;">`; pendingAndCancelledAssignments.forEach(a => { detailsHtml += buildAssignmentListItem(a); }); detailsHtml += '</ul>'; }
+
+                eventFrameDetailsModalBody.innerHTML = detailsHtml;
+                eventFrameDetailsEditBtn.onclick = () => { Utils.hideEventFrameDetailsModal(); Render.setEventFrameFormMode('edit', frame); if (eventFrameForm) { eventFrameForm.scrollIntoView({ behavior: 'smooth', block: 'start' }); } };
+                eventFrameDetailsDeleteBtn.onclick = () => { Utils.hideEventFrameDetailsModal(); Handlers.requestDeleteEventFrame(frame.id, frame.eventName); };
+                eventFrameDetailsCloseBtn.onclick = Utils.hideEventFrameDetailsModal;
+                if (eventFrameDetailsModalCloseBtnX) { eventFrameDetailsModalCloseBtnX.onclick = Utils.hideEventFrameDetailsModal; }
+                eventFrameDetailsModal.classList.add('visible'); eventFrameDetailsCloseBtn.focus();
+            },
+
+            // Oculta el modal de detalls del marc
+            hideEventFrameDetailsModal: () => {
+                if (eventFrameDetailsModal) { eventFrameDetailsModal.classList.remove('visible'); }
+                if (eventFrameDetailsEditBtn) eventFrameDetailsEditBtn.onclick = null;
+                if (eventFrameDetailsDeleteBtn) eventFrameDetailsDeleteBtn.onclick = null;
+                if (eventFrameDetailsCloseBtn) eventFrameDetailsCloseBtn.onclick = null;
+                if (eventFrameDetailsModalCloseBtnX) eventFrameDetailsModalCloseBtnX.onclick = null;
+            },
+
+            // Mostra missatges de feedback
+             showFeedback: (message, type = 'success', duration = 3000) => { if (!feedbackArea) return; feedbackArea.textContent = message; feedbackArea.className = 'visible'; feedbackArea.classList.add(`feedback-${type}`); if (feedbackArea.timeoutId) clearTimeout(feedbackArea.timeoutId); feedbackArea.timeoutId = setTimeout(() => { feedbackArea.classList.remove('visible'); feedbackArea.timeoutId = null; }, duration); },
+
+             // Funció Debounce per retardar execució
+             debounce: (func, delay) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => { func.apply(this, a); }, delay); }; },
+
+             // Comprova conflictes d'assignació per a una persona en unes dates
+             checkAssignmentConflicts: (assignmentToCheck) => {
+                const c = []; if (!assignmentToCheck.personId || !assignmentToCheck.eventFrameId || !assignmentToCheck.assignmentStartDate || !/^\d{4}-\d{2}-\d{2}$/.test(assignmentToCheck.assignmentStartDate)) { return c; } let s1, e1; try { s1 = new Date(assignmentToCheck.assignmentStartDate + 'T00:00:00Z'); e1 = assignmentToCheck.assignmentEndDate && /^\d{4}-\d{2}-\d{2}$/.test(assignmentToCheck.assignmentEndDate) ? new Date(assignmentToCheck.assignmentEndDate + 'T23:59:59Z') : new Date(assignmentToCheck.assignmentStartDate + 'T23:59:59Z'); if (isNaN(s1.getTime()) || isNaN(e1.getTime()) || e1 < s1) { return c; } } catch(e) { return c; } (appState.assignments||[]).forEach(exA => { if (exA.id === assignmentToCheck.id || !exA.personId || !exA.assignmentStartDate || !/^\d{4}-\d{2}-\d{2}$/.test(exA.assignmentStartDate) || exA.personId !== assignmentToCheck.personId) { return; } let s2, e2; try { s2 = new Date(exA.assignmentStartDate + 'T00:00:00Z'); e2 = exA.assignmentEndDate && /^\d{4}-\d{2}-\d{2}$/.test(exA.assignmentEndDate) ? new Date(exA.assignmentEndDate + 'T23:59:59Z') : new Date(exA.assignmentStartDate + 'T23:59:59Z'); if (isNaN(s2.getTime()) || isNaN(e2.getTime()) || e2 < s2) return; } catch (e) { return; } if (s1 <= e2 && e1 >= s2) { const cf = (appState.eventFrames||[]).find(f => f.id === exA.eventFrameId); const cn = cf ? cf.eventName : '?'; c.push({ eventName: cn, startDate: exA.assignmentStartDate, endDate: exA.assignmentEndDate }); } }); console.log("[DEBUG] checkAssignmentConflicts: Conflictes trobats:", c.length); return c;
+             },
+
+            // Escapa valors per a format CSV
+            escapeCsvValue: (value) => {
+                if (value == null) { return ''; }
+                const stringValue = String(value);
+                if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+                    return `"${stringValue.replace(/"/g, '""')}"`;
+                }
+                return stringValue;
+            }
+
+        };
+                // <<< FI NOVA FUNCIÓ Utils.escapeCsvValue >>>
+               
 
         // --- Person Management Logic ---
         const PeopleManager = {
-            addPerson: (personData) => { const e = (appState.people||[]).find(p => p.name.trim().toLowerCase() === personData.name.trim().toLowerCase()); if (e) { Utils.showFeedback(`Ja existeix: '${Utils.escapeHTML(personData.name)}'.`, 'warning'); return false; } const n = { id: Date.now()+Math.random(), name: personData.name.trim(), role: (personData.role || '').trim(), tel1: (personData.tel1 || '').trim(), tel2: (personData.tel2 || '').trim(), email: (personData.email || '').trim(), web: (personData.web || '').trim(), notes: (personData.notes || '').trim() }; appState.people.push(n); console.log('[DEBUG] PeopleManager.addPerson:', n); return true; },
-            updatePerson: (id, personData) => { const i = (appState.people||[]).findIndex(p => p.id === id); if (i > -1) { const e = (appState.people||[]).find(p => p.id !== id && p.name.trim().toLowerCase() === personData.name.trim().toLowerCase()); if (e) { Utils.showFeedback(`Nom duplicat: '${Utils.escapeHTML(personData.name)}'.`, 'warning'); return false; } appState.people[i] = { id: appState.people[i].id, name: personData.name.trim(), role: (personData.role || '').trim(), tel1: (personData.tel1 || '').trim(), tel2: (personData.tel2 || '').trim(), email: (personData.email || '').trim(), web: (personData.web || '').trim(), notes: (personData.notes || '').trim() }; console.log('[DEBUG] PeopleManager.updatePerson:', appState.people[i]); return true; } console.warn('[DEBUG] PeopleManager.updatePerson: ID no trobat:', id); return false; },
-            deletePerson: (id) => { const il = (appState.people||[]).length; appState.people = (appState.people||[]).filter(p => p.id !== id); if (appState.people.length < il) { const oc = (appState.assignments||[]).length; appState.assignments = (appState.assignments||[]).filter(a => a.personId !== id); console.log(`[DEBUG] Persona ${id} eliminada. ${oc - appState.assignments.length} assignacions eliminades.`); return true; } return false; },
+            addPerson: (personData) => {
+                const e = (appState.people||[]).find(p => p.name.trim().toLowerCase() === personData.name.trim().toLowerCase());
+                if (e) { Utils.showFeedback(`Ja existeix: '${Utils.escapeHTML(personData.name)}'.`, 'warning'); return false; }
+                const n = { id: Date.now()+Math.random(), name: personData.name.trim(), role: (personData.role || '').trim(), tel1: (personData.tel1 || '').trim(), tel2: (personData.tel2 || '').trim(), email: (personData.email || '').trim(), web: (personData.web || '').trim(), notes: (personData.notes || '').trim() };
+                appState.people.push(n);
+                // < inici marcar canvis no guardats >
+                Utils.setUnsavedChanges(true);
+                // < final marcar canvis no guardats >
+                console.log('[DEBUG] PeopleManager.addPerson:', n); return true;
+            },
+            updatePerson: (id, personData) => {
+                const i = (appState.people||[]).findIndex(p => p.id === id);
+                if (i > -1) {
+                    const e = (appState.people||[]).find(p => p.id !== id && p.name.trim().toLowerCase() === personData.name.trim().toLowerCase());
+                    if (e) { Utils.showFeedback(`Nom duplicat: '${Utils.escapeHTML(personData.name)}'.`, 'warning'); return false; }
+                    appState.people[i] = { id: appState.people[i].id, name: personData.name.trim(), role: (personData.role || '').trim(), tel1: (personData.tel1 || '').trim(), tel2: (personData.tel2 || '').trim(), email: (personData.email || '').trim(), web: (personData.web || '').trim(), notes: (personData.notes || '').trim() };
+                    // < inici marcar canvis no guardats >
+                    Utils.setUnsavedChanges(true);
+                    // < final marcar canvis no guardats >
+                    console.log('[DEBUG] PeopleManager.updatePerson:', appState.people[i]); return true;
+                }
+                console.warn('[DEBUG] PeopleManager.updatePerson: ID no trobat:', id); return false;
+            },
+            deletePerson: (id) => {
+                const il = (appState.people||[]).length;
+                appState.people = (appState.people||[]).filter(p => p.id !== id);
+                if (appState.people.length < il) {
+                    const originalAssignmentsCount = (appState.assignments || []).length;
+                    appState.assignments = (appState.assignments||[]).filter(a => a.personId !== id);
+                    const assignmentsRemoved = originalAssignmentsCount - (appState.assignments || []).length;
+                    // < inici marcar canvis no guardats >
+                    Utils.setUnsavedChanges(true);
+                    // < final marcar canvis no guardats >
+                    console.log(`[DEBUG] Persona ${id} eliminada. ${assignmentsRemoved} assignacions eliminades.`);
+                    return true;
+                }
+                return false;
+            },
             findPerson: (id) => (appState.people || []).find(p => p.id === id)
         }; // Fi objecte PeopleManager
 
         // --- Rendering Functions ---
         const Render = {
-            renderAll: () => { if (!isDataLoaded) { console.log("RenderAll v8 skipped: data not loaded."); return; } console.log("RenderAll v8 executed."); Render.eventsTable(); Render.peopleManagementList(); Render.peopleSelectOptions(); Render.updateDatalists(); Render.calendar(); Render.updateSortIndicators(); },
-            eventsTable: () => { const allFrames = appState.eventFrames || []; const allAssignments = appState.assignments || []; let filteredFrames = [...allFrames]; const sf=appState.filters.search.toLowerCase().trim(), ss=appState.filters.status, sp=appState.filters.personId?parseFloat(appState.filters.personId):null; let sD=null, eD=null; try{sD=appState.filters.startDate?new Date(appState.filters.startDate+'T00:00:00Z'):null;}catch(e){} try{eD=appState.filters.endDate?new Date(appState.filters.endDate+'T23:59:59Z'):null;}catch(e){} if(sf||ss||sp!==null||sD||eD){filteredFrames=filteredFrames.filter(f=>{const aF=allAssignments.filter(a=>a.eventFrameId===f.id); let tm=!sf||((f.eventName||'').toLowerCase().includes(sf)||(f.location||'').toLowerCase().includes(sf)||(f.notesGeneral||'').toLowerCase().includes(sf)||aF.some(a=>(Utils.getPersonNameById(a.personId)||'').toLowerCase().includes(sf)||(a.notesAssignment||'').toLowerCase().includes(sf))); const sm=!ss||aF.some(a=>a.status===ss); const pm=sp===null||aF.some(a=>a.personId===sp); let dm=true; if(sD||eD){const fS=f.generalStartDate?new Date(f.generalStartDate+'T00:00:00Z'):null; const fE=f.generalEndDate?new Date(f.generalEndDate+'T23:59:59Z'):(fS?new Date(f.generalStartDate+'T23:59:59Z'):null); let fi=fS&&fE&&(!sD||fE>=sD)&&(!eD||fS<=eD); const ai=aF.some(a=>{const as=a.assignmentStartDate?new Date(a.assignmentStartDate+'T00:00:00Z'):null; const ae=a.assignmentEndDate?new Date(a.assignmentEndDate+'T23:59:59Z'):(as?new Date(a.assignmentStartDate+'T23:59:59Z'):null); return as&&ae&&(!sD||ae>=sD)&&(!eD||as<=eD);}); dm=fi||ai;} return tm&&sm&&pm&&dm;});} const sk=appState.sort.key, sd=appState.sort.direction==='asc'?1:-1; filteredFrames.sort((a,b)=>{let vA=a[sk],vB=b[sk]; if(sk==='generalStartDate'){const dA=vA?new Date(vA).getTime():(sd===1?Infinity:-Infinity); const dB=vB?new Date(vB).getTime():(sd===1?Infinity:-Infinity); vA=isNaN(dA)?(sd===1?Infinity:-Infinity):dA; vB=isNaN(dB)?(sd===1?Infinity:-Infinity):dB;}else if(typeof vA==='string'){vA=(vA||'').toLowerCase(); vB=(vB||'').toLowerCase();}else if(vA==null){vA=(sd===1?Infinity:-Infinity);}else if(vB==null){vB=(sd===1?Infinity:-Infinity);} if(vA<vB)return -1*sd; if(vA>vB)return 1*sd; return 0;}); if(eventsTableBody) eventsTableBody.innerHTML=''; else {console.error("eventsTableBody no trobat!"); return;} if(eventFrameCountSpan) eventFrameCountSpan.textContent=allFrames.length; if(assignmentCountSpan) assignmentCountSpan.textContent=allAssignments.length; if(allFrames.length===0){if(eventsTable)eventsTable.style.display='none'; if(noEventsMessage){noEventsMessage.style.display='block'; noEventsMessage.textContent="Cap esdeveniment marc.";}}else if(filteredFrames.length===0){if(eventsTable)eventsTable.style.display='none'; if(noEventsMessage){noEventsMessage.style.display='block'; noEventsMessage.textContent="Cap marc coincideix amb filtres.";}}else{if(eventsTable)eventsTable.style.display=''; if(noEventsMessage)noEventsMessage.style.display='none'; filteredFrames.forEach(frame=>{const assignmentsForFrame=allAssignments.filter(a=>a.eventFrameId===frame.id).sort((a,b)=>{const nA=Utils.getPersonNameById(a?a.personId:null)||''; const nB=Utils.getPersonNameById(b?b.personId:null)||''; return nA.localeCompare(nB,'ca',{sensitivity:'base'});}); eventsTableBody.appendChild(Render.createEventFrameRow(frame,assignmentsForFrame)); assignmentsForFrame.forEach(assignment=>{eventsTableBody.appendChild(Render.createAssignmentDetailRow(assignment));});});}},
+            renderAll: () => { if (!isDataLoaded) { console.log("RenderAll v8 skipped: data not loaded."); return; } console.log("RenderAll v8 executed."); Render.eventsTable(); Render.peopleManagementList(); Render.peopleSelectOptions(); Render.eventFrameSelectOptions(); Render.updateDatalists(); Render.calendar(); Render.updateSortIndicators(); Render.renderSummaries();},
+            
+                      // <<< INICI BLOC A SUBSTITUIR (Part inicial de Render.eventsTable) >>>
+                    // Dins de Render = { ... }
+        // Dins de la funció eventsTable: () => { ... }
+        eventsTable: () => {
+            const allFrames = appState.eventFrames || [];
+            const allAssignments = appState.assignments || [];
+
+            // Obtenir valors dels filtres (sense canvis aquí)
+            const sf = appState.filters.search.toLowerCase().trim();
+            const ss = appState.filters.status;
+            const sp = appState.filters.personId ? parseFloat(appState.filters.personId) : null;
+            const se = appState.filters.eventFrameId ? parseFloat(appState.filters.eventFrameId) : null;
+            let sD = null, eD = null;
+            try { sD = appState.filters.startDate ? new Date(appState.filters.startDate + 'T00:00:00Z') : null; } catch (e) {}
+            try { eD = appState.filters.endDate ? new Date(appState.filters.endDate + 'T23:59:59Z') : null; } catch (e) {}
+
+            let filteredFrames = [...allFrames];
+
+            // <<< INICI BLOC A SUBSTITUIR (Lògica de Filtratge) >>>
+            // Filtrar Marcs basat en TOTS els filtres combinats
+            if (sf || ss || sp !== null || sD || eD || se !== null) {
+                filteredFrames = filteredFrames.filter(frame => {
+                    // 1. Comprovar filtre d'esdeveniment (obligatori si està actiu)
+                    if (se !== null && frame.id !== se) {
+                        return false; // No coincideix amb el filtre d'esdeveniment
+                    }
+
+                    // 2. Obtenir assignacions NOMÉS d'aquest marc
+                    const assignmentsForThisFrame = allAssignments.filter(a => a.eventFrameId === frame.id);
+
+                    // 3. Filtrar les assignacions segons els filtres d'assignació (estat, persona, dates)
+                    const filteredAssignments = assignmentsForThisFrame.filter(a => {
+                        const statusMatch = !ss || (a.status === ss);
+                        const personMatch = sp === null || (a.personId === sp);
+
+                        let dateMatch = true;
+                        if (sD || eD) {
+                            const assignStart = a.assignmentStartDate ? new Date(a.assignmentStartDate + 'T00:00:00Z') : null;
+                            const assignEnd = a.assignmentEndDate ? new Date(a.assignmentEndDate + 'T23:59:59Z') : (assignStart ? new Date(a.assignmentStartDate + 'T23:59:59Z') : null);
+                            dateMatch = assignStart && assignEnd && (!sD || assignEnd >= sD) && (!eD || assignStart <= eD);
+                        }
+                        return statusMatch && personMatch && dateMatch;
+                    });
+
+                    // 4. Comprovar el filtre de text (cerca general)
+                    let textMatch = !sf || (
+                        (frame.eventName || '').toLowerCase().includes(sf) ||
+                        (frame.location || '').toLowerCase().includes(sf) ||
+                        (frame.notesGeneral || '').toLowerCase().includes(sf) ||
+                        // Comprovar si *alguna* de les assignacions (filtrades o no) coincideix amb el text
+                        assignmentsForThisFrame.some(a =>
+                            (Utils.getPersonNameById(a.personId) || '').toLowerCase().includes(sf) ||
+                            (a.notesAssignment || '').toLowerCase().includes(sf)
+                        )
+                    );
+
+                    // 5. Decisió final: El marc es mostra si...
+                    //    - Compleix el filtre de text (si n'hi ha)
+                    //    - I ( O bé no hi ha filtres d'assignació (ss, sp, sD, eD)
+                    //          O bé hi ha *almenys una* assignació que compleix aquests filtres )
+                    const hasAssignmentFilters = ss || sp !== null || sD || eD;
+                    return textMatch && (!hasAssignmentFilters || filteredAssignments.length > 0);
+
+                });
+            }
+            // <<< FI BLOC A SUBSTITUIR (Lògica de Filtratge) >>>
+
+            // Ordenació (sense canvis aquí)
+            const sk = appState.sort.key, sd = appState.sort.direction === 'asc' ? 1 : -1;
+            filteredFrames.sort((a, b) => {
+                // ... (lògica d'ordenació existent) ...
+                  let vA = a[sk], vB = b[sk];
+                  // ... (resta de la lògica d'ordenació) ...
+                  if (sk === 'isPersonnelComplete') {
+                     const valA = vA === true ? 1 : 0;
+                     const valB = vB === true ? 1 : 0;
+                     if (valA < valB) return -1 * sd;
+                     if (valA > valB) return 1 * sd;
+                     const dateA = new Date(a.generalStartDate || 0).getTime();
+                     const dateB = new Date(b.generalStartDate || 0).getTime();
+                     if (dateA < dateB) return 1;
+                     if (dateA > dateB) return -1;
+                     return 0;
+                 } else if (sk === 'generalStartDate') {
+                     const dA = vA ? new Date(vA).getTime() : (sd === 1 ? Infinity : -Infinity);
+                     const dB = vB ? new Date(vB).getTime() : (sd === 1 ? Infinity : -Infinity);
+                     vA = isNaN(dA) ? (sd === 1 ? Infinity : -Infinity) : dA;
+                     vB = isNaN(dB) ? (sd === 1 ? Infinity : -Infinity) : dB;
+                 } else if (typeof vA === 'string') {
+                     vA = (vA || '').toLowerCase();
+                     vB = (vB || '').toLowerCase();
+                 } else if (vA == null) { vA = (sd === 1 ? Infinity : -Infinity);
+                 } else if (vB == null) { vB = (sd === 1 ? Infinity : -Infinity); }
+                 if (vA < vB) return -1 * sd;
+                 if (vA > vB) return 1 * sd;
+                 if (sk !== 'isPersonnelComplete') {
+                     const nameA = (a.eventName || '').toLowerCase();
+                     const nameB = (b.eventName || '').toLowerCase();
+                     if (nameA < nameB) return -1;
+                     if (nameA > nameB) return 1;
+                 }
+                 return 0;
+            }); // <<< Fi de sort
+
+            // Buidar i comprovar si hi ha resultats (sense canvis aquí)
+            if (eventsTableBody) eventsTableBody.innerHTML = '';
+            else { console.error("eventsTableBody no trobat!"); return; }
+            if (eventFrameCountSpan) eventFrameCountSpan.textContent = allFrames.length;
+            if (assignmentCountSpan) assignmentCountSpan.textContent = allAssignments.length;
+
+            if (allFrames.length === 0) { /* ... */ }
+            else if (filteredFrames.length === 0) { /* ... */ }
+            else {
+                // Renderitzar les files (ARA HEM DE PASSAR NOMÉS LES ASSIGNACIONS FILTRADES)
+                if (eventsTable) eventsTable.style.display = '';
+                if (noEventsMessage) noEventsMessage.style.display = 'none';
+
+                filteredFrames.forEach(frame => {
+                    // Filtrar les assignacions per a AQUEST marc que compleixen els filtres
+                    const assignmentsToDisplay = allAssignments.filter(a => {
+                        if (a.eventFrameId !== frame.id) return false; // Només d'aquest marc
+                        const statusMatch = !ss || (a.status === ss);
+                        const personMatch = sp === null || (a.personId === sp);
+                        let dateMatch = true;
+                        if (sD || eD) {
+                            const assignStart = a.assignmentStartDate ? new Date(a.assignmentStartDate + 'T00:00:00Z') : null;
+                            const assignEnd = a.assignmentEndDate ? new Date(a.assignmentEndDate + 'T23:59:59Z') : (assignStart ? new Date(a.assignmentStartDate + 'T23:59:59Z') : null);
+                            dateMatch = assignStart && assignEnd && (!sD || assignEnd >= sD) && (!eD || assignStart <= eD);
+                        }
+                        // Comprovació adicional del filtre de text per si només coincideix l'assignació
+                         let textMatchInAssignment = !sf ||
+                             (Utils.getPersonNameById(a.personId) || '').toLowerCase().includes(sf) ||
+                             (a.notesAssignment || '').toLowerCase().includes(sf);
+
+                         // Perquè una assignació es mostri, ha de complir els filtres d'estat, persona, data
+                         // I si hi ha filtre de text, o bé el marc o bé l'assignació han de coincidir
+                         let overallTextMatch = !sf ||
+                            (frame.eventName || '').toLowerCase().includes(sf) ||
+                            (frame.location || '').toLowerCase().includes(sf) ||
+                            (frame.notesGeneral || '').toLowerCase().includes(sf) ||
+                            textMatchInAssignment;
+
+
+                         // L'assignació es mostra si compleix ELS SEUS filtres I el filtre de text general
+                         return statusMatch && personMatch && dateMatch && overallTextMatch;
+
+                    }).sort((a, b) => { // Ordenar les assignacions a mostrar
+                        const statusOrder = { 'Sí': 1, 'Pendent': 2, 'No': 3 };
+                        const statusA = statusOrder[a.status] || 4;
+                        const statusB = statusOrder[b.status] || 4;
+                        if (statusA !== statusB) return statusA - statusB;
+                        const nA = Utils.getPersonNameById(a.personId) || '';
+                        const nB = Utils.getPersonNameById(b.personId) || '';
+                        return nA.localeCompare(nB, 'ca', { sensitivity: 'base' });
+                    });
+
+                    // Obtenir TOTES les assignacions per calcular els recomptes totals del marc
+                    const allAssignmentsForFrameCounts = allAssignments.filter(a => a.eventFrameId === frame.id);
+
+                    // Renderitzar la fila del marc (passant les assignacions totals per als recomptes)
+                    eventsTableBody.appendChild(Render.createEventFrameRow(frame, allAssignmentsForFrameCounts));
+
+                    // Renderitzar NOMÉS les files de detall de les assignacions filtrades
+                    assignmentsToDisplay.forEach(assignment => {
+                        eventsTableBody.appendChild(Render.createAssignmentDetailRow(assignment));
+                    });
+                });
+            } // <<< Fi del else (renderitzar)
+
+        }, // <<< Fi de eventsTable
 
             // < inici Render.createEventFrameRow v8.6 >
             createEventFrameRow: (frame, assignments) => {
@@ -1114,7 +1751,15 @@ Docs & License: https://fullcalendar.io
                 if (!row) { console.error("tr no trobat dins de event-frame-row-template"); return document.createElement('tr'); }
                 row.dataset.frameId = frame.id;
 
-                // Cel·la 1: Checkbox
+                // < inici afegir classe si el personal està complet >
+                if (frame.isPersonnelComplete) {
+                    row.classList.add('frame-personnel-marked-complete');
+                } else {
+                    row.classList.remove('frame-personnel-marked-complete'); // Assegurar que no hi és si no està complet
+                }
+                // < final afegir classe si el personal està complet >
+
+                // Cel·la 1: Icona desplegable ja està a la plantilla. Checkbox:
                 const checkboxCell = row.querySelector('.personnel-complete-checkbox');
                 if (checkboxCell) { checkboxCell.checked = frame.isPersonnelComplete || false; checkboxCell.dataset.frameId = frame.id; }
 
@@ -1171,6 +1816,8 @@ Docs & License: https://fullcalendar.io
                 const safeStatus = Utils.escapeHTML(assignment.status || 'Pendent');
                 row.className = `assignment-detail-row status-${safeStatus}`;
 
+               
+
                 // Les 4 primeres TD ja estan al template com a buides amb classe cell-hidden-detail
 
                 // Cel·la 5: Persona/Grup
@@ -1188,12 +1835,269 @@ Docs & License: https://fullcalendar.io
                 return row;
             },
             // < final Render.createAssignmentDetailRow v8.6 >
+            // < inici Render.updateFrameCounts >
+            updateFrameCounts: (frameId) => {
+                const frameRow = document.querySelector(`.event-frame-row[data-frame-id="${frameId}"]`);
+                if (!frameRow) {
+                    console.warn(`updateFrameCounts: No s'ha trobat la fila del marc amb ID ${frameId}`);
+                    return;
+                }
 
+                const frame = (appState.eventFrames || []).find(f => f.id === frameId);
+                if (!frame) {
+                    console.warn(`updateFrameCounts: No s'ha trobat el marc a appState amb ID ${frameId}`);
+                    return;
+                }
+
+                const assignmentsForFrame = (appState.assignments || []).filter(a => a.eventFrameId === frameId);
+                let counts = { 'Sí': 0, 'Pendent': 0, 'No': 0 };
+                assignmentsForFrame.forEach(a => { counts[a.status] = (counts[a.status] || 0) + 1; });
+
+                const countsCell = frameRow.querySelector('.frame-counts');
+                if (countsCell) {
+                    countsCell.innerHTML = ''; // Buidem per reconstruir
+                    const countYesSpan = document.createElement('span');
+                    countYesSpan.className = 'count-yes';
+                    countYesSpan.title = 'Confirmats';
+                    if (counts['Sí'] > 0) countYesSpan.innerHTML = `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19L21 7l-1.41-1.41z"></path></svg><span>${counts['Sí']}</span>`;
+
+                    const countPendingSpan = document.createElement('span');
+                    countPendingSpan.className = 'count-pending';
+                    countPendingSpan.title = 'Pendents';
+                    if (counts['Pendent'] > 0) countPendingSpan.innerHTML = `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8s8 3.58 8 8s-3.58 8-8 8zm0-13c-1.1 0-2 .9-2 2h-2v2h2c0 1.1.9 2 2 2s2-.9 2-2h2V9h-2c0-1.1-.9-2-2-2zm-1 6.5V17h2v-1.5z"></path></svg><span>${counts['Pendent']}</span>`;
+
+                    const countNoSpan = document.createElement('span');
+                    countNoSpan.className = 'count-no';
+                    countNoSpan.title = 'Cancel·lats';
+                    if (counts['No'] > 0) countNoSpan.innerHTML = `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8zm3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z"></path></svg><span>${counts['No']}</span>`;
+                    
+                    if (counts['Sí'] > 0) countsCell.appendChild(countYesSpan);
+                    if (counts['Pendent'] > 0) countsCell.appendChild(countPendingSpan);
+                    if (counts['No'] > 0) countsCell.appendChild(countNoSpan);
+                }
+                 // Actualitzar el comptador global de la capçalera de la llista d'esdeveniments
+                if (assignmentCountSpan) assignmentCountSpan.textContent = (appState.assignments || []).length;
+            },
+            // < final Render.updateFrameCounts >
             updateDatalists: () => { const uEN = Utils.getUniqueValues(appState.eventFrames || [], 'eventName'); if (eventNameDatalist) { eventNameDatalist.innerHTML = uEN.map(n => `<option value="${Utils.escapeHTML(n)}"></option>`).join(''); } else { console.warn("Element #event-name-datalist no trobat."); } const uL = Utils.getUniqueValues(appState.eventFrames || [], 'location'); if (locationDatalist) { locationDatalist.innerHTML = uL.map(l => `<option value="${Utils.escapeHTML(l)}"></option>`).join(''); } else { console.warn("Element #location-datalist no trobat."); } },
             peopleManagementList: () => { if (!peopleList || !personListItemTemplate || !noPeopleMessage) { console.error("Elements modal gestió persones no trobats."); return; } peopleList.innerHTML = ''; if (!appState.people || appState.people.length === 0) { noPeopleMessage.style.display = 'block'; } else { noPeopleMessage.style.display = 'none'; const sP = [...appState.people].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ca', { sensitivity: 'base' })); sP.forEach(p => { const tC=personListItemTemplate.content.cloneNode(true); const li=tC.querySelector('li'); if (!li) return; li.dataset.id=p.id; const setS=(sel,cnt,isL=false,lT='')=>{const s=li.querySelector(sel); if(s){if(cnt){if(isL&&lT==='web'&&cnt.startsWith('http')){s.innerHTML=`<a href="${Utils.escapeHTML(cnt)}" target="_blank" rel="noopener noreferrer">${Utils.escapeHTML(cnt)}</a>`;}else if(isL&&lT==='email'&&cnt.includes('@')){s.innerHTML=`<a href="mailto:${Utils.escapeHTML(cnt)}">${Utils.escapeHTML(cnt)}</a>`;}else{s.textContent=cnt;} s.style.display='block';}else{s.style.display='none';}}else{console.warn(`Selector no trobat: ${sel}`);}}; setS('.person-item-name', p.name || 'Sense Nom'); setS('.person-item-role', p.role); setS('.person-item-email', p.email, true, 'email'); const ph=[p.tel1,p.tel2].filter(Boolean).join(' / '); setS('.person-item-phones',ph); setS('.person-item-web',p.web,true,'web'); setS('.person-item-notes',p.notes); const eB=li.querySelector('.edit-person-btn'); if(eB){eB.dataset.id=p.id;eB.setAttribute('aria-label',`Editar ${Utils.escapeHTML(p.name||'p')}`);} const dB=li.querySelector('.delete-person-btn'); if(dB){dB.dataset.id=p.id;dB.setAttribute('aria-label',`Eliminar ${Utils.escapeHTML(p.name||'p')}`);} peopleList.appendChild(li); }); } },
             peopleSelectOptions: () => { if (!appState.people) return; const sP=[...appState.people].sort((a,b)=>(a.name||'').localeCompare(b.name||'','ca',{sensitivity:'base'})); const oH=sP.map(p=>`<option value="${p.id}">${Utils.escapeHTML(p.name)}</option>`).join(''); const cFV=filterPersonSelect?filterPersonSelect.value:''; const cAV=assignmentPersonSelect?assignmentPersonSelect.value:''; if(filterPersonSelect){filterPersonSelect.innerHTML='<option value="">-- Totes --</option>'+oH; if(cFV&&sP.some(p=>String(p.id)===cFV)){filterPersonSelect.value=cFV;}else{filterPersonSelect.value='';}} if(assignmentPersonSelect){assignmentPersonSelect.innerHTML='<option value="">-- Selecciona --</option>'+oH; if(cAV&&sP.some(p=>String(p.id)===cAV)){assignmentPersonSelect.value=cAV;}else{assignmentPersonSelect.value='';}} },
-            renderSummaries: () => { /* console.log("RenderSummaries inactiu a v8"); */ },
-            calendar: () => { if(!isDataLoaded||!calendarEl){return;} if(typeof FullCalendar==='undefined'){console.error("FullCalendar no carregat!"); if(calendarEl)calendarEl.innerHTML="<p style='color:red;'>Error: FullCalendar no carregat.</p>"; return;} const cE=(appState.eventFrames||[]).filter(f=>f.generalStartDate&&/^\d{4}-\d{2}-\d{2}$/.test(f.generalStartDate)).map(f=>{let eE=null; if(f.generalEndDate&&/^\d{4}-\d{2}-\d{2}$/.test(f.generalEndDate)&&f.generalEndDate>=f.generalStartDate){try{const e=new Date(f.generalEndDate+'T00:00:00Z');e.setUTCDate(e.getUTCDate()+1);eE=e.toISOString().split('T')[0];}catch(e){}} const eC=f.isPersonnelComplete?'var(--success-color)':'var(--primary-color)'; const aF=(appState.assignments||[]).filter(a=>a.eventFrameId===f.id).map(a=>({personName:Utils.getPersonNameById(a.personId),status:a.status||'Pendent',notes:a.notesAssignment||'',startDate:a.assignmentStartDate,endDate:a.assignmentEndDate})); return{id:String(f.id),title:f.eventName,start:f.generalStartDate,end:eE,allDay:true,backgroundColor:eC,borderColor:eC,extendedProps:{isFrame:true,frameLocation:f.location,frameNotes:f.notesGeneral,assignments:aF}};}); try{if(calendarInstance){calendarInstance.setOption('events',cE); console.log("FullCalendar events updated.");}else{calendarInstance=new FullCalendar.Calendar(calendarEl,{views:{multiMonthTwo:{type:'multiMonth',duration:{months:2},buttonText:'2 Mesos'},multiMonthFour:{type:'multiMonth',duration:{months:4},buttonText:'4 Mesos'}},initialView:'multiMonthTwo',locale:'ca',firstDay:1,headerToolbar:{left:'prev,next today',center:'title',right:'multiMonthFour,multiMonthTwo,dayGridMonth,timeGridWeek,listWeek'},events:cE,editable:false,selectable:false,eventClick:Handlers.calendarEventClick,height:'auto'}); calendarInstance.render(); console.log("FullCalendar initialized for v8.");}}catch(e){console.error("Error initializing/updating FullCalendar:",e); if(calendarEl)calendarEl.innerHTML="<p style='color:red;'>Error mostrant calendari.</p>"; calendarInstance=null;}},
+            // <<< INICI NOVA FUNCIÓ Render.eventFrameSelectOptions >>>
+            eventFrameSelectOptions: () => {
+                if (!filterEventFrameSelect) return; // Comprova si l'element existeix
+                const frames = appState.eventFrames || [];
+                // Ordenar marcs per nom per al desplegable
+                const sortedFrames = [...frames].sort((a, b) =>
+                    (a.eventName || '').localeCompare(b.eventName || '', 'ca', { sensitivity: 'base' })
+                );
+                const optionsHtml = sortedFrames.map(frame =>
+                    `<option value="${frame.id}">${Utils.escapeHTML(frame.eventName)}</option>`
+                ).join('');
+                const currentFilterValue = appState.filters.eventFrameId; // Obtenir valor actual del filtre
+                filterEventFrameSelect.innerHTML = '<option value="">-- Tots --</option>' + optionsHtml;
+
+                // Restaurar la selecció si existeix un valor filtrat
+                if (currentFilterValue && sortedFrames.some(f => String(f.id) === currentFilterValue)) {
+                    filterEventFrameSelect.value = currentFilterValue;
+                } else {
+                    filterEventFrameSelect.value = ''; // Si no, seleccionar "-- Tots --"
+                }
+            },
+            // <<< FI NOVA FUNCIÓ Render.eventFrameSelectOptions >>>
+            renderSummaries: () => {
+                if (!isDataLoaded) return;
+
+                const summariesContainerByEvent = document.getElementById('summary-by-event-name');
+                const summariesContainerByDate = document.getElementById('summary-by-start-date');
+                const summariesContainerByPerson = document.getElementById('summary-by-person');
+
+                if (!summariesContainerByEvent || !summariesContainerByDate || !summariesContainerByPerson) {
+                    console.warn("No s'han trobat els contenidors de resum.");
+                    return;
+                }
+
+                summariesContainerByEvent.innerHTML = ''; // Netejar contingut previ
+                summariesContainerByDate.innerHTML = '';
+                summariesContainerByPerson.innerHTML = '';
+
+                const frames = appState.eventFrames || [];
+                const assignments = appState.assignments || [];
+                const people = appState.people || [];
+
+                let hasContentForEvent = false;
+                let hasContentForDate = false;
+                let hasContentForPerson = false;
+
+                // 1. Agrupat per Nom Esdeveniment
+                if (frames.length > 0 && assignments.length > 0) {
+                    // Ordenar marcs per data d'inici, després per nom
+                    const sortedFrames = [...frames].sort((a, b) => {
+                        const dateA = new Date(a.generalStartDate).getTime();
+                        const dateB = new Date(b.generalStartDate).getTime();
+                        if (dateA !== dateB) return dateA - dateB;
+                        return (a.eventName || '').localeCompare(b.eventName || '', 'ca');
+                    });
+
+                    sortedFrames.forEach(frame => {
+                        const frameAssignments = assignments.filter(a => a.eventFrameId === frame.id)
+                            .sort((a, b) => (Utils.getPersonNameById(a.personId) || '').localeCompare(Utils.getPersonNameById(b.personId) || '', 'ca'));
+
+                        if (frameAssignments.length > 0) {
+                            hasContentForEvent = true;
+                            let tableHtml = `<div class="summary-group-header">Esdeveniment: ${Utils.escapeHTML(frame.eventName)}</div>`;
+                            tableHtml += '<table><thead><tr><th>Persona/Grup</th><th>Dates Assign.</th><th>Estat</th></tr></thead><tbody>';
+                            frameAssignments.forEach(a => {
+                                tableHtml += `<tr>
+                                    <td>${Utils.escapeHTML(Utils.getPersonNameById(a.personId))}</td>
+                                    <td>${Utils.formatDateRange(a.assignmentStartDate, a.assignmentEndDate)}</td>
+                                    <td class="status-${Utils.escapeHTML(a.status)}">${Utils.escapeHTML(a.status)}</td>
+                                </tr>`;
+                            });
+                            tableHtml += '</tbody></table>';
+                            summariesContainerByEvent.innerHTML += tableHtml;
+                        }
+                    });
+                }
+                if (!hasContentForEvent) {
+                    summariesContainerByEvent.innerHTML = '<p>Cap assignació per mostrar agrupada per esdeveniment.</p>';
+                }
+
+                // 2. Agrupat per Data Inici (d'assignació)
+                if (assignments.length > 0) {
+                    const assignmentsByStartDate = {};
+                    assignments.forEach(a => {
+                        if (a.assignmentStartDate) {
+                            if (!assignmentsByStartDate[a.assignmentStartDate]) {
+                                assignmentsByStartDate[a.assignmentStartDate] = [];
+                            }
+                            assignmentsByStartDate[a.assignmentStartDate].push(a);
+                        }
+                    });
+
+                    const uniqueStartDates = Object.keys(assignmentsByStartDate).sort();
+
+                    if (uniqueStartDates.length > 0) {
+                        hasContentForDate = true;
+                        uniqueStartDates.forEach(dateStr => {
+                            let tableHtml = `<div class="summary-group-header">Data Inici Assignació: ${Utils.formatSingleDate(dateStr)}</div>`;
+                            tableHtml += '<table><thead><tr><th>Esdeveniment</th><th>Persona/Grup</th><th>Estat</th></tr></thead><tbody>';
+                            const assignmentsForDate = assignmentsByStartDate[dateStr].sort((a,b) => {
+                                const eventNameA = Utils.escapeHTML(frames.find(f => f.id === a.eventFrameId)?.eventName || 'N/A');
+                                const eventNameB = Utils.escapeHTML(frames.find(f => f.id === b.eventFrameId)?.eventName || 'N/A');
+                                if (eventNameA !== eventNameB) return eventNameA.localeCompare(eventNameB, 'ca');
+                                return (Utils.getPersonNameById(a.personId) || '').localeCompare(Utils.getPersonNameById(b.personId) || '', 'ca');
+                            });
+
+                            assignmentsForDate.forEach(a => {
+                                const frame = frames.find(f => f.id === a.eventFrameId);
+                                tableHtml += `<tr>
+                                    <td>${Utils.escapeHTML(frame ? frame.eventName : 'Esdeveniment Desconegut')}</td>
+                                    <td>${Utils.escapeHTML(Utils.getPersonNameById(a.personId))}</td>
+                                    <td class="status-${Utils.escapeHTML(a.status)}">${Utils.escapeHTML(a.status)}</td>
+                                </tr>`;
+                            });
+                            tableHtml += '</tbody></table>';
+                            summariesContainerByDate.innerHTML += tableHtml;
+                        });
+                    }
+                }
+                if (!hasContentForDate) {
+                    summariesContainerByDate.innerHTML = '<p>Cap assignació per mostrar agrupada per data d\'inici.</p>';
+                }
+
+
+                // 3. Agrupat per Persona/Grup
+                if (people.length > 0 && assignments.length > 0) {
+                    const sortedPeople = [...people].sort((a,b) => (a.name || '').localeCompare(b.name || '', 'ca'));
+
+                    sortedPeople.forEach(person => {
+                        const personAssignments = assignments.filter(a => a.personId === person.id)
+                            .sort((a, b) => {
+                                const dateA = new Date(a.assignmentStartDate).getTime();
+                                const dateB = new Date(b.assignmentStartDate).getTime();
+                                if (dateA !== dateB) return dateA - dateB;
+                                const eventNameA = Utils.escapeHTML(frames.find(f => f.id === a.eventFrameId)?.eventName || 'N/A');
+                                const eventNameB = Utils.escapeHTML(frames.find(f => f.id === b.eventFrameId)?.eventName || 'N/A');
+                                return eventNameA.localeCompare(eventNameB, 'ca');
+                            });
+
+                        if (personAssignments.length > 0) {
+                            hasContentForPerson = true;
+                            let tableHtml = `<div class="summary-group-header">${person.role ? Utils.escapeHTML(person.role) + ': ' : ''}${Utils.escapeHTML(person.name)}</div>`;
+                            tableHtml += '<table><thead><tr><th>Esdeveniment</th><th>Dates Assign.</th><th>Estat</th></tr></thead><tbody>';
+                            personAssignments.forEach(a => {
+                                const frame = frames.find(f => f.id === a.eventFrameId);
+                                tableHtml += `<tr>
+                                    <td>${Utils.escapeHTML(frame ? frame.eventName : 'Esdeveniment Desconegut')}</td>
+                                    <td>${Utils.formatDateRange(a.assignmentStartDate, a.assignmentEndDate)}</td>
+                                    <td class="status-${Utils.escapeHTML(a.status)}">${Utils.escapeHTML(a.status)}</td>
+                                </tr>`;
+                            });
+                            tableHtml += '</tbody></table>';
+                            summariesContainerByPerson.innerHTML += tableHtml;
+                        }
+                    });
+                }
+                if (!hasContentForPerson) {
+                    summariesContainerByPerson.innerHTML = '<p>Cap assignació per mostrar agrupada per persona.</p>';
+                }
+            },
+            // < final implementació Render.renderSummaries >
+            
+                 // < inici modificació Render.calendar per ajustar vistes i increments v9.x >
+            calendar: () => {
+                if(!isDataLoaded||!calendarEl){return;}
+                if(typeof FullCalendar==='undefined'){console.error("FullCalendar no carregat!"); if(calendarEl)calendarEl.innerHTML="<p style='color:red;'>Error: FullCalendar no carregat.</p>"; return;}
+                const cE=(appState.eventFrames||[]).filter(f=>f.generalStartDate&&/^\d{4}-\d{2}-\d{2}$/.test(f.generalStartDate)).map(f=>{let eE=null; if(f.generalEndDate&&/^\d{4}-\d{2}-\d{2}$/.test(f.generalEndDate)&&f.generalEndDate>=f.generalStartDate){try{const e=new Date(f.generalEndDate+'T00:00:00Z');e.setUTCDate(e.getUTCDate()+1);eE=e.toISOString().split('T')[0];}catch(e){}} const eC=f.isPersonnelComplete?'var(--success-color)':'var(--primary-color)'; const aF=(appState.assignments||[]).filter(a=>a.eventFrameId===f.id).map(a=>({personName:Utils.getPersonNameById(a.personId),status:a.status||'Pendent',notes:a.notesAssignment||'',startDate:a.assignmentStartDate,endDate:a.assignmentEndDate})); return{id:String(f.id),title:f.eventName,start:f.generalStartDate,end:eE,allDay:true,backgroundColor:eC,borderColor:eC,extendedProps:{isFrame:true,frameLocation:f.location,frameNotes:f.notesGeneral,assignments:aF}};});
+                try{
+                    if(calendarInstance){
+                        // Si el calendari ja existeix, actualitzem només els events.
+                        // Canviar les vistes disponibles podria requerir destruir i recrear.
+                        calendarInstance.setOption('events', cE);
+                        calendarInstance.setOption('eventClick', Handlers.calendarEventClick);
+                        calendarInstance.setOption('dateClick', Handlers.calendarDateClick);
+                        console.log("FullCalendar events and handlers updated.");
+                    } else {
+                        // Crear la instància del calendari si no existeix
+                        calendarInstance=new FullCalendar.Calendar(calendarEl,{
+                            // Definició de les vistes personalitzades AMB dateIncrement específic
+                            views:{
+                                // Vistes Multi-Mes (increment mensual)
+                                multiMonthSix:  {type:'multiMonth', duration:{months:6}, buttonText:'6 Mesos', dateIncrement: { months: 1 }},
+                                multiMonthThree:{type:'multiMonth', duration:{months:3}, buttonText:'3 Mesos', dateIncrement: { months: 1 }},
+                                // Vista Mes (increment mensual) - Utilitzem la vista integrada
+                                dayGridMonth: { buttonText: '1 Mes', dateIncrement: { months: 1 } }, // <<< Canviat buttonText
+                                // Vistes Setmanals (increment setmanal)
+                                timeGridWeek: { buttonText: '1 Setmana', dateIncrement: { weeks: 1 } }, // <<< Afegit buttonText
+                                listWeek:     { buttonText: 'Agenda', dateIncrement: { weeks: 1 } }  // <<< Canviat buttonText
+                                // Hem eliminat multiMonthTwo
+                            },
+                            // Vista inicial per defecte (es manté 6 mesos)
+                            initialView:'multiMonthSix',
+                            locale:'ca',
+                            firstDay:1,
+                            // Configuració de la barra d'eines (actualitzada amb les noves vistes)
+                            headerToolbar:{
+                                left:'prev,next today',
+                                center:'title',
+                                // Actualitzat amb els noms interns correctes de les vistes
+                                right:'multiMonthSix,multiMonthThree,dayGridMonth,timeGridWeek,listWeek' // <<< Modificat aquí
+                            },
+                            events:cE,
+                            editable:false,
+                            selectable:false,
+                            // Handlers per a clics
+                            eventClick: Handlers.calendarEventClick,
+                            dateClick: Handlers.calendarDateClick,
+                            height:'auto'
+                        });
+                        calendarInstance.render(); console.log("FullCalendar initialized.");
+                    }
+                } catch(e) {
+                    console.error("Error initializing/updating FullCalendar:",e); if(calendarEl)calendarEl.innerHTML="<p style='color:red;'>Error mostrant calendari.</p>"; calendarInstance=null;
+                }
+            },
+            // < final modificació Render.calendar per ajustar vistes i increments v9.x >
             updateSortIndicators: () => { if (!eventsTableHeader) return; eventsTableHeader.querySelectorAll('th[data-sort-key]').forEach(th=>{let i=th.querySelector('.sort-indicator'); if(!i){i=document.createElement('span'); i.classList.add('sort-indicator'); th.appendChild(i);} if(th.dataset.sortKey===appState.sort.key){i.textContent=appState.sort.direction==='asc'?' ▲':' ▼';}else{i.textContent='';}}); },
 
             setEventFrameFormMode: (mode, frame = null) => {
@@ -1225,302 +2129,581 @@ Docs & License: https://fullcalendar.io
             setPersonFormMode: (mode, person = null) => { if(!personForm) return; personForm.reset(); if (mode === 'edit' && person) { appState.editingPersonId = person.id; if(editPersonIdInput) editPersonIdInput.value = person.id; if(personModalNameInput) personModalNameInput.value = person.name || ''; if(personModalRoleInput) personModalRoleInput.value = person.role || ''; if(personModalTel1Input) personModalTel1Input.value = person.tel1 || ''; if(personModalTel2Input) personModalTel2Input.value = person.tel2 || ''; if(personModalEmailInput) personModalEmailInput.value = person.email || ''; if(personModalWebInput) personModalWebInput.value = person.web || ''; if(personModalNotesInput) personModalNotesInput.value = person.notes || ''; if(personSubmitBtnText) personSubmitBtnText.textContent = "Desar Persona"; if(personCancelEditBtn) personCancelEditBtn.classList.remove('hidden'); if(personModalNameInput) personModalNameInput.focus(); } else { appState.editingPersonId = null; if(editPersonIdInput) editPersonIdInput.value = ''; if(personSubmitBtnText) personSubmitBtnText.textContent = "Afegir Persona"; if(personCancelEditBtn) personCancelEditBtn.classList.add('hidden'); } }
         }; // <<< End of Render object
 
+           // --- Event Handlers ---
         // --- Event Handlers ---
         const Handlers = {
-            // < inici Handlers per v8.1 COMPLET >
-            handleInitialLoadChoice: () => { if(initialLoadOverlay) initialLoadOverlay.classList.add('hidden'); appState.people=[]; appState.eventFrames=[]; appState.assignments=[]; isDataLoaded=true; if(mainContent) mainContent.classList.add('visible'); Render.renderAll(); Utils.showFeedback("Començant buit. Utilitza 'Carregar'.", 'info', 5000); },
-            handleFileImport: (e) => { const f=e.target.files[0]; const it=appState.importType; if(!f||!it){appState.importType=null; if(importFileInput)importFileInput.value=''; return;} const r=new FileReader(); r.onload=(ev)=>{console.log(`[DEBUG] reader.onload v8.1: Processant ${it}`); const j=ev.target.result; let s=false, dT=it; try{if(it==='all'){s=Utils.loadAllDataFromFile(j); dT="dades totals";}else if(it==='people'){const pD=JSON.parse(j); if(!Array.isArray(pD.people)) throw new Error("El JSON ha de contenir 'people' com a array."); appState.people=Utils._loadPeople(pD.people); s=true; dT="persones";}else{console.warn(`Tipus import desconegut: ${it}`);}}catch(err){console.error(`[DEBUG] Error durant ${it}:`,err); Utils.showConfirmationModal(`Error Carregant ${dT}`,`No s'ha pogut processar: ${Utils.escapeHTML(err.message)}`,null,'error'); s=false;} appState.importType=null; console.log(`[DEBUG] reader.onload v8.1: Èxit ${it}? ${s}`); if(s){if(!isDataLoaded){if(mainContent)mainContent.classList.add('visible'); isDataLoaded=true;} Render.renderAll(); Utils.showFeedback(`Dades de ${dT} carregades.`); Render.setEventFrameFormMode('add'); Render.setPersonFormMode('add');}else{console.warn(`[DEBUG] reader.onload v8.1: Càrrega ${dT} fallida.`);}}; r.onerror=(err)=>{const t=appState.importType||it; appState.importType=null; const tx=t==='all'?"totals":t==='people'?"persones":"desconegut"; Utils.showConfirmationModal(`Error Carregant ${tx}`,`No s'ha pogut llegir: ${err.message||'Error'}`,null,'error');}; r.readAsText(f); if(importFileInput)importFileInput.value='';},
-            handleSaveAll: () => { if (!isDataLoaded||(!appState.eventFrames?.length&&!appState.assignments?.length&&!appState.people?.length)){Utils.showFeedback("Res a guardar.",'warning');return;} try{const d=Utils.prepareAllDataForSave(), b=new Blob([d],{type:'application/json;charset=utf-8'}), u=URL.createObjectURL(b), l=document.createElement('a'), t=new Date().toISOString().slice(0,10); l.download=`gestio_dades_${t}.json`; l.href=u; document.body.appendChild(l); l.click(); document.body.removeChild(l); URL.revokeObjectURL(u); Utils.showFeedback("Dades totals guardades.");}catch(e){Utils.showFeedback(`Error guardant: ${e.message}`,'error');}},
-            handleSavePeople: () => { if (!isDataLoaded||!appState.people||appState.people.length===0){Utils.showFeedback("Cap persona a guardar.",'warning');return;} try{const d=Utils.preparePeopleForSave(), b=new Blob([d],{type:'application/json;charset=utf-8'}), u=URL.createObjectURL(b), l=document.createElement('a'), t=new Date().toISOString().slice(0,10); l.download=`people_data_${t}.json`; l.href=u; document.body.appendChild(l); l.click(); document.body.removeChild(l); URL.revokeObjectURL(u); Utils.showFeedback("Persones guardades.");}catch(e){Utils.showFeedback(`Error guardant persones: ${e.message}`,'error');}},
+            // < inici Handlers per v9.x (amb correccions i noves funcionalitats) >
+            handleInitialLoadChoice: () => {
+                if(initialLoadOverlay) initialLoadOverlay.classList.add('hidden');
+                if(mainContent) mainContent.classList.add('visible'); // Mostrar contingut principal
+                appState.people=[];
+                appState.eventFrames=[];
+                appState.assignments=[];
+                isDataLoaded=true;
+                Render.renderAll();
+                Utils.showFeedback("Començant buit. Utilitza 'Carregar'.", 'info', 5000);
+                Utils.setUnsavedChanges(false);
+            },
+            handleFileImport: (e) => {
+                const f=e.target.files[0];
+                const it=appState.importType;
+                if(!f||!it){appState.importType=null; if(importFileInput)importFileInput.value=''; return;}
+                const r=new FileReader();
+                r.onload=(ev)=>{
+                    const j=ev.target.result;
+                    let s=false, dT=it;
+                    try{
+                        if(it==='all'){
+                            s=Utils.loadAllDataFromFile(j);
+                            dT="dades totals";
+                            if (s) Utils.setUnsavedChanges(false);
+                        } else if(it==='people'){
+                            const pD=JSON.parse(j);
+                            if(!Array.isArray(pD.people)) throw new Error("El JSON ha de contenir 'people' com a array.");
+                            appState.people=Utils._loadPeople(pD.people);
+                            s=true;
+                            dT="persones";
+                            if (s) Utils.setUnsavedChanges(true);
+                        } else {
+                            console.warn(`Tipus import desconegut: ${it}`);
+                        }
+                    } catch(err) {
+                        Utils.showConfirmationModal(`Error Carregant ${dT}`,`No s'ha pogut processar: ${Utils.escapeHTML(err.message)}`,null,'error');
+                        s=false;
+                    }
+                    appState.importType=null;
+                    if(s){
+                        if(!isDataLoaded){
+                            if(initialLoadOverlay) initialLoadOverlay.classList.add('hidden'); // Ocultar overlay si no s'havia fet
+                            if(mainContent) mainContent.classList.add('visible');
+                            isDataLoaded=true;
+                        }
+                        Render.renderAll();
+                        Utils.showFeedback(`Dades de ${dT} carregades.`);
+                        Render.setEventFrameFormMode('add');
+                        Render.setPersonFormMode('add');
+                    }
+                };
+                r.onerror=(err)=>{
+                    const t=appState.importType||it;
+                    appState.importType=null;
+                    const tx=t==='all'?"totals":t==='people'?"persones":"desconegut";
+                    Utils.showConfirmationModal(`Error Carregant ${tx}`,`No s'ha pogut llegir: ${err.message||'Error'}`,null,'error');
+                };
+                r.readAsText(f);
+                if(importFileInput)importFileInput.value='';
+            },
+            handleSaveAll: () => {
+                if (!isDataLoaded||(!appState.eventFrames?.length&&!appState.assignments?.length&&!appState.people?.length)){Utils.showFeedback("Res a guardar.",'warning');return;}
+                try{
+                    const d=Utils.prepareAllDataForSave(), b=new Blob([d],{type:'application/json;charset=utf-8'}), u=URL.createObjectURL(b), l=document.createElement('a'), t=new Date().toISOString().slice(0,10);
+                    l.download=`gestio_dades_${t}.json`;
+                    l.href=u;
+                    document.body.appendChild(l);
+                    l.click();
+                    document.body.removeChild(l);
+                    URL.revokeObjectURL(u);
+                    Utils.showFeedback("Dades totals guardades.");
+                    Utils.setUnsavedChanges(false);
+                } catch(e) {
+                    Utils.showFeedback(`Error guardant: ${e.message}`,'error');
+                }
+            },
+            handleSavePeople: () => {
+                if (!isDataLoaded||!appState.people||appState.people.length===0){Utils.showFeedback("Cap persona a guardar.",'warning');return;}
+                try{
+                    const d=Utils.preparePeopleForSave(), b=new Blob([d],{type:'application/json;charset=utf-8'}), u=URL.createObjectURL(b), l=document.createElement('a'), t=new Date().toISOString().slice(0,10);
+                    l.download=`people_data_${t}.json`;
+                    l.href=u;
+                    document.body.appendChild(l);
+                    l.click();
+                    document.body.removeChild(l);
+                    URL.revokeObjectURL(u);
+                    Utils.showFeedback("Persones guardades.");
+                } catch(e) {
+                    Utils.showFeedback(`Error guardant persones: ${e.message}`,'error');
+                }
+            },
             triggerLoadAll: () => { appState.importType='all'; if(importFileInput) importFileInput.click(); },
             triggerLoadPeople: () => { appState.importType='people'; if(importFileInput) importFileInput.click(); },
-
             handleEventFrameFormSubmit: (e) => {
                 e.preventDefault(); if (!isDataLoaded) return;
                 const idToEdit = appState.editingEventFrameId ? parseFloat(appState.editingEventFrameId) : null;
-
-                // Recuperem el valor actual si estem editant
                 let currentIsComplete = false;
                 if (idToEdit !== null) {
                      const currentFrame = (appState.eventFrames || []).find(f => f.id === idToEdit);
                      currentIsComplete = currentFrame ? currentFrame.isPersonnelComplete : false;
                 }
-
                 const frameData = {
                     eventName: eventFrameNameInput ? eventFrameNameInput.value.trim() : '',
                     location: eventFrameLocationInput ? eventFrameLocationInput.value.trim() : '',
                     generalStartDate: eventFrameStartDateInput ? eventFrameStartDateInput.value : '',
                     generalEndDate: eventFrameEndDateInput ? (eventFrameEndDateInput.value || null) : null,
-                    // JA NO LLEGIM EL CHECKBOX DEL FORMULARI AQUÍ
                     notesGeneral: eventFrameNotesInput ? eventFrameNotesInput.value.trim() : '',
-                    // < inici valor per defecte/existent isPersonnelComplete >
-                    // Si estem editant, mantenim el valor que ja tenia. Si és nou, el posem a false.
                     isPersonnelComplete: idToEdit !== null ? currentIsComplete : false,
-                    // < final valor per defecte/existent isPersonnelComplete >
                     id: idToEdit !== null ? idToEdit : (Date.now() + Math.random())
                 };
-
-                // Validacions bàsiques (afegir les que faltaven)
-                if (!frameData.eventName) {
-                    Utils.showFeedback("El nom de l'esdeveniment és obligatori.", 'warning');
-                    eventFrameNameInput?.focus();
-                    return;
-                 }
-                if (!frameData.generalStartDate || !/^\d{4}-\d{2}-\d{2}$/.test(frameData.generalStartDate)) {
-                    Utils.showFeedback("La data d'inici general és obligatòria i ha de ser vàlida (YYYY-MM-DD).", 'warning');
-                    eventFrameStartDateInput?.focus();
-                    return;
-                }
+                if (!frameData.eventName) { Utils.showFeedback("El nom de l'esdeveniment és obligatori.", 'warning'); eventFrameNameInput?.focus(); return; }
+                if (!frameData.generalStartDate || !/^\d{4}-\d{2}-\d{2}$/.test(frameData.generalStartDate)) { Utils.showFeedback("La data d'inici general és obligatòria i ha de ser vàlida (YYYY-MM-DD).", 'warning'); eventFrameStartDateInput?.focus(); return; }
                 if (frameData.generalEndDate) {
-                    if (!/^\d{4}-\d{2}-\d{2}$/.test(frameData.generalEndDate)) {
-                        Utils.showFeedback("El format de la data de fi general és invàlid (YYYY-MM-DD).", 'warning');
-                        eventFrameEndDateInput?.focus();
-                        return;
-                    }
-                    try {
-                        const start = new Date(frameData.generalStartDate);
-                        const end = new Date(frameData.generalEndDate);
-                        if (end < start) {
-                             Utils.showFeedback("La data de fi general no pot ser anterior a la data d'inici.", 'warning');
-                             eventFrameEndDateInput?.focus();
-                             return;
-                        }
-                    } catch (e) {
-                        Utils.showFeedback("Error comparant les dates generals.", 'error');
-                        return;
-                    }
+                    if (!/^\d{4}-\d{2}-\d{2}$/.test(frameData.generalEndDate)) { Utils.showFeedback("El format de la data de fi general és invàlid (YYYY-MM-DD).", 'warning'); eventFrameEndDateInput?.focus(); return; }
+                    try { const start = new Date(frameData.generalStartDate); const end = new Date(frameData.generalEndDate); if (end < start) { Utils.showFeedback("La data de fi general no pot ser anterior a la data d'inici.", 'warning'); eventFrameEndDateInput?.focus(); return; }
+                    } catch (errDate) { Utils.showFeedback("Error comparant les dates generals.", 'error'); return; }
                 }
-
 
                 if (idToEdit !== null) {
                     const index = (appState.eventFrames || []).findIndex(f => f.id === idToEdit);
                     if (index > -1) {
-                         appState.eventFrames[index] = {
-                             ...appState.eventFrames[index],
-                             eventName: frameData.eventName,
-                             location: frameData.location,
-                             generalStartDate: frameData.generalStartDate,
-                             generalEndDate: frameData.generalEndDate,
-                             notesGeneral: frameData.notesGeneral,
-                             isPersonnelComplete: frameData.isPersonnelComplete // Assignem el valor correcte
-                         };
+                         appState.eventFrames[index] = { ...appState.eventFrames[index], eventName: frameData.eventName, location: frameData.location, generalStartDate: frameData.generalStartDate, generalEndDate: frameData.generalEndDate, notesGeneral: frameData.notesGeneral, isPersonnelComplete: frameData.isPersonnelComplete };
                          Utils.showFeedback("Marc d'esdeveniment actualitzat.");
-                    } else {
-                         Utils.showFeedback("Error actualitzant marc.", 'error');
-                         Render.setEventFrameFormMode('add');
-                         return;
-                    }
+                    } else { Utils.showFeedback("Error actualitzant marc.", 'error'); Render.setEventFrameFormMode('add'); return; }
                 } else {
-                    appState.eventFrames.push(frameData);
+                    (appState.eventFrames = appState.eventFrames || []).push(frameData);
                     Utils.showFeedback("Marc d'esdeveniment afegit.");
                 }
-
+                Utils.setUnsavedChanges(true);
                 Render.setEventFrameFormMode('add');
                 Render.renderAll();
-            }, // <-- Fi de handleEventFrameFormSubmit (COMA afegida)
-
-            handleAssignmentFormSubmit: (e) => { e.preventDefault(); if (!isDataLoaded) return; const id=appState.editingAssignmentId?parseFloat(appState.editingAssignmentId):null; const fId=appState.currentAssignmentModalFrameId; const pId=assignmentPersonSelect?.value?parseFloat(assignmentPersonSelect.value):null; const f=(appState.eventFrames||[]).find(f=>f.id===fId); if(!f){Utils.showFeedback("Error: Marc no trobat.",'error'); return;} if(pId===null){Utils.showFeedback("Selecciona persona.",'warning'); assignmentPersonSelect?.focus();return;} const aD={eventFrameId:fId, personId:pId, assignmentStartDate:assignmentStartDateInput?assignmentStartDateInput.value:'', assignmentEndDate:assignmentEndDateInput?(assignmentEndDateInput.value||null):null, status:assignmentStatusSelect?assignmentStatusSelect.value:'Pendent', notesAssignment:assignmentNotesInput?assignmentNotesInput.value.trim():'', id:id!==null?id:(Date.now()+Math.random()+1000)}; if(!aD.assignmentStartDate||!/^\d{4}-\d{2}-\d{2}$/.test(aD.assignmentStartDate)){Utils.showFeedback("Data Inici Assign. obligatòria.",'warning'); assignmentStartDateInput?.focus();return;} let aS,aE,fS,fE; try{aS=new Date(aD.assignmentStartDate+'T00:00:00Z'); if(isNaN(aS.getTime())) throw new Error("Data inici assign. invàlida"); if(aD.assignmentEndDate){if(!/^\d{4}-\d{2}-\d{2}$/.test(aD.assignmentEndDate)){Utils.showFeedback("Format Data Fi Assign. invàlid.",'warning'); assignmentEndDateInput?.focus();return;} aE=new Date(aD.assignmentEndDate+'T00:00:00Z'); if(isNaN(aE.getTime())) throw new Error("Data fi assign. invàlida"); if(aE<aS){Utils.showFeedback("Data Fi Assign. anterior a inici.",'warning'); assignmentEndDateInput?.focus();return;}}else{aE=new Date(aD.assignmentStartDate+'T00:00:00Z');} fS=new Date(f.generalStartDate+'T00:00:00Z'); if(isNaN(fS.getTime())) throw new Error("Data inici marc invàlida"); fE=f.generalEndDate?new Date(f.generalEndDate+'T23:59:59Z'):new Date(f.generalStartDate+'T23:59:59Z'); if(isNaN(fE.getTime())) throw new Error("Data fi marc invàlida"); if(aS<fS||aE>fE){Utils.showFeedback("Dates assign. fora rang marc.",'warning',5000); return;}}catch(err){Utils.showFeedback(`Error dates: ${err.message}`,'error'); return;} const cfl=Utils.checkAssignmentConflicts(aD); if(cfl.length>0){const n=cfl.map(c=>`"${Utils.escapeHTML(c.eventName)}" (${Utils.formatDateRange(c.startDate,c.endDate)})`).join(', '); if(assignmentConflictWarning){assignmentConflictWarning.innerHTML=`Conflicte: ${n}.`; assignmentConflictWarning.style.display='block';} /* return; */}else{if(assignmentConflictWarning)assignmentConflictWarning.style.display='none';} const exI=(appState.assignments||[]).findIndex(a=>a.eventFrameId===fId&&a.personId===pId&&a.id!==aD.id); if(id===null&&exI>-1){Utils.showFeedback(`${Utils.getPersonNameById(pId)} ja assignat a aquest marc.`,'warning',5000);return;} if(id!==null){const i=(appState.assignments||[]).findIndex(a=>a.id===id); if(i>-1){appState.assignments[i]=aD; Utils.showFeedback("Assignació actualitzada.");}else{Utils.showFeedback("Error actualitzant assign.",'error'); Utils.hideAssignmentModal();return;}}else{appState.assignments.push(aD); Utils.showFeedback("Assignació afegida.");} Utils.hideAssignmentModal(); Render.renderAll(); },
-            handlePersonFormSubmit: (e) => { e.preventDefault(); if(!isDataLoaded)return; const id=appState.editingPersonId?parseFloat(appState.editingPersonId):null; const pD={name:personModalNameInput?.value.trim()||'',role:personModalRoleInput?.value.trim()||'',tel1:personModalTel1Input?.value.trim()||'',tel2:personModalTel2Input?.value.trim()||'',email:personModalEmailInput?.value.trim()||'',web:personModalWebInput?.value.trim()||'',notes:personModalNotesInput?.value.trim()||''}; if(!pD.name){Utils.showFeedback("Nom persona obligatori.",'warning'); personModalNameInput?.focus();return;} let opS=false; if(id!==null){opS=PeopleManager.updatePerson(id,pD); if(opS)Utils.showFeedback("Persona actualitzada.");}else{opS=PeopleManager.addPerson(pD); if(opS)Utils.showFeedback("Persona afegida.");} if(opS){Render.setPersonFormMode('add'); Render.renderAll(); Render.peopleManagementList();}},
-            peopleListClick: (e) => { const edB=e.target.closest('.edit-person-btn'); const delB=e.target.closest('.delete-person-btn'); if(edB){const pId=parseFloat(edB.dataset.id); const p=PeopleManager.findPerson(pId); if(p)Render.setPersonFormMode('edit',p); else Utils.showFeedback("Error: Persona no trobada.", "error");}else if(delB){const pId=parseFloat(delB.dataset.id); const p=PeopleManager.findPerson(pId); if(p){const isU=(appState.assignments||[]).some(a=>a.personId===pId); const msg=`Eliminar <strong>${Utils.escapeHTML(p.name)}</strong>? ${isU?"<br>Es desassignarà.":""}`; Utils.showConfirmationModal("Confirmar Eliminació",msg,()=>{if(PeopleManager.deletePerson(pId)){Render.renderAll(); Render.peopleManagementList(); Utils.showFeedback('Persona eliminada.'); if(appState.editingPersonId===pId)Render.setPersonFormMode('add');}else Utils.showFeedback('No eliminada.','error');},'danger');}else Utils.showFeedback("Error: Persona no trobada.","error");}},
+            },
+            handleAssignmentFormSubmit: (e) => {
+                e.preventDefault(); if (!isDataLoaded) return;
+                const id=appState.editingAssignmentId?parseFloat(appState.editingAssignmentId):null;
+                const fId=appState.currentAssignmentModalFrameId;
+                const pId=assignmentPersonSelect?.value?parseFloat(assignmentPersonSelect.value):null;
+                const f=(appState.eventFrames||[]).find(fr=>fr.id===fId);
+                if(!f){Utils.showFeedback("Error: Marc no trobat.",'error'); return;}
+                if(pId===null){Utils.showFeedback("Selecciona persona.",'warning'); assignmentPersonSelect?.focus();return;}
+                const aD={eventFrameId:fId, personId:pId, assignmentStartDate:assignmentStartDateInput?assignmentStartDateInput.value:'', assignmentEndDate:assignmentEndDateInput?(assignmentEndDateInput.value||null):null, status:assignmentStatusSelect?assignmentStatusSelect.value:'Pendent', notesAssignment:assignmentNotesInput?assignmentNotesInput.value.trim():'', id:id!==null?id:(Date.now()+Math.random()+1000)};
+                if(!aD.assignmentStartDate||!/^\d{4}-\d{2}-\d{2}$/.test(aD.assignmentStartDate)){Utils.showFeedback("Data Inici Assign. obligatòria.",'warning'); assignmentStartDateInput?.focus();return;}
+                let aS,aE,fS,fE;
+                try{ aS=new Date(aD.assignmentStartDate+'T00:00:00Z'); if(isNaN(aS.getTime())) throw new Error("Data inici assign. invàlida"); if(aD.assignmentEndDate){if(!/^\d{4}-\d{2}-\d{2}$/.test(aD.assignmentEndDate)){Utils.showFeedback("Format Data Fi Assign. invàlid.",'warning'); assignmentEndDateInput?.focus();return;} aE=new Date(aD.assignmentEndDate+'T00:00:00Z'); if(isNaN(aE.getTime())) throw new Error("Data fi assign. invàlida"); if(aE<aS){Utils.showFeedback("Data Fi Assign. anterior a inici.",'warning'); assignmentEndDateInput?.focus();return;}}else{aE=new Date(aD.assignmentStartDate+'T00:00:00Z');} fS=new Date(f.generalStartDate+'T00:00:00Z'); if(isNaN(fS.getTime())) throw new Error("Data inici marc invàlida"); fE=f.generalEndDate?new Date(f.generalEndDate+'T23:59:59Z'):new Date(f.generalStartDate+'T23:59:59Z'); if(isNaN(fE.getTime())) throw new Error("Data fi marc invàlida"); if(aS<fS||aE>fE){Utils.showFeedback("Dates assign. fora rang marc.",'warning',5000); return;}}catch(err){Utils.showFeedback(`Error dates: ${err.message}`,'error'); return;}
+                const cfl=Utils.checkAssignmentConflicts(aD); if(cfl.length>0){const n=cfl.map(c=>`"${Utils.escapeHTML(c.eventName)}" (${Utils.formatDateRange(c.startDate,c.endDate)})`).join(', '); if(assignmentConflictWarning){assignmentConflictWarning.innerHTML=`Conflicte: ${n}.`; assignmentConflictWarning.style.display='block';}}else{if(assignmentConflictWarning)assignmentConflictWarning.style.display='none';}
+                const exI=(appState.assignments||[]).findIndex(a=>a.eventFrameId===fId&&a.personId===pId&&a.id!==aD.id); if(id===null&&exI>-1){Utils.showFeedback(`${Utils.getPersonNameById(pId)} ja assignat a aquest marc.`,'warning',5000);return;}
+                if(id!==null){const i=(appState.assignments||[]).findIndex(a=>a.id===id); if(i>-1){appState.assignments[i]=aD; Utils.showFeedback("Assignació actualitzada.");}else{Utils.showFeedback("Error actualitzant assign.",'error'); Utils.hideAssignmentModal();return;}}else{(appState.assignments = appState.assignments || []).push(aD); Utils.showFeedback("Assignació afegida.");}
+                Utils.setUnsavedChanges(true);
+                Utils.hideAssignmentModal(); Render.renderAll();
+            },
+            handlePersonFormSubmit: (e) => {
+                e.preventDefault(); if(!isDataLoaded)return;
+                const id=appState.editingPersonId?parseFloat(appState.editingPersonId):null;
+                const pD={name:personModalNameInput?.value.trim()||'',role:personModalRoleInput?.value.trim()||'',tel1:personModalTel1Input?.value.trim()||'',tel2:personModalTel2Input?.value.trim()||'',email:personModalEmailInput?.value.trim()||'',web:personModalWebInput?.value.trim()||'',notes:personModalNotesInput?.value.trim()||''};
+                if(!pD.name){Utils.showFeedback("Nom persona obligatori.",'warning'); personModalNameInput?.focus();return;}
+                let opS=false;
+                if(id!==null){opS=PeopleManager.updatePerson(id,pD); if(opS)Utils.showFeedback("Persona actualitzada.");}
+                else{opS=PeopleManager.addPerson(pD); if(opS)Utils.showFeedback("Persona afegida.");}
+                if(opS){ Render.setPersonFormMode('add'); Render.renderAll(); Render.peopleManagementList(); }
+            },
+            peopleListClick: (e) => {
+                const edB=e.target.closest('.edit-person-btn');
+                const delB=e.target.closest('.delete-person-btn');
+                if(edB){
+                    const pId=parseFloat(edB.dataset.id); const p=PeopleManager.findPerson(pId);
+                    if(p)Render.setPersonFormMode('edit',p); else Utils.showFeedback("Error: Persona no trobada.", "error");
+                } else if(delB) {
+                    const pId=parseFloat(delB.dataset.id); const p=PeopleManager.findPerson(pId);
+                    if(p){
+                        const isU=(appState.assignments||[]).some(a=>a.personId===pId);
+                        const msg=`Eliminar <strong>${Utils.escapeHTML(p.name)}</strong>? ${isU?"<br>Es desassignarà.":""}`;
+                        Utils.showConfirmationModal("Confirmar Eliminació",msg,()=>{
+                            if(PeopleManager.deletePerson(pId)){
+                                Render.renderAll(); Render.peopleManagementList(); Utils.showFeedback('Persona eliminada.');
+                                if(appState.editingPersonId===pId)Render.setPersonFormMode('add');
+                            } else Utils.showFeedback('No eliminada.','error');
+                        },'danger');
+                    } else Utils.showFeedback("Error: Persona no trobada.","error");
+                }
+            },
             handlePersonCancelEdit: () => { Render.setPersonFormMode('add'); },
-            // < inici Handlers.tableClick v8.2 (afegir edit frame i delete frame) >
             tableClick: (e) => {
-                 // Identifica quin botó s'ha premut dins de la fila
-                 const assignBtn = e.target.closest('.assign-person-btn');
-                 const editAssignmentBtn = e.target.closest('.edit-assignment-btn');
-                 const deleteAssignmentBtn = e.target.closest('.delete-assignment-btn');
-                 const editFrameBtn = e.target.closest('.edit-frame-btn');
-                 const deleteFrameBtn = e.target.closest('.delete-frame-btn'); // <-- Afegit delete frame btn
+                 const clickedElement = e.target;
+                 const toggleIcon = clickedElement.closest('.frame-assignment-toggle-icon');
+                 const eventNameCell = clickedElement.closest('.frame-event-name');
+                 const frameRowForNameClick = eventNameCell ? eventNameCell.closest('.event-frame-row') : null;
 
-                 // Lògica per al botó ASSIGNAR PERSONA (a la fila del marc)
-                 if (assignBtn) {
-                     const frameId = parseFloat(assignBtn.dataset.frameId);
-                     if(!isNaN(frameId)) {
-                        Utils.showAssignmentModal(frameId); // Obre modal per afegir assignació
-                     } else {
-                        console.error("ID de marc no trobat al botó d'assignar.");
-                     }
-                 }
-                 // Lògica per al botó EDITAR ASSIGNACIÓ (a la fila de detall)
-                 else if (editAssignmentBtn) {
-                     const assignmentId = parseFloat(editAssignmentBtn.dataset.assignmentId);
-                     const assignment = (appState.assignments || []).find(a => a.id === assignmentId);
-                     if (assignment) {
-                         Utils.showAssignmentModal(assignment.eventFrameId, assignmentId); // Obre modal per editar assignació
-                     } else {
-                         Utils.showFeedback("Error: Assignació no trobada per editar.", 'error');
-                     }
-                 }
-                 // Lògica per al botó ELIMINAR ASSIGNACIÓ (a la fila de detall)
-                 else if (deleteAssignmentBtn) {
-                     const assignmentId = parseFloat(deleteAssignmentBtn.dataset.assignmentId);
-                     const assignmentToDelete = (appState.assignments || []).find(a => a.id === assignmentId);
-                     if (assignmentToDelete) {
-                         const personName = Utils.getPersonNameById(assignmentToDelete.personId);
-                         const frame = (appState.eventFrames || []).find(f => f.id === assignmentToDelete.eventFrameId);
-                         const frameName = frame ? frame.eventName : 'Esdeveniment Desconegut';
-                         const confirmMsg = `Segur que vols eliminar l'assignació de:<br><strong>${Utils.escapeHTML(personName)}</strong><br>a l'esdeveniment:<br><strong>${Utils.escapeHTML(frameName)}</strong>?`;
+                 if (toggleIcon || (eventNameCell && frameRowForNameClick)) {
+                    const frameRow = toggleIcon ? toggleIcon.closest('.event-frame-row') : frameRowForNameClick;
+                    const actualToggleIcon = frameRow ? frameRow.querySelector('.frame-assignment-toggle-icon') : null;
+                    if (frameRow && actualToggleIcon) {
+                        const frameId = frameRow.dataset.frameId;
+                        const isExpanded = actualToggleIcon.classList.contains('expanded');
+                        actualToggleIcon.classList.toggle('expanded', !isExpanded);
+                        actualToggleIcon.textContent = isExpanded ? '►' : '▼';
+                        actualToggleIcon.setAttribute('aria-expanded', String(!isExpanded));
+                        let nextSibling = frameRow.nextElementSibling;
+                        while (nextSibling && nextSibling.classList.contains('assignment-detail-row')) {
+                            if (nextSibling.dataset.frameId === frameId) {
+                                nextSibling.classList.toggle('assignment-detail-hidden', isExpanded);
+                                nextSibling.setAttribute('aria-hidden', String(isExpanded));
+                            }
+                            nextSibling = nextSibling.nextElementSibling;
+                        }
+                    }
+                 } else {
+                     const assignBtn = clickedElement.closest('.assign-person-btn');
+                     const editAssignmentBtn = clickedElement.closest('.edit-assignment-btn');
+                     const deleteAssignmentBtn = clickedElement.closest('.delete-assignment-btn');
+                     const editFrameBtn = clickedElement.closest('.edit-frame-btn');
+                     const deleteFrameBtn = clickedElement.closest('.delete-frame-btn');
 
-                         Utils.showConfirmationModal("Confirmar Eliminació Assignació", confirmMsg, () => {
-                             appState.assignments = appState.assignments.filter(a => a.id !== assignmentId);
-                             Render.renderAll();
-                             Utils.showFeedback("Assignació eliminada.");
-                             if (appState.editingAssignmentId === assignmentId) {
-                                 Utils.hideAssignmentModal();
-                             }
-                         }, 'danger');
-                     } else {
-                         Utils.showFeedback("Error: Assignació no trobada per eliminar.", 'error');
+                     if (assignBtn) {
+                         const frameId = parseFloat(assignBtn.dataset.frameId);
+                         if(!isNaN(frameId)) { Utils.showAssignmentModal(frameId); }
+                         else { console.error("ID de marc no trobat al botó d'assignar."); }
+                     } else if (editAssignmentBtn) {
+                         const assignmentId = parseFloat(editAssignmentBtn.dataset.assignmentId);
+                         const assignment = (appState.assignments || []).find(a => a.id === assignmentId);
+                         if (assignment) { Utils.showAssignmentModal(assignment.eventFrameId, assignmentId); }
+                         else { Utils.showFeedback("Error: Assignació no trobada per editar.", 'error'); }
+                     } else if (deleteAssignmentBtn) {
+                         const assignmentId = parseFloat(deleteAssignmentBtn.dataset.assignmentId);
+                         const assignmentToDelete = (appState.assignments || []).find(a => a.id === assignmentId);
+                         if (assignmentToDelete) {
+                             const personName = Utils.getPersonNameById(assignmentToDelete.personId);
+                             const frame = (appState.eventFrames || []).find(f => f.id === assignmentToDelete.eventFrameId);
+                             const frameName = frame ? frame.eventName : 'Esdeveniment Desconegut';
+                             const confirmMsg = `Segur que vols eliminar l'assignació de:<br><strong>${Utils.escapeHTML(personName)}</strong><br>a l'esdeveniment:<br><strong>${Utils.escapeHTML(frameName)}</strong>?`;
+                             Utils.showConfirmationModal("Confirmar Eliminació Assignació", confirmMsg, () => {
+                                 appState.assignments = (appState.assignments || []).filter(a => a.id !== assignmentId);
+                                 Utils.setUnsavedChanges(true);
+                                 Render.renderAll();
+                                 Utils.showFeedback("Assignació eliminada.");
+                                 if (appState.editingAssignmentId === assignmentId) { Utils.hideAssignmentModal(); }
+                             }, 'danger');
+                         } else { Utils.showFeedback("Error: Assignació no trobada per eliminar.", 'error'); }
+                     } else if (editFrameBtn) {
+                         const frameId = parseFloat(editFrameBtn.dataset.frameId);
+                         const frameToEdit = (appState.eventFrames || []).find(f => f.id === frameId);
+                         if (frameToEdit) {
+                             Render.setEventFrameFormMode('edit', frameToEdit);
+                             if (eventFrameForm) { eventFrameForm.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+                         } else { Utils.showFeedback("Error: Marc no trobat per editar.", 'error'); }
+                     } else if (deleteFrameBtn) {
+                         const frameId = parseFloat(deleteFrameBtn.dataset.frameId);
+                         const frameToDelete = (appState.eventFrames || []).find(f => f.id === frameId);
+                         if (frameToDelete) { Handlers.requestDeleteEventFrame(frameId, frameToDelete.eventName); }
+                         else { Utils.showFeedback("Error: Marc no trobat per eliminar.", 'error'); }
                      }
                  }
-                 // Lògica per al botó EDITAR MARC (a la fila del marc)
-                 else if (editFrameBtn) {
-                     const frameId = parseFloat(editFrameBtn.dataset.frameId);
-                     const frameToEdit = (appState.eventFrames || []).find(f => f.id === frameId);
-                     if (frameToEdit) {
-                         Render.setEventFrameFormMode('edit', frameToEdit);
-                         if (eventFrameForm) {
-                             eventFrameForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                         }
-                     } else {
-                         Utils.showFeedback("Error: Marc no trobat per editar.", 'error');
-                     }
-                 }
-                 // (inici afegit lògica delete-frame-btn v9.x)
-                 // Lògica per al botó ELIMINAR MARC (a la fila del marc)
-                 else if (deleteFrameBtn) {
-                     const frameId = parseFloat(deleteFrameBtn.dataset.frameId);
-                     const frameToDelete = (appState.eventFrames || []).find(f => f.id === frameId);
-
-                     if (frameToDelete) {
-                         Handlers.requestDeleteEventFrame(frameId, frameToDelete.eventName); // Cridem la funció per demanar confirmació
-                     } else {
-                         Utils.showFeedback("Error: Marc no trobat per eliminar.", 'error');
-                     }
-                 }
-                 // (final afegit lògica delete-frame-btn v9.x)
-            }, // <-- Fi de tableClick (COMA afegida)
-            // < final Handlers.tableClick v8.2 (afegir edit frame i delete frame) >
-
-            // < inici Handlers.tableChange v8.2 COMPLET >
+            },
             tableChange: (e) => {
-                // Gestió Checkbox Personal Complet (a la fila del Marc)
                 if (e.target.classList.contains('personnel-complete-checkbox')) {
                     const checkbox = e.target;
                     const frameId = parseFloat(checkbox.dataset.frameId);
                     const isChecked = checkbox.checked;
                     const frameIndex = (appState.eventFrames || []).findIndex(f => f.id === frameId);
-
                     if (frameIndex > -1) {
                         appState.eventFrames[frameIndex].isPersonnelComplete = isChecked;
+                        Utils.setUnsavedChanges(true);
                         Utils.showFeedback(`Marc marcat com a personal ${isChecked ? 'complet' : 'incomplet'}.`);
                         Render.calendar();
+                        const frameRow = checkbox.closest('.event-frame-row');
+                        if (frameRow) {
+                            if (isChecked) { frameRow.classList.add('frame-personnel-marked-complete'); }
+                            else { frameRow.classList.remove('frame-personnel-marked-complete'); }
+                        }
                     } else {
-                        console.error("Error: No s'ha trobat el marc per actualitzar l'estat 'Personal Complet'. ID:", frameId);
+                        console.error("Error: No s'ha trobat el marc. ID:", frameId);
                         Utils.showFeedback("Error actualitzant l'estat del marc.", 'error');
                     }
                     return;
                 }
-
-                // Gestió Select Estat Assignació (a la fila de Detall)
                 if (e.target.classList.contains('status-select')) {
                     const select = e.target;
                     const assignmentId = parseFloat(select.dataset.assignmentId);
                     const newStatus = select.value;
                     const assignmentIndex = (appState.assignments || []).findIndex(a => a.id === assignmentId);
-
                     if (assignmentIndex > -1) {
+                        const frameIdToUpdate = appState.assignments[assignmentIndex].eventFrameId;
                         appState.assignments[assignmentIndex].status = newStatus;
                         const row = select.closest('tr');
                         if (row && row.classList.contains('assignment-detail-row')) {
                             row.className = row.className.replace(/status-\w+/g,'').trim();
                             row.classList.add(`status-${Utils.escapeHTML(newStatus)}`);
                         }
-                        Render.eventsTable();
-                        // Render.renderSummaries(); // Si estigués actiu
+                        Utils.setUnsavedChanges(true);
+                        if (frameIdToUpdate !== null && frameIdToUpdate !== undefined) {
+                            Render.updateFrameCounts(frameIdToUpdate);
+                        } else {
+                            console.warn("No s'ha pogut actualitzar recompte, frameId no trobat.");
+                            Render.eventsTable(); 
+                        }
                         Utils.showFeedback("Estat d'assignació actualitzat.");
                     } else {
-                        console.error("Error: No s'ha trobat l'assignació per actualitzar l'estat. ID:", assignmentId);
-                        Utils.showFeedback("Error actualitzant estat d'assignació.", 'error');
+                        console.error("Error: No s'ha trobat l'assignació. ID:", assignmentId);
+                        Utils.showFeedback("Error actualitzant estat.", 'error');
                         Render.renderAll();
                     }
                     return;
                 }
-            }, // <-- Fi de tableChange (COMA afegida)
-            // < final Handlers.tableChange v8.2 COMPLET >
-
-            // (inici afegit funcions delete event frame v9.x)
+            },
             requestDeleteEventFrame: (frameId, frameName) => {
                 const assignmentsCount = (appState.assignments || []).filter(a => a.eventFrameId === frameId).length;
                 let confirmMsg = `Segur que vols eliminar l'esdeveniment:<br><strong>${Utils.escapeHTML(frameName)}</strong>?`;
-                if (assignmentsCount > 0) {
-                    confirmMsg += `<br><br><strong style='color:var(--danger-color);'>ATENCIÓ:</strong> També s'eliminaran <strong>${assignmentsCount} assignaci${assignmentsCount === 1 ? 'ó' : 'ons'}</strong> de personal associades a aquest esdeveniment.`;
-                }
+                if (assignmentsCount > 0) { confirmMsg += `<br><br><strong style='color:var(--danger-color);'>ATENCIÓ:</strong> També s'eliminaran <strong>${assignmentsCount} assignaci${assignmentsCount === 1 ? 'ó' : 'ons'}</strong> de personal associades.`;}
                 confirmMsg += `<br><br>Aquesta acció no es pot desfer.`
-
-                Utils.showConfirmationModal(
-                    "Confirmar Eliminació Esdeveniment",
-                    confirmMsg,
-                    () => { // Aquesta és la funció que s'executa si l'usuari confirma
-                        Handlers.executeDeleteEventFrame(frameId);
-                    },
-                    'danger' // Tipus de modal per emfatitzar l'acció
-                );
+                Utils.showConfirmationModal( "Confirmar Eliminació Esdeveniment", confirmMsg, () => { Handlers.executeDeleteEventFrame(frameId); }, 'danger');
             },
-
             executeDeleteEventFrame: (frameId) => {
                 const initialFramesLength = (appState.eventFrames || []).length;
-                const initialAssignmentsLength = (appState.assignments || []).length;
-
-                // Filtra per eliminar el marc
                 appState.eventFrames = (appState.eventFrames || []).filter(f => f.id !== frameId);
-
-                // Filtra per eliminar les assignacions associades
+                const assignmentsRemoved = (appState.assignments || []).filter(a => a.eventFrameId === frameId).length;
                 appState.assignments = (appState.assignments || []).filter(a => a.eventFrameId !== frameId);
-
-                const framesRemoved = initialFramesLength - (appState.eventFrames || []).length;
-                const assignmentsRemoved = initialAssignmentsLength - (appState.assignments || []).length;
-
-                if (framesRemoved > 0) {
+                if (initialFramesLength > (appState.eventFrames || []).length) {
+                    Utils.setUnsavedChanges(true);
                     Utils.showFeedback(`Esdeveniment eliminat (i ${assignmentsRemoved} assign. associades).`);
-                    // Si l'esdeveniment eliminat era el que s'estava editant, neteja el formulari
-                    if (appState.editingEventFrameId === frameId) {
-                        Render.setEventFrameFormMode('add');
-                    }
-                    Render.renderAll(); // Actualitza tota la interfície
-                } else {
-                    Utils.showFeedback("Error: No s'ha pogut eliminar l'esdeveniment.", 'error');
-                }
+                    if (appState.editingEventFrameId === frameId) { Render.setEventFrameFormMode('add'); }
+                    Render.renderAll();
+                } else { Utils.showFeedback("Error: No s'ha pogut eliminar.", 'error');}
             },
-            // (final afegit funcions delete event frame v9.x)
-
             directFilterChange: () => {
-                // (inici correcció línia incompleta v9.x)
-                if (filterStatusSelect) appState.filters.status = filterStatusSelect.value;
-                // (final correcció línia incompleta v9.x)
-                if (filterPersonSelect) appState.filters.personId = filterPersonSelect.value;
-                if (filterStartDateInput) appState.filters.startDate = filterStartDateInput.value;
-                if (filterEndDateInput) appState.filters.endDate = filterEndDateInput.value;
-                Render.renderAll();
-            },
+            // Llegir els valors actuals dels selectors/inputs
+            if (filterStatusSelect) appState.filters.status = filterStatusSelect.value;
+            if (filterPersonSelect) appState.filters.personId = filterPersonSelect.value;
+            if (filterEventFrameSelect) appState.filters.eventFrameId = filterEventFrameSelect.value; // <<< Assegurar que es guarda l'ID
+            if (filterStartDateInput) appState.filters.startDate = filterStartDateInput.value;
+            if (filterEndDateInput) appState.filters.endDate = filterEndDateInput.value;
+
+            // Un cop actualitzat appState.filters, re-renderitzar la taula
+            Render.renderAll(); // Render.renderAll cridarà Render.eventsTable que aplicarà els filtres
+        },
             filterChange: Utils.debounce(() => {
                 if(filterSearchInput) appState.filters.search = filterSearchInput.value;
                 Render.renderAll();
             }, DEBOUNCE_DELAY),
-            resetFilters: () => { if(filterSearchInput) filterSearchInput.value = ''; if(filterStatusSelect) filterStatusSelect.value = ''; if(filterPersonSelect) filterPersonSelect.value = ''; if(filterStartDateInput) filterStartDateInput.value = ''; if(filterEndDateInput) filterEndDateInput.value = ''; appState.filters = { search: '', status: '', startDate: '', endDate: '', personId: '' }; Render.renderAll(); },
-            headerClick: (e) => { const th=e.target.closest('th[data-sort-key]'); if (!th) return; const nk=th.dataset.sortKey; if(appState.sort.key===nk){appState.sort.direction=appState.sort.direction==='asc'?'desc':'asc';}else{appState.sort.key=nk; appState.sort.direction=(nk==='generalStartDate')?'desc':'asc';} Render.renderAll(); },
+            // <<< INICI BLOC A SUBSTITUIR (Handlers.resetFilters) >>>
+            resetFilters: () => {
+                // Netejar els camps d'entrada
+                if(filterSearchInput) filterSearchInput.value = '';
+                if(filterStatusSelect) filterStatusSelect.value = '';
+                if(filterPersonSelect) filterPersonSelect.value = '';
+                if(filterEventFrameSelect) filterEventFrameSelect.value = ''; // <<< Netejar nou filtre
+                if(filterStartDateInput) filterStartDateInput.value = '';
+                if(filterEndDateInput) filterEndDateInput.value = '';
+                // Reiniciar l'estat dels filtres
+                appState.filters = { search: '', status: '', startDate: '', endDate: '', personId: '', eventFrameId: '' }; // <<< Incloure eventFrameId buit
+                // Re-renderitzar tot
+                Render.renderAll();
+            },
+            // <<< FI BLOC A SUBSTITUIR (Handlers.resetFilters) >>>
+
+            headerClick: (e) => {
+                const th = e.target.closest('th[data-sort-key]');
+                if (!th) return;
+                const newKey = th.dataset.sortKey;
+                if (appState.sort.key === newKey) {
+                    appState.sort.direction = appState.sort.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    appState.sort.key = newKey;
+                    if (newKey === 'isPersonnelComplete') { appState.sort.direction = 'desc'; }
+                    else if (newKey === 'generalStartDate') { appState.sort.direction = 'desc'; }
+                    else { appState.sort.direction = 'asc'; }
+                }
+                Render.renderAll();
+            },
             clearEventFrameForm: () => { Render.setEventFrameFormMode('add'); },
             cancelEditEventFrame: () => { Render.setEventFrameFormMode('add'); },
             cancelEditAssignment: () => { Utils.hideAssignmentModal(); },
-            calendarEventClick: (info) => { const cE=info.event; if(cE.extendedProps&&cE.extendedProps.isFrame){const fId=parseFloat(cE.id); const f=(appState.eventFrames||[]).find(f=>f.id===fId); const ass=cE.extendedProps.assignments||[]; const fT=cE.title; const fDS=cE.start?Utils.formatDateRange(cE.startStr,cE.endStr?new Date(new Date(cE.endStr).getTime()-864e5).toISOString().split('T')[0]:cE.startStr):'N/D'; const fL=cE.extendedProps.frameLocation||'-'; const fN=cE.extendedProps.frameNotes||'-'; let dH=`<strong>Dates Marc:</strong> ${fDS}<br><strong>Lloc:</strong> ${Utils.escapeHTML(fL)}<br><strong>Notes Marc:</strong> ${Utils.escapeHTML(fN).replace(/\n/g,'<br>')}<br><hr><strong>Assignacions (${ass.length}):</strong>`; if(ass.length>0){dH+='<ul style="margin-top:5px;padding-left:20px;">'; ass.sort((a,b)=>(a.personName||'').localeCompare(b.personName||'','ca',{sensitivity:'base'})); ass.forEach(d=>{const aD=Utils.formatDateRange(d.startDate,d.endDate); dH+=`<li style="margin-bottom:5px;"><strong>${Utils.escapeHTML(d.personName||'N/D')}</strong> (${Utils.escapeHTML(d.status)})`; if(aD&&aD!==fDS){dH+=` <small>(${aD})</small>`;} if(d.notes){dH+=`<br><small style="font-style:italic;">${Utils.escapeHTML(d.notes).replace(/\n/g,'<br>')}</small>`;} dH+=`</li>`;}); dH+='</ul>';}else{dH+='<p style="font-style:italic;margin-left:15px;">Cap persona assignada.</p>';} Utils.showConfirmationModal(`Detalls Marc: ${Utils.escapeHTML(fT)}`,dH,null,'info');}else{console.warn("Clic event calendari inesperat:",cE);}},
-            assignmentInputsChange: () => { const aD={id:appState.editingAssignmentId?parseFloat(appState.editingAssignmentId):null,personId:assignmentPersonSelect?.value?parseFloat(assignmentPersonSelect.value):null,eventFrameId:appState.currentAssignmentModalFrameId,assignmentStartDate:assignmentStartDateInput?.value,assignmentEndDate:assignmentEndDateInput?.value||null}; if(aD.personId!==null&&aD.assignmentStartDate){const cfl=Utils.checkAssignmentConflicts(aD); if(cfl.length>0){const n=cfl.map(c=>`"${Utils.escapeHTML(c.eventName)}" (${Utils.formatDateRange(c.startDate,c.endDate)})`).join(', '); if(assignmentConflictWarning){assignmentConflictWarning.innerHTML=`Conflicte: ${n}.`; assignmentConflictWarning.style.display='block';}}else{if(assignmentConflictWarning)assignmentConflictWarning.style.display='none';}}else{if(assignmentConflictWarning)assignmentConflictWarning.style.display='none';}}
+            calendarEventClick: (info) => {
+                const clickedEvent = info.event;
+                if (clickedEvent.extendedProps && clickedEvent.extendedProps.isFrame) {
+                    const frameId = parseFloat(clickedEvent.id);
+                    Utils.showEventFrameDetailsModal(frameId);
+                } else {
+                    console.warn("Clic a event del calendari no reconegut:", clickedEvent);
+                }
+            },
+            calendarDateClick: (info) => {
+                const formattedDate = Utils.formatSingleDate(info.dateStr);
+                const message = `Vols afegir un nou esdeveniment per al dia ${formattedDate}?`;
+                Utils.showConfirmationModal("Afegir Esdeveniment", message, () => {
+                    Render.setEventFrameFormMode('add');
+                    if (eventFrameStartDateInput) { eventFrameStartDateInput.value = info.dateStr; }
+                    if (eventFrameEndDateInput) { eventFrameEndDateInput.value = ''; }
+                    if (eventFrameForm) { eventFrameForm.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+                    if (eventFrameNameInput) { eventFrameNameInput.focus(); }
+                    Utils.showFeedback(`Preparat per afegir esdeveniment el ${formattedDate}`, "info");
+                }, 'info');
+                if (modalConfirmBtn && modalCancelBtn) {
+                     modalConfirmBtn.textContent = "Sí, afegir";
+                     modalCancelBtn.textContent = "Cancel·lar";
+                     modalConfirmBtn.classList.remove('btn-danger', 'btn-warning');
+                     modalConfirmBtn.classList.add('btn-success');
+                }
+            },
+           // <<< INICI BLOC COMPLET A SUBSTITUIR (Handlers.handleExportFilteredView - FORMAT GRUPAT) >>>
+        handleExportFilteredView: () => {
+            console.log("Iniciant exportació CSV (format agrupat)...");
+            if (!isDataLoaded) {
+                Utils.showFeedback("No hi ha dades carregades per exportar.", 'warning');
+                return;
+            }
 
-            // < final Handlers per v8.1 COMPLET >
+            const allFrames = appState.eventFrames || [];
+            const allAssignments = appState.assignments || [];
+            const allPeople = appState.people || [];
+
+            // 1. Obtenir filtres actuals (igual que abans)
+            const sf = appState.filters.search.toLowerCase().trim();
+            const ss = appState.filters.status;
+            const sp = appState.filters.personId ? parseFloat(appState.filters.personId) : null;
+            const se = appState.filters.eventFrameId ? parseFloat(appState.filters.eventFrameId) : null;
+            let sD = null, eD = null;
+            try { sD = appState.filters.startDate ? new Date(appState.filters.startDate + 'T00:00:00Z') : null; } catch (e) {}
+            try { eD = appState.filters.endDate ? new Date(appState.filters.endDate + 'T23:59:59Z') : null; } catch (e) {}
+
+            // 2. Filtrar PRIMER els Marcs que compleixen els criteris
+            const filteredFrames = allFrames.filter(frame => {
+                // Comprovar filtre directe d'esdeveniment
+                const eventMatch = (se === null || frame.id === se);
+                if (!eventMatch) return false;
+
+                const assignmentsForThisFrame = allAssignments.filter(a => a.eventFrameId === frame.id);
+
+                // Comprovar filtre de text (en marc o en qualsevol assignació/persona associada)
+                 let textMatch = !sf || (
+                     (frame.eventName || '').toLowerCase().includes(sf) ||
+                     (frame.location || '').toLowerCase().includes(sf) ||
+                     (frame.notesGeneral || '').toLowerCase().includes(sf) ||
+                     assignmentsForThisFrame.some(a =>
+                         (Utils.getPersonNameById(a.personId) || '').toLowerCase().includes(sf) ||
+                         (a.notesAssignment || '').toLowerCase().includes(sf)
+                     )
+                 );
+                if (!textMatch) return false;
+
+                // Comprovar si *alguna* assignació compleix els filtres d'assignació (estat, persona, data)
+                const hasAssignmentFilters = ss || sp !== null || sD || eD;
+                if (hasAssignmentFilters) {
+                    const hasMatchingAssignment = assignmentsForThisFrame.some(a => {
+                        const statusMatch = !ss || (a.status === ss);
+                        const personMatch = sp === null || (a.personId === sp);
+                        let dateMatch = true;
+                        if (sD || eD) {
+                            const assignStart = a.assignmentStartDate ? new Date(a.assignmentStartDate + 'T00:00:00Z') : null;
+                            const assignEnd = a.assignmentEndDate ? new Date(a.assignmentEndDate + 'T23:59:59Z') : (assignStart ? new Date(a.assignmentStartDate + 'T23:59:59Z') : null);
+                            dateMatch = assignStart && assignEnd && (!sD || assignEnd >= sD) && (!eD || assignStart <= eD);
+                        }
+                        return statusMatch && personMatch && dateMatch;
+                    });
+                    if (!hasMatchingAssignment) return false; // Si hi ha filtres d'assignació, almenys una ha de complir
+                }
+
+                // Si ha passat tots els filtres, s'inclou el marc
+                return true;
+            });
+
+            // 3. Comprovar si hi ha marcs filtrats
+            if (filteredFrames.length === 0) {
+                Utils.showFeedback("No hi ha esdeveniments que compleixin els filtres per exportar.", 'info');
+                return;
+            }
+
+            // 4. Preparar les dades per al CSV amb el format agrupat desitjat
+            const csvRows = [];
+
+            // Ordenar els marcs (per exemple, per data d'inici)
+             filteredFrames.sort((a, b) => {
+                 const dateA = a.generalStartDate ? new Date(a.generalStartDate).getTime() : 0;
+                 const dateB = b.generalStartDate ? new Date(b.generalStartDate).getTime() : 0;
+                 if (dateA !== dateB) return dateA - dateB;
+                 return (a.eventName || '').localeCompare(b.eventName || '', 'ca');
+             });
+
+            filteredFrames.forEach(frame => {
+                // Filtrar les assignacions d'AQUEST marc que compleixen els filtres d'assignació
+                 const filteredAssignmentsForThisFrame = allAssignments.filter(a => {
+                     if (a.eventFrameId !== frame.id) return false;
+                     const statusMatch = !ss || (a.status === ss);
+                     const personMatch = sp === null || (a.personId === sp);
+                     let dateMatch = true;
+                     if (sD || eD) {
+                         const assignStart = a.assignmentStartDate ? new Date(a.assignmentStartDate + 'T00:00:00Z') : null;
+                         const assignEnd = a.assignmentEndDate ? new Date(a.assignmentEndDate + 'T23:59:59Z') : (assignStart ? new Date(a.assignmentStartDate + 'T23:59:59Z') : null);
+                         dateMatch = assignStart && assignEnd && (!sD || assignEnd >= sD) && (!eD || assignStart <= eD);
+                     }
+                     // Ja no cal comprovar el filtre de text aquí, perquè ja s'ha filtrat el marc
+                     return statusMatch && personMatch && dateMatch;
+                 });
+
+                 // Només incloure el marc si té assignacions que compleixen els filtres
+                 if (filteredAssignmentsForThisFrame.length > 0) {
+
+                    // Afegir separador
+                    csvRows.push(['', '', ''].map(Utils.escapeCsvValue).join(','));
+
+                    // Capçalera dades marc
+                    csvRows.push(['Esdeveniment', 'Data Esdeveniment', 'Ubicació Esdeveniment'].map(Utils.escapeCsvValue).join(','));
+                    // Dades marc
+                    csvRows.push([
+                        frame.eventName,
+                        Utils.formatDateRange(frame.generalStartDate, frame.generalEndDate),
+                        frame.location || ''
+                    ].map(Utils.escapeCsvValue).join(','));
+
+                    // Capçalera assignacions
+                    csvRows.push(['Dates Assignació', 'Persona/Grup', 'Estat'].map(Utils.escapeCsvValue).join(','));
+
+                    // Ordenar assignacions (per exemple, per nom de persona)
+                    filteredAssignmentsForThisFrame.sort((a, b) =>
+                        (Utils.getPersonNameById(a.personId) || '').localeCompare(Utils.getPersonNameById(b.personId) || '', 'ca')
+                    );
+
+                    // Dades assignacions
+                    filteredAssignmentsForThisFrame.forEach(a => {
+                        const person = allPeople.find(p => p.id === a.personId);
+                        csvRows.push([
+                            Utils.formatDateRange(a.assignmentStartDate, a.assignmentEndDate),
+                            person ? person.name : 'Desconegut',
+                            a.status || 'Pendent'
+                        ].map(Utils.escapeCsvValue).join(','));
+                    });
+
+                    // Capçalera notes marc
+                    csvRows.push(['Notes Esdeveniment', '', ''].map(Utils.escapeCsvValue).join(','));
+                    // Dades notes marc
+                    csvRows.push([
+                        frame.notesGeneral || '',
+                        '', // Cel·la buida
+                        ''  // Cel·la buida
+                    ].map(Utils.escapeCsvValue).join(','));
+                 }
+            });
+
+            // 5. Comprovar si s'ha generat alguna fila (pot ser que els marcs filtrats no tinguessin assignacions coincidents)
+            if (csvRows.length === 0) {
+                 Utils.showFeedback("No hi ha assignacions que compleixin els filtres per als esdeveniments seleccionats.", 'info');
+                 return;
+             }
+
+            // 6. Crear i descarregar el fitxer CSV (igual que abans)
+            try {
+                const csvString = csvRows.join('\n');
+                // Afegir BOM per a Excel
+                const blob = new Blob(["\uFEFF" + csvString], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                const timestamp = new Date().toISOString().slice(0, 10);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `export_assignacions_agrupades_${timestamp}.csv`); // Nom de fitxer diferent
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                Utils.showFeedback("Exportació CSV (agrupada) completada.");
+            } catch (err) {
+                console.error("Error generant CSV:", err);
+                Utils.showFeedback("Error durant l'exportació CSV.", 'error');
+            }
+        },
+        // <<< FI BLOC COMPLET A SUBSTITUIR (Handlers.handleExportFilteredView - FORMAT GRUPAT) >>>
+            assignmentInputsChange: () => { const aD={id:appState.editingAssignmentId?parseFloat(appState.editingAssignmentId):null,personId:assignmentPersonSelect?.value?parseFloat(assignmentPersonSelect.value):null,eventFrameId:appState.currentAssignmentModalFrameId,assignmentStartDate:assignmentStartDateInput?.value,assignmentEndDate:assignmentEndDateInput?.value||null}; if(aD.personId!==null&&aD.assignmentStartDate){const cfl=Utils.checkAssignmentConflicts(aD); if(cfl.length>0){const n=cfl.map(c=>`"${Utils.escapeHTML(c.eventName)}" (${Utils.formatDateRange(c.startDate,c.endDate)})`).join(', '); if(assignmentConflictWarning){assignmentConflictWarning.innerHTML=`Conflicte: ${n}.`; assignmentConflictWarning.style.display='block';}}else{if(assignmentConflictWarning)assignmentConflictWarning.style.display='none';}}else{if(assignmentConflictWarning)assignmentConflictWarning.style.display='none';}}
+            // < final Handlers per v9.x >
         }; // <<< End of Handlers object
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOM Loaded. Initializing v9..."); // Actualitzat missatge
+            console.log("DOM Loaded. Initializing v9...");
             // Initial Load
             if(startEmptyBtn) startEmptyBtn.addEventListener('click', Handlers.handleInitialLoadChoice);
             if(importFileInput) importFileInput.addEventListener('change', Handlers.handleFileImport);
@@ -1528,6 +2711,7 @@ Docs & License: https://fullcalendar.io
             if(eventFrameForm) eventFrameForm.addEventListener('submit', Handlers.handleEventFrameFormSubmit);
             if(clearEventFrameFormBtn) clearEventFrameFormBtn.addEventListener('click', Handlers.clearEventFrameForm);
             if(cancelEditEventFrameBtn) cancelEditEventFrameBtn.addEventListener('click', Handlers.cancelEditEventFrame);
+            if(deleteEventFrameFromFormBtn) deleteEventFrameFromFormBtn.addEventListener('click', () => { const frameId=appState.editingEventFrameId?parseFloat(appState.editingEventFrameId):null; if(frameId!==null){const fTD=(appState.eventFrames||[]).find(f=>f.id===frameId); if(fTD){Handlers.requestDeleteEventFrame(frameId,fTD.eventName);}else{Utils.showFeedback("Error: No es pot identificar event a eliminar.",'error');}}else{Utils.showFeedback("Cap event en edició per eliminar.",'warning');}});
             // People Modal
             if(managePeopleBtn) managePeopleBtn.addEventListener('click', Utils.showPeopleModal);
             if(personForm) personForm.addEventListener('submit', Handlers.handlePersonFormSubmit);
@@ -1549,7 +2733,9 @@ Docs & License: https://fullcalendar.io
             if(filterStatusSelect) filterStatusSelect.addEventListener('change', Handlers.directFilterChange);
             if(filterStartDateInput) filterStartDateInput.addEventListener('change', Handlers.directFilterChange);
             if(filterEndDateInput) filterEndDateInput.addEventListener('change', Handlers.directFilterChange);
+            if(filterEventFrameSelect) filterEventFrameSelect.addEventListener('change', Handlers.directFilterChange); 
             if(resetFiltersBtn) resetFiltersBtn.addEventListener('click', Handlers.resetFilters);
+            
             // Events Table
             if(eventsTableBody) eventsTableBody.addEventListener('click', Handlers.tableClick);
             if(eventsTableBody) eventsTableBody.addEventListener('change', Handlers.tableChange);
@@ -1561,32 +2747,35 @@ Docs & License: https://fullcalendar.io
             if(saveAllBtn) saveAllBtn.addEventListener('click', Handlers.handleSaveAll);
             if(loadPeopleBtn) loadPeopleBtn.addEventListener('click', Handlers.triggerLoadPeople);
             if(savePeopleBtn) savePeopleBtn.addEventListener('click', Handlers.handleSavePeople);
+            if(exportFilteredViewBtn) exportFilteredViewBtn.addEventListener('click', Handlers.handleExportFilteredView);
 
-            // (inici afegit listener per eliminar des de form v9.x)
-            if (deleteEventFrameFromFormBtn) {
-                deleteEventFrameFromFormBtn.addEventListener('click', () => {
-                    const frameId = appState.editingEventFrameId ? parseFloat(appState.editingEventFrameId) : null;
-                    if (frameId !== null) {
-                        const frameToDelete = (appState.eventFrames || []).find(f => f.id === frameId);
-                        if (frameToDelete) {
-                            Handlers.requestDeleteEventFrame(frameId, frameToDelete.eventName);
-                        } else {
-                            Utils.showFeedback("Error: No s'ha pogut identificar l'esdeveniment a eliminar.", 'error');
-                        }
-                    } else {
-                         Utils.showFeedback("No hi ha cap esdeveniment en mode edició per eliminar.", 'warning');
-                    }
+            window.addEventListener('beforeunload', (event) => {
+                if (appState.hasUnsavedChanges) {
+                    const message = "Tens canvis sense desar a la Gestió d'Esdeveniments. Vols desar-los abans de sortir?";
+                    event.returnValue = message; return message;
+                }
+            });
+            
+            document.querySelectorAll('.collapsible-header').forEach(header => {
+                const targetId = header.dataset.targetContent;
+                const content = document.getElementById(targetId);
+                const icon = header.querySelector('.collapse-icon');
+                if (!content) { console.warn(`Contingut desplegable no trobat: ${targetId}`); return; }
+                const updateCollapsibleState = (isOpen) => {
+                    if (isOpen) { content.classList.remove('hidden'); header.classList.remove('collapsed'); if (icon) icon.textContent = '▼'; header.setAttribute('aria-expanded', 'true'); content.setAttribute('aria-hidden', 'false');
+                    } else { content.classList.add('hidden'); header.classList.add('collapsed'); if (icon) icon.textContent = '►'; header.setAttribute('aria-expanded', 'false'); content.setAttribute('aria-hidden', 'true');}
+                };
+                const isInitiallyOpen = !content.classList.contains('hidden');
+                updateCollapsibleState(isInitiallyOpen);
+                if (isInitiallyOpen) { if(icon) icon.textContent = '▼'; } else { if(icon) icon.textContent = '►';}
+                header.addEventListener('click', () => {
+                    const isCurrentlyOpen = !content.classList.contains('hidden'); // Comprova l'estat ACTUAL
+                    updateCollapsibleState(!isCurrentlyOpen); // Passa l'estat CONTRARI per commutar
                 });
-            }
-            // (final afegit listener per eliminar des de form v9.x)
-
-            // Initial State
-            if(initialLoadOverlay) initialLoadOverlay.classList.remove('hidden');
-            if(mainContent) mainContent.classList.remove('visible');
+            });
             console.log("Initialization v9 complete. Waiting for user action.");
         }); // <<< End of DOMContentLoaded listener
 
     </script>    <!-- ********** FI CODI JavaScript PRINCIPAL DE L'APLICACIÓ (v9) ********** -->
-
 </body>
 </html>
