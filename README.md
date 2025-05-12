@@ -1,8 +1,8 @@
-# Gestió Integral d'Esdeveniments v9.5
+# Gestió Integral d'Esdeveniments v10.1
 
 ## Descripció
 
-Aquesta és una aplicació web autocontinguda (un sol fitxer HTML) dissenyada per gestionar esdeveniments i les assignacions de personal o grups a aquests esdeveniments. La versió 9 introdueix un canvi conceptual important, organitzant la informació en:
+Aquesta és una aplicació web autocontinguda (un sol fitxer HTML) dissenyada per gestionar esdeveniments i les assignacions de personal o grups a aquests esdeveniments. La versió 10 continua millorant la usabilitat i les funcionalitats de la versió 9.x, mantenint l'estructura conceptual de:
 
 1.  **Marcs d'Esdeveniment (Event Frames):** Defineixen l'esdeveniment general (nom, lloc, dates generals, notes generals).
 2.  **Assignacions (Assignments):** Vinculen persones o grups específics a un Marc d'Esdeveniment, amb dates concretes (que poden ser un subconjunt de les dates generals del marc), un estat (Pendent, Sí, No) i notes específiques de l'assignació.
@@ -13,77 +13,80 @@ L'aplicació està escrita en HTML, CSS i JavaScript (sense frameworks externs, 
 
 ## Estat Actual del Projecte
 
-*   **Versió:** v9.5
-*   **Estat:** Funcional. Permet les operacions bàsiques de creació, lectura, actualització i eliminació (CRUD) per a Marcs d'Esdeveniment, Persones/Grups i Assignacions. Inclou visualitzacions de taula, calendari, exportació CSV filtrada i resums.
+*   **Versió:** v10.1 
+*   **Estat:** Funcional. Permet les operacions bàsiques de creació, lectura, actualització i eliminació (CRUD) per a Marcs d'Esdeveniment, Persones/Grups i Assignacions. Inclou visualitzacions de taula, calendari, exportació CSV filtrada i resums amb exportació CSV detallada.
 *   **Idioma:** Català (interfície i comentaris del codi).
 
-## Característiques Principals
+## Novetats a la Versió 10.1
 
+*   **Millores als Resums:**
+    *   **Ordenació Avançada:** Els resums (agrupats per nom d'esdeveniment, per data d'inici, i per persona) ara tenen una ordenació interna més lògica, prioritzant les dates més recents i després criteris secundaris com noms.
+    *   **Exportació CSV Detallada:** Els botons "Exportar CSV" de cada targeta de resum ara generen fitxers CSV amb informació més rica i contextualitzada, incloent detalls del marc de l'esdeveniment associat a cada assignació.
+*   **Reorganització de la Interfície:** La secció "Vista de Calendari" ara es mostra abans que la secció "Afegir Marc Esdeveniment" per a un accés més ràpid a la visualització general.
+*   **Millora al Modal de Detalls del Marc:** S'ha afegit un botó "Mostrar a la Llista" que filtra la taula principal per mostrar només el marc d'esdeveniment seleccionat i fa scroll fins a ell.
+*   **Neteja d'Interfície:** Eliminat un botó de canvi de tema duplicat/no funcional.
+
+## Característiques Principals (v10.1)
+
+*   **Interfície d'Usuari:**
+    *   **Canvi de Tema:** Permet seleccionar entre un tema Clar i un tema Fosc (per defecte).
+    *   **Ordre de Seccions:** Vista de Calendari primer, seguida pel formulari d'Afegir Marc.
+    *   **Responsiva:** S'adapta a diferents mides de pantalla.
+    *   **Modals:** Ús de finestres modals per a gestió de persones, assignacions, detalls de marc (amb nou botó "Mostrar a la Llista") i confirmacions.
+    *   **Seccions Desplegables:** La Llista d'Esdeveniments comença oberta; Generació de Llistes i Resums comencen tancades.
+    *   **Feedback Visual:** Missatges emergents per informar l'usuari.
 *   **Gestió de Dades:**
     *   **Càrrega/Desa:** Permet carregar i guardar TOTES les dades (Marcs, Assignacions, Persones) en un únic fitxer JSON.
     *   **Càrrega/Desa Selectiva:** Permet carregar i guardar NOMÉS les dades de Persones/Grups en un fitxer JSON separat.
     *   **Avís de Canvis:** Mostra un avís quan hi ha canvis sense desar.
-    *   **Sense Desa Automàtica:** **MOLT IMPORTANT:** L'aplicació NO desa les dades automàticament. L'usuari ha de desar manualment les dades utilitzant els botons corresponents.
+    *   **Sense Desa Automàtica:** **MOLT IMPORTANT:** L'aplicació NO desa les dades automàticament. L'usuari ha de desar manualment.
 *   **Marcs d'Esdeveniment:**
-    *   Crear, Editar i Eliminar Marcs (nom, lloc, dates generals, notes).
-    *   Datalists per autocompletar noms i llocs basats en entrades anteriors.
+    *   Crear, Editar i Eliminar Marcs.
+    *   Datalists per autocompletar noms i llocs.
 *   **Persones/Grups:**
-    *   Gestionar (Afegir, Editar, Eliminar) persones o grups a través d'un modal.
-    *   Emmagatzema nom, rol/tipus, telèfons, email, web i notes.
+    *   Gestionar (Afegir, Editar, Eliminar) persones o grups.
 *   **Assignacions:**
-    *   Assignar persones/grups a Marcs d'Esdeveniment existents mitjançant un modal.
-    *   Definir dates específiques per a cada assignació (dins del rang del marc).
-    *   Establir l'estat de l'assignació (Pendent, Sí, No).
-    *   Afegir notes específiques per a l'assignació.
-    *   **Detecció de Conflictes:** Avisa visualment en el formulari d'assignació si la persona ja té una altra assignació en les mateixes dates.
+    *   Assignar persones/grups a Marcs d'Esdeveniment.
+    *   Definir dates específiques, estat i notes per assignació.
+    *   **Detecció de Conflictes:** Avisa si la persona ja té una assignació en les mateixes dates.
 *   **Visualització Principal (Taula Agrupada):**
-    *   Mostra els Marcs d'Esdeveniment com a files principals.
-    *   **Desplegable:** Cada marc es pot desplegar/replegar per mostrar/ocultar les assignacions associades (obert per defecte).
-    *   **Recompte d'Estats:** Mostra icones amb el recompte d'assignacions per estat (Sí, Pendent, No) a la fila del marc.
-    *   **Estat Complet:** Permet marcar un marc com a "Personal Complet" amb un checkbox, canviant visualment la fila.
-    *   **Filtrat:** Permet filtrar la llista per text (cerca en noms, llocs, notes, persones), per persona assignada, per **esdeveniment (marc)**, per estat d'assignació i per rang de dates.
-    *   **Ordenació:** Permet ordenar la taula per diverses columnes (incloent l'estat de "Personal Complet").
-    *   **Vista Detall Assignació:** Mostra la persona, dates específiques, estat (amb selector per canviar-lo directament) i notes de l'assignació.
-    *   **Accions Ràpides:** Botons per editar/eliminar marcs i assignacions directament des de la taula.
+    *   Mostra Marcs d'Esdeveniment i les seves assignacions desplegables.
+    *   Recompte d'Estats i opció de marcar "Personal Complet".
+    *   Filtrat avançat i ordenació de columnes.
+    *   Accions ràpides d'edició/eliminació.
 *   **Vista de Calendari:**
-    *   Integració amb FullCalendar per mostrar els Marcs d'Esdeveniment visualment.
-    *   Vistes disponibles: **6 Mesos (per defecte)**, 3 Mesos, 1 Mes, 1 Setmana, Agenda.
-    *   Navegació per fletxes adaptada a cada vista (mensual per vistes multi-mes i mes, setmanal per vistes setmanals).
-    *   Clic en un esdeveniment del calendari obre un modal amb els detalls del Marc.
-    *   Clic en una data del calendari permet iniciar la creació d'un nou Marc per a aquesta data.
+    *   Integració amb FullCalendar.
+    *   Vistes: 6 Mesos (per defecte), 3 Mesos, 1 Mes, 1 Setmana, Agenda.
+    *   Navegació adaptada i interacció per veure detalls o crear esdeveniments.
 *   **Generació de Llistes / Informes:**
-    *   Nova secció (replegada per defecte) per exportar dades.
-    *   Botó **"Exportar Vista Filtrada (CSV)"**.
-    *   Genera un fitxer CSV basat en els filtres actius a la secció "Filtres i Cerca".
-    *   El CSV exporta **només les assignacions** que compleixen els filtres.
-    *   El format del CSV és **agrupat per esdeveniment**, mostrant primer les dades del marc, després les assignacions filtrades d'aquest marc i finalment les notes del marc.
+    *   Secció per exportar dades filtrades de la vista principal a CSV (format agrupat per esdeveniment).
 *   **Vista de Resums:**
-    *   Secció existent (replegada per defecte) que mostra targetes amb dades agrupades per nom d'esdeveniment, data d'inici i persona. (Els botons CSV d'aquesta secció són independents de la nova funcionalitat d'exportació).
-*   **Interfície d'Usuari:**
-    *   **Responsiva:** S'adapta a diferents mides de pantalla.
-    *   **Modals:** Ús de finestres modals per a gestió de persones, assignacions, detalls de marc i confirmacions.
-    *   **Seccions Desplegables:** La Llista d'Esdeveniments comença oberta; Generació de Llistes i Resums comencen tancades. Es poden commutar.
-    *   **Feedback Visual:** Missatges emergents per informar l'usuari.
+    *   Targetes amb dades agrupades per nom d'esdeveniment, data d'inici i persona/grup.
+    *   **Ordenació millorada** dins de cada resum.
+    *   **Exportació CSV detallada** per a cada tipus de resum.
 
 ## Com Utilitzar
 
-1.  **Obrir el Fitxer:** Desa el fitxer `Gestió de Personal i Esdeveniments v9_5 dev.html` al teu ordinador. Fes doble clic sobre ell per obrir-lo amb el teu navegador web preferit.
-2.  **Inici:** Apareixerà una pantalla de benvinguda. Fes clic a "Començar" o utilitza els botons "Carregar" de la secció "Gestió de Dades" si tens fitxers previs.
-3.  **Gestionar Persones:** Afegeix/Edita persones des del botó "Gestionar" a "Gestió de Dades".
-4.  **Crear Marcs:** Utilitza el formulari "Afegir Marc Esdeveniment".
-5.  **Assignar Persones:** A la taula principal, fes clic a la icona verd (+) a la fila del marc per obrir el modal d'assignació.
-6.  **Visualitzar:** Explora la Taula (amb assignacions visibles per defecte) o el Calendari.
-7.  **Filtrar i Ordenar:** Utilitza els controls de la secció "Filtres i Cerca". Fes clic a les capçaleres de la taula per ordenar.
-8.  **Exportar:** Aplica els filtres desitjats. Obre la secció "Generació de Llistes / Informes" i fes clic a "Exportar Vista Filtrada (CSV)" per descarregar un fitxer amb les assignacions filtrades en format agrupat per esdeveniment.
-9.  **DESAR:** **Recorda desar les teves dades sovint!** Utilitza els botons "Guardar Tot (JSON)" o "Guardar Persones (JSON)". Si tanques el navegador sense desar, perdràs els canvis.
+1.  **Obrir el Fitxer:** Desa el fitxer `Gestió de Personal i Esdeveniments v10_1.html` (o el nom que li hagis donat) al teu ordinador. Fes doble clic sobre ell per obrir-lo amb el teu navegador web preferit.
+2.  **Inici:** Apareixerà una pantalla de benvinguda. Fes clic a "Començar" per iniciar una sessió buida. Si tens dades prèvies, pots utilitzar els botons "Carregar Tot (JSON)" o "Carregar Persones (JSON)" de la secció "Gestió de Dades" un cop hagis començat.
+3.  **Canviar Tema (Opcional):** Utilitza el botó a la part superior dreta per ajustar el tema visual.
+4.  **Visualitzar Calendari:** La vista de calendari ara és la primera secció principal.
+5.  **Crear Marcs:** Utilitza el formulari "Afegir Marc Esdeveniment" que ara està sota el calendari.
+6.  **Gestionar Persones:** Afegeix/Edita persones des del botó "Gestionar" a "Gestió de Dades > Persones / Grups".
+7.  **Assignar Persones:** A la taula principal, fes clic a la icona amb un usuari i un "+" verd a la fila del marc desitjat.
+8.  **Filtrar i Ordenar:** Utilitza els controls de la secció "Filtres i Cerca". Fes clic a les capçaleres de la taula per ordenar.
+9.  **Exportar:**
+    *   **Vista Filtrada Principal:** Aplica filtres, obre "Generació de Llistes / Informes" i clica "Exportar Vista Filtrada (CSV)".
+    *   **Resums:** Obre la secció "Resums", i cada targeta tindrà el seu botó "Exportar CSV" que generarà un fitxer detallat.
+10. **DESAR:** **Recorda desar les teves dades sovint!** Utilitza els botons "Guardar Tot (JSON)" o "Guardar Persones (JSON)". L'aplicació t'avisarà si intentes tancar la pàgina amb canvis pendents.
 
-## Gestió de Dades: Flux de Treball Important (v9.5)
+## Gestió de Dades: Flux de Treball Important
 
 Aquesta aplicació **no té backend ni emmagatzematge automàtic**. Tota la informació es manté a la memòria del navegador durant la sessió.
 
-*   **Per desar el teu treball:** Utilitza **activament** el botó **Guardar Tot (JSON)**. Això generarà un fitxer `.json` que conté tota la informació i que has de desar al teu ordinador.
-*   **Per continuar treballant:** Quan tornis a obrir l'aplicació, normalment utilitzaràs **Carregar Tot (JSON)** per restaurar l'estat complet des del fitxer que vas desar.
-*   **Avís:** Si no guardes les dades abans de tancar la pàgina, **els canvis es perdran**. Fes desats freqüents! L'aplicació avisa si detecta canvis pendents en tancar.
+*   **Per desar el teu treball:** Utilitza **activament** el botó **Guardar Tot (JSON)**.
+*   **Per continuar treballant:** Utilitza **Carregar Tot (JSON)** per restaurar l'estat.
+*   **Avís:** Si no guardes les dades abans de tancar la pàgina, **els canvis es perdran**.
 *   **Incompatibilitat:** Els fitxers JSON de versions anteriors a la v8/v9 no són compatibles.
 
 ## Pila Tecnològica
@@ -95,7 +98,7 @@ Aquesta aplicació **no té backend ni emmagatzematge automàtic**. Tota la info
 
 ## Dependències
 
-*   **FullCalendar:** Utilitza la llibreria FullCalendar (v6.1.17 incrustada) per a la vista de calendari. [Llicència MIT](https://github.com/fullcalendar/fullcalendar/blob/main/LICENSE.txt).
+*   **FullCalendar:** Utilitza la llibreria FullCalendar (v6.1.17 incrustada). [Llicència MIT](https://github.com/fullcalendar/fullcalendar/blob/main/LICENSE.txt).
 
 ## Desenvolupament
 
